@@ -12,7 +12,7 @@ import javax.mail.internet.MimeMessage;
 public class SendEmail {
 	private String host = "smtp.163.com";//smtp
 	private String user = "kone_net@163.com";//
-	private String pwd = "ww15181647378";
+	private String pwd = "";
 	private String from = "kone_net@163.com";//
 	private String to = "1093312677@qq.com";//
 	private String subject = "Weily";//
