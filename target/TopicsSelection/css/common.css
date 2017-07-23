@@ -1,0 +1,66 @@
+@CHARSET "UTF-8";
+.panel{
+	border-radius:0;
+}
+.form-control{
+	border-radius:0;
+}
+table{
+	margin-top:0;
+}
+	/*查找框样式*/
+.search{
+	width:40%;
+	float:left;
+	margin-top:0;
+}
+.searchable-select-holder{
+	border-radius:0;
+}
+.btn{
+	border-radius:0;
+}
+
+/*弹出框*/
+.alert-container{
+	position:fixed;
+	width:100%;
+	height:100%;
+	background-color:rgba(0, 0, 0, .3);
+	z-index:1;
+}
+.box-container{
+	margin:0 auto;
+	margin-top:20px;
+	width:400px;
+	height:260px;
+	background-color:white;
+}
+.alert-title{
+	width:100%;
+	background-color:rgba(0, 0, 0, .6);
+	height:50px;
+}
+.close{
+	float:right;
+	width:40px;
+	height:50px;
+	background-color:;
+	
+}
+.alert-content{
+	width:100%;
+	height:100%;
+	
+}
+.content{
+	font-size:25px;
+	margin-top:20px;
+}
+.alert-confirm{
+	margin:0 auto;
+	width:50%;
+	height:45px;
+	margin-top:20px;
+	
+}

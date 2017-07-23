@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<testsuite failures="0" time="19.121" errors="1" skipped="0" tests="1" name="com.test.TestClass">
+  <properties>
+    <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
+    <property name="sun.boot.library.path" value="D:\SoftwareInstalled\software\jdk7\jre\bin"/>
+    <property name="java.vm.version" value="24.80-b11"/>
+    <property name="java.vm.vendor" value="Oracle Corporation"/>
+    <property name="maven.multiModuleProjectDirectory" value="D:\workplace\workplace\maven2\TopicsSelection3"/>
+    <property name="java.vendor.url" value="http://java.oracle.com/"/>
+    <property name="path.separator" value=";"/>
+    <property name="guice.disable.misplaced.annotation.check" value="true"/>
+    <property name="java.vm.name" value="Java HotSpot(TM) 64-Bit Server VM"/>
+    <property name="file.encoding.pkg" value="sun.io"/>
+    <property name="user.script" value=""/>
+    <property name="user.country" value="CN"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="user.dir" value="D:\workplace\workplace\maven2\TopicsSelection3"/>
+    <property name="java.runtime.version" value="1.7.0_80-b15"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.Win32GraphicsEnvironment"/>
+    <property name="java.endorsed.dirs" value="D:\SoftwareInstalled\software\jdk7\jre\lib\endorsed"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.io.tmpdir" value="C:\Users\kone\AppData\Local\Temp\"/>
+    <property name="line.separator" value="
+"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.variant" value=""/>
+    <property name="os.name" value="Windows 8.1"/>
+    <property name="classworlds.conf" value="D:\workplace\workplace\maven\.metadata\.plugins\org.eclipse.m2e.launching\launches\m2conf6228159588181375757.tmp"/>
+    <property name="sun.jnu.encoding" value="GBK"/>
+    <property name="java.library.path" value="D:\SoftwareInstalled\software\jdk7\bin;C:\WINDOWS\Sun\Java\bin;C:\WINDOWS\system32;C:\WINDOWS;C:\Python27\;C:\Python27\Scripts;C:\WINDOWS\system32;C:\WINDOWS;C:\WINDOWS\System32\Wbem;C:\WINDOWS\System32\WindowsPowerShell\v1.0\;D:\SoftwareInstalled\software\jdk8\bin;D:\SoftwareInstalled\software\jre8\bin;D:\SoftwareInstalled\software\svn\bin;C:\Program Files (x86)\MySQL\MySQL Server 5.5\bin;D:\server\maven\apache-maven-3.3.9\bin;D:\SoftwareInstalled\software\Git\cmd;C:\Program Files\PuTTY\;C:\ProgramData\chocolatey\bin;C:\Program Files\nodejs\;D:\SoftwareInstalled\software\sdk\platform-tools;D:\SoftwareInstalled\software\sdk\tools;E:\softwareInstalled\brackets\command;D:\SoftwareInstalled\software\py\Scripts\;D:\SoftwareInstalled\software\py\;C:\Users\kone\AppData\Local\Microsoft\WindowsApps;;D:\SoftwareInstalled\software\搜狐影音\5.2.0.37;C:\Users\kone\AppData\Roaming\npm;."/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.class.version" value="51.0"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="os.version" value="6.3"/>
+    <property name="user.home" value="C:\Users\kone"/>
+    <property name="user.timezone" value="Asia/Shanghai"/>
+    <property name="java.awt.printerjob" value="sun.awt.windows.WPrinterJob"/>
+    <property name="java.specification.version" value="1.7"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="user.name" value="kone"/>
+    <property name="java.class.path" value="D:\server\maven\apache-maven-3.3.9\boot\plexus-classworlds-2.5.2.jar"/>
+    <property name="java.vm.specification.version" value="1.7"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.home" value="D:\SoftwareInstalled\software\jdk7\jre"/>
+    <property name="sun.java.command" value="org.codehaus.plexus.classworlds.launcher.Launcher -B -s D:\workplace\maven\apache-maven-3.3.9\conf\settings.xml install"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="user.language" value="zh"/>
+    <property name="awt.toolkit" value="sun.awt.windows.WToolkit"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.version" value="1.7.0_80"/>
+    <property name="java.ext.dirs" value="D:\SoftwareInstalled\software\jdk7\jre\lib\ext;C:\WINDOWS\Sun\Java\lib\ext"/>
+    <property name="sun.boot.class.path" value="D:\SoftwareInstalled\software\jdk7\jre\lib\resources.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\rt.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\sunrsasign.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\jsse.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\jce.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\charsets.jar;D:\SoftwareInstalled\software\jdk7\jre\lib\jfr.jar;D:\SoftwareInstalled\software\jdk7\jre\classes"/>
+    <property name="java.vendor" value="Oracle Corporation"/>
+    <property name="maven.home" value="D:\server\maven\apache-maven-3.3.9"/>
+    <property name="file.separator" value="\"/>
+    <property name="java.vendor.url.bug" value="http://bugreport.sun.com/bugreport/"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="sun.desktop" value="windows"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+  </properties>
+  <testcase time="19.121" classname="com.test.TestClass" name="test">
+    <error type="java.lang.NullPointerException">java.lang.NullPointerException
+	at com.test.TestClass.isEmail(TestClass.java:31)
+	at com.test.TestClass.test(TestClass.java:21)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:50)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:12)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:47)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:17)
+	at org.junit.runners.ParentRunner.runLeaf(ParentRunner.java:325)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:78)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:57)
+	at org.junit.runners.ParentRunner$3.run(ParentRunner.java:290)
+	at org.junit.runners.ParentRunner$1.schedule(ParentRunner.java:71)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:288)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:58)
+	at org.junit.runners.ParentRunner$2.evaluate(ParentRunner.java:268)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:363)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.execute(JUnit4Provider.java:252)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:141)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:112)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:57)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:606)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:189)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:165)
+	at org.apache.maven.surefire.booter.ProviderFactory.invokeProvider(ProviderFactory.java:85)
+	at org.apache.maven.surefire.booter.ForkedBooter.runSuitesInProcess(ForkedBooter.java:115)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)
+</error>
+    <system-out>true
+DEBUG: setDebug: JavaMail version 1.5.6
+DEBUG: getProvider() returning javax.mail.Provider[TRANSPORT,smtp,com.sun.mail.smtp.SMTPTransport,Oracle]
+DEBUG SMTP: useEhlo true, useAuth true
+DEBUG SMTP: trying to connect to host &quot;smtp.163.com&quot;, port 25, isSSL false
+220 163.com Anti-spam GT for Coremail System (163com[20141201])
+DEBUG SMTP: connected to host &quot;smtp.163.com&quot;, port: 25
+
+EHLO DESKTOP-EBJ8UJU
+250-mail
+250-PIPELINING
+250-AUTH LOGIN PLAIN
+250-AUTH=LOGIN PLAIN
+250-coremail 1Uxr2xKj7kG0xkI17xGrU7I0s8FY2U3Uj8Cz28x1UUUUU7Ic2I0Y2UFMsXsEUCa0xDrUUUUj
+250-STARTTLS
+250 8BITMIME
+DEBUG SMTP: Found extension &quot;PIPELINING&quot;, arg &quot;&quot;
+DEBUG SMTP: Found extension &quot;AUTH&quot;, arg &quot;LOGIN PLAIN&quot;
+DEBUG SMTP: Found extension &quot;AUTH=LOGIN&quot;, arg &quot;PLAIN&quot;
+DEBUG SMTP: Found extension &quot;coremail&quot;, arg &quot;1Uxr2xKj7kG0xkI17xGrU7I0s8FY2U3Uj8Cz28x1UUUUU7Ic2I0Y2UFMsXsEUCa0xDrUUUUj&quot;
+DEBUG SMTP: Found extension &quot;STARTTLS&quot;, arg &quot;&quot;
+DEBUG SMTP: Found extension &quot;8BITMIME&quot;, arg &quot;&quot;
+DEBUG SMTP: Attempt to authenticate using mechanisms: LOGIN PLAIN DIGEST-MD5 NTLM 
+DEBUG SMTP: AUTH LOGIN command trace suppressed
+DEBUG SMTP: AUTH LOGIN succeeded
+DEBUG SMTP: use8bit false
+MAIL FROM:&lt;kone_net@163.com&gt;
+250 Mail OK
+RCPT TO:&lt;1093312677@qq.com&gt;
+250 Mail OK
+DEBUG SMTP: Verified Addresses
+DEBUG SMTP:   1093312677@qq.com
+DATA
+354 End data with &lt;CR&gt;&lt;LF&gt;.&lt;CR&gt;&lt;LF&gt;
+From: kone_net@163.com
+To: 1093312677@qq.com
+Message-ID: &lt;1955217984.0.1500397377412@DESKTOP-EBJ8UJU&gt;
+Subject: =?GBK?B?zqLBpsq10enK0tXQ0MK72Li0o6E=?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=GBK
+Content-Transfer-Encoding: base64
+
+ob7OosGmyrXR6crSob/E47rDo6HE48zhvbu1xNDFz6LS0crVwryho87Sw8e9q76hv+y9+NDQsum/
+tKOsvfzG2s7Sw8e74c2o1qrE48PHtb02QTQyMb340NDD5srUo6zE48PH0rK/ydLUzOHHsLW91eLA
+78C0v7S/tKGj09DKwsfpwarPtc6iwabKtdHpytK4utTwyMujus7itM+jujE4NCAyODMyIDY1NTSj
+u9XUus3GvaO6MTg0IDI4MzIgNzQxNqO7zuK3sqO6MTU4IDI4NjMgMjU0Ni60y8/7z6LOqs+1zbPX
+1Lavu9i4tKOh
+.
+250 Mail OK queued as smtp14,EsCowABX4jxTP25ZO5lbBA--.43372S2 1500397404
+DEBUG SMTP: message successfully delivered to mail server
+QUIT
+221 Bye
+</system-out>
+  </testcase>
+</testsuite>
