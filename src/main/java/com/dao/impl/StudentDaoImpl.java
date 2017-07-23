@@ -1,6 +1,5 @@
 package com.dao.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -229,7 +228,7 @@ public class StudentDaoImpl implements IStudentDao{
 				+ " FROM "
 					+ " Student as students "
 				+ " WHERE "
-					+ " students.clazz.direction.spceialty.grade.id="+gradeId;
+					+ " students.clazz.direction.spceialty.grade.id=:gradeId";
 		Integer count = 0;
 		try{
 			session = sessionFactory.getCurrentSession();
@@ -251,6 +250,29 @@ public class StudentDaoImpl implements IStudentDao{
 	@Override
 	public Student getStudentBasicInfor(Long studentId) {
 		return null;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Student> getAllStudents() {
+		hql = "SELECT new com.entity.Student(no) "
+				+ "FROM "
+				+ " Student";
+		List<Student> students = null;
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setCacheable(true);
+			students = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return students;
 	}
 	
 }

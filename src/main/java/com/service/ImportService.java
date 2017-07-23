@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.WorkbookTool;
+import com.dao.ISettingDao;
+import com.dao.IStudentDao;
 import com.dao.impl.CommonDaoImpl;
 import com.entity.Clazz;
 import com.entity.Department;
@@ -35,6 +37,9 @@ public class ImportService {
 	private Session session;
 	@Autowired
 	private CommonDaoImpl commonDaoImpl;
+	
+	@Autowired
+	private IStudentDao studentDao;
 	/**
 	 * 导入教师信息
 	 * @param file
@@ -266,6 +271,9 @@ public class ImportService {
 		List<Student> studentsError = new ArrayList<Student>();
 		List<Student> studentsIn = new ArrayList<Student>();
 		
+//		查找出学生
+		students = studentDao.getAllStudents();
+		
 		List<Student> studentsInTemp = new ArrayList<Student>();
 		Clazz clazz = null;
 //		获取整理好的教师信息
@@ -325,8 +333,7 @@ public class ImportService {
 
 				}
 			}
-//			查找出学生
-			students = commonDaoImpl.findAll("Student");
+
 			for(int i=0;i<studentsIn.size();i++) {
 				int flag = 0;
 				for(int j=0;j<students.size();j++) {
@@ -345,7 +352,7 @@ public class ImportService {
 					user.setUsername(studentsIn.get(i).getNo());
 					studentsIn.get(i).setUser(user);
 					commonDaoImpl.save(studentsIn.get(i));
-					if(i%10 == 0) {
+					if(i%20 == 0) {
 						session.clear();
 						session.flush();
 					}

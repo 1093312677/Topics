@@ -8,8 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,7 +35,7 @@ public class AccountController {
 	
 	@Autowired
 	private DealData dealData;
-	private static Logger logger =LoggerFactory.getLogger(AccountController.class);
+	private static Logger logger = Logger.getLogger(AccountController.class);
 	/**
 	 * 登录
 	 * @param request
@@ -46,9 +45,7 @@ public class AccountController {
 	 */
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request,HttpServletResponse response,HttpSession session, User user){
-		logger.debug("IP:"+request.getRemoteAddr()+"username:"+user.getUsername());
-		logger.error("error");
-		logger.info("info");
+		logger.info("info"+"IP:"+request.getRemoteAddr()+"username:"+user.getUsername());
 		User user1 = accountService.login(user);
 		if(user1 != null){
 			List infor = null;
@@ -114,7 +111,6 @@ public class AccountController {
 		try {
 			response.sendRedirect("../index.jsp");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
 		
@@ -129,7 +125,7 @@ public class AccountController {
 	 */
 	@RequestMapping("/loginApp")
 	public @ResponseBody ServerResponse<User> loginApp(User user, HttpServletRequest request,HttpServletResponse response){
-		
+		logger.info("用户手机端登录：username->"+user.getUsername());
 		return accountService.loginApp(user);
 	}
 	

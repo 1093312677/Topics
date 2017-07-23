@@ -14,17 +14,23 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                            查看<span class="glyphicon glyphicon-eye-open">题目</span> 
-	         <a href="<%=request.getContextPath() %>/topic/exportTopic.do">
-	        	 <span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出题目情况"></span>
-	   		 </a>
-	   		 <a href="<%=request.getContextPath() %>/topic/exportSubTopic.do">
-	        	 <span style="float:right;margin-right:20px;">导出子题目</span>
-	   		 </a>
+	          <c:if test="${state == 1 }">
+		         <a href="<%=request.getContextPath() %>/topic/exportTopic.do">
+		        	 <span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出题目情况"></span>
+		   		 </a>
+		   		 <a href="<%=request.getContextPath() %>/topic/exportSubTopic.do">
+		        	 <span style="float:right;margin-right:20px;">导出子题目</span>
+		   		 </a>
+		   	  </c:if>
 	    </div>
     </div> 
     <table class="table table-hover table-striped" >
@@ -35,14 +41,16 @@
     		<td width=50px>可选学生</td>
     		<td width=50px>已选学生</td>
     		<td>指导老师</td>
-    		<td width=70px>题目状态</td>
+    		<td width=90px>题目状态</td>
     		<td>发布时间</td>
     		<td>任务书</td>
-    		<td>查看学生</td>
+    		<c:if test="${state == 1 }">
+    			<td>查看学生</td>
+    		</c:if>
+    		
     		<td>操作</td>
     	</tr>
     	<c:forEach items="${topics }" var="items">
-        	<c:if test="${items.state == state}">
 	    		<tr>
 	    			<td><c:out value="${items.id }"></c:out></td>
 	    			<td>
@@ -86,7 +94,10 @@
 	    				</c:if>
 	    				
 	    			</td>
-	    			<td><a href="<%=request.getContextPath() %>/topic/viewStudentSelected.do?topicId=${items.id}">查看学生</a></td>	
+	    			<c:if test="${state == 1 }">
+		    			<td><a href="<%=request.getContextPath() %>/topic/viewStudentSelected.do?topicId=${items.id}">查看学生</a></td>
+		    		</c:if>
+	    				
 	    			<td>
 	    				<c:if test="${state == 2 }">
 	    					<button type="button" class="btn btn-default btn-sm" style="color:green">
@@ -105,7 +116,6 @@
 	    				</c:if>
 	    			</td>
 	    		</tr>
-	    	 </c:if>
 		</c:forEach>
     </table>
     
@@ -156,6 +166,7 @@
 	})
 	
 	function audit(id){
+		
 		$.ajax({
 			type:"post",
 			url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
@@ -163,12 +174,12 @@
 			dataType:"json",
 			success:function(data){
 				if( data == 1 ) {
-					alert("成功！");
+					swal("成功!", "", "success");
 				} else {
-					alert("失败！");
+					swal("失败!", "", "error");
 				}
 				
-				window.setTimeout(reload,200);
+				window.setTimeout(reload,700);
 			},
 			error:function(msg){
 				console.log(msg)
@@ -183,12 +194,12 @@
 			dataType:"json",
 			success:function(data){
 				if( data == 1 ) {
-					alert("成功！");
+					swal("成功!", "", "success");
 				} else {
-					alert("失败！");
+					swal("失败!", "", "error");
 				}
 				
-				window.setTimeout(reload,200);
+				window.setTimeout(reload,700);
 			},
 			error:function(msg){
 				console.log(msg)
@@ -197,7 +208,16 @@
 	}
 	//删除
 	function deleteItem(id){
-		if(confirm("取认删除？删除该选项将会删除与该选项相关联数据！")){
+		swal({
+			  title: "取认删除？",
+			  text: "删除该选项将会删除与该选项相关联数据！",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
 			$.ajax({
 				type:"post",
 				url:"<%=request.getContextPath()%>/topic/deleteTopic.do",
@@ -205,17 +225,17 @@
 				},
 				dataType:"json",
 				success:function(data){
-					 alert("删除成功！");
-					 window.setTimeout(reload,200);
+					 swal("删除成功!", "", "success");
+					 window.setTimeout(reload,700);
 					
 				},
 				error:function(msg){
-					alert("删除失败！");
+					swal("删除失败！", "请重试！", "error");
 					console.log(msg)
 				}
 			})
-			
-		}
+		});
+		
 	}
 	
 	function reload(){

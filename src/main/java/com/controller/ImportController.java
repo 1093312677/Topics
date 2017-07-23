@@ -94,9 +94,9 @@ public class ImportController {
 	 */
 	@RequestMapping("/importStudent")
 	public String importStudent(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		List<Student> students = null;
-		students = importService.importStudent(file, Long.valueOf(gradeId));
+		students = importService.importStudent(file, gradeId);
 		session.setAttribute("students", students);
 		return "import/viewImportErrorStudent";
 	}

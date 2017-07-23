@@ -71,4 +71,10 @@ public interface IStudentDao {
 	 * @return
 	 */
 	public Student getStudentBasicInfor(Long studentId);
+	
+	/**
+	 *获取系统所有的学生，导入学生判断是否存在重复的
+	 * @return
+	 */
+	public List<Student> getAllStudents();
 }

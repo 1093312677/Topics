@@ -98,7 +98,7 @@ public class TeachStuController {
 	 */
 	@RequestMapping("/exportStudentGrade")
 	public String exportStudentGrade(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		HSSFWorkbook wb = null;
 		wb = teachStuService.exportStudentGrade(gradeId);
 		//输出Excel文件

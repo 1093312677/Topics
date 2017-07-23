@@ -6,6 +6,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.dao.daoAdapter.DaoAdapter;
+import com.entity.Student;
 /**
  * 通用的dao
  * @author kone
@@ -127,6 +128,19 @@ public class CommonDaoImpl<T> extends DaoAdapter<T>{
 	public void updateSubTopic(String id) {
 		String sql = "update SubTopic set studentId = null where topicId="+id;
 		session.createSQLQuery(sql).executeUpdate();
+	}
+	
+	public List<Student> getStudents(Long gradeId) {
+		hql = "SELECT student "
+				+ " FROM "
+					+ " Student as student "
+				+ " WHERE "
+					+ " student.clazz.direction.spceialty.grade.id =:gradeId";
+		List<Student> students = null;
+		Query query = session.createQuery(hql);
+		query.setLong("gradeId", gradeId);
+		students = query.list();
+		return students;
 	}
 	
 }

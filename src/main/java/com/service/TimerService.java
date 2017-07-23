@@ -233,7 +233,7 @@ public class TimerService {
 			}
 			
 //			自动选择了一次后，进行更新操作次数
-			timerDao.updateTopicTimes(isSelect);
+//			timerDao.updateTopicTimes(isSelect);
 //			session.flush();
 //			session.clear();
 			

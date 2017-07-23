@@ -106,6 +106,11 @@ public class Student{
 		this.name = name;
 	}
 
+	public Student(String no) {
+		super();
+		this.no = no;
+	}
+
 	public Student() {
 		super();
 	}

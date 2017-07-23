@@ -14,6 +14,10 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 
@@ -68,11 +72,11 @@
 	    			<td>
 	    				<c:if test="${items.swap == 0 }">
 	    					否
-	    					<a href="<%=request.getContextPath() %>/swap/changeSwapInTeacher.do?state=1&intenId= <c:out value="${items.id }"></c:out>">修改</a>
+	    					<a href="javascript:void(0)" onclick="change(1,${items.id })">修改</a>
 	    				</c:if>
 	    				<c:if test="${items.swap == 1 }">
 	    					是
-	    					<a href="<%=request.getContextPath() %>/swap/changeSwapInTeacher.do?state=0&intenId=<c:out value="${items.id }"></c:out>">修改</a>
+	    					<a href="javascript:void(0)" onclick="change(1,${items.id })">修改</a>
 	    				</c:if>
 	    			
 	    			</td>
@@ -136,11 +140,11 @@
 		    			<td>
 		    				<c:if test="${items.swap == 0 }">
 		    					否
-		    					<a href="<%=request.getContextPath() %>/swap/changeSwapInTeacher.do?state=1&intenId= <c:out value="${items.id }"></c:out>">修改</a>
+		    					<a href="javascript:void(0)" onclick="change(1,${items.id })">修改</a>
 		    				</c:if>
 		    				<c:if test="${items.swap == 1 }">
 		    					是
-		    					<a href="<%=request.getContextPath() %>/swap/changeSwapInTeacher.do?state=0&intenId=<c:out value="${items.id }"></c:out>">修改</a>
+		    					<a href="javascript:void(0)" onclick="change(0,${items.id })">修改</a>
 		    				</c:if>
 		    			
 		    			</td>
@@ -167,45 +171,6 @@
 		    	</c:if>
 		    </c:forEach>
 	 <!-- 第二轮选题结束 -->   	
-	 
-	 <!-- 第三轮选题开始 
-	 		<tr>
-		    	<td colspan="7" align=center height=40px style="background-color:#f6f6f6">第三轮选题</td>
-		    </tr>
-	 		<c:forEach items="${intentionTopics }" var="items">
-		    	<c:if test="${items.batch == 3}">
-		    		<tr>
-		    			<td><c:out value="${items.topic.topicsName }"></c:out></td>
-		    			<td>
-		    				<c:if test="${items.choice == 1}">
-		    					第一志愿
-		    				</c:if>
-		    				<c:if test="${items.choice == 2}">
-		    					第二志愿
-		    				</c:if>
-		    				<c:if test="${items.choice == 3}">
-		    					第三志愿
-		    				</c:if>
-		    			</td>
-		    			<td><c:out value="${items.topic.enableSelect }"></c:out></td>
-		    			<td><c:out value="${items.topic.selectedStudent }"></c:out></td>
-		    			<td>
-		    				<a href="<%=request.getContextPath() %>/teacher/viewTeacherOne.do?type=no&id=<c:out value="${items.topic.teacher.id }"></c:out>"><c:out value="${items.topic.teacher.name }"></c:out></a>
-		    			</td>
-		    			
-		    			<td><c:out value="${items.topic.introduce }"></c:out></td>
-		    			<td>
-		    				<c:if test="${items.topic.taskBookName == null}">
-		    					未上传
-		    				</c:if>
-		    				<c:if test="${items.topic.taskBookName !=null }">
-		    					<a href="<%=request.getContextPath() %>/upload/<c:out value="${items.topic.taskBookName }"></c:out>"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
-		    				</c:if>
-		    			</td>
-		    		</tr>
-		    	</c:if>
-		    </c:forEach>-->
-	   <!-- 第三轮选题结束 -->
     </table>
     
     
@@ -223,141 +188,87 @@
 				</h4>
 			</div>
 			<div class="modal-body">
-				<form action="<%=request.getContextPath() %>/swap/leavMessage.do" method="post">
-					<input type="hidden" value="" name="id" id="id"/>
-					<textarea name="message" id="message" class="form-control" autofocus rows="10">
-					
-					</textarea>
+				<textarea name="message" id="message" class="form-control" autofocus rows="10">
+				
+				</textarea>
 			</div>
 			<div class="modal-footer">
-					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
-					</button>
-					<input type="submit" class="btn btn-primary" id="submit" value="保存">
-				</form>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+				</button>
+				<input type="button" class="btn btn-primary" id="submit"  onclick="saveMessage()" value="保存">
 			</div>
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal -->
 </div>
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
-	function hide(){
-		$("#alert").hide();
-		$("#success").hide();
-		$("#failed").hide();
-		$("#alert-confirm").hide();
-		$("#alert-confirm2").hide();
+	var url = "<%=request.getContextPath() %>/swap/changeSwapInTeacher.do";
+	
+	//修改是否服从调配
+	function change(state, intenId) {
+		swal({
+			  title: "是否更改？",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:url,
+				data:{"state":state,"intenId":intenId},
+				dataType:"json",
+				success:function(data){
+					if(data==1){
+						swal("更改成功!", "", "success");
+						window.setTimeout(reload,800);
+					}else{
+						swal("更改失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					console.log(msg)
+				}
+			})	
+		});
 	}
-	//hide
-	hide();
-	var choice1;
-	var id1;
-	function volunteer(choice,id){
-		choice1 = choice;
-		id1 = id;
-		hide();
-		
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/student/selectIntentionTopic.do",
-			data:{"choice":choice,"id":id},
-			dataType:"json",
-			success:function(data){
-				if(data==1){
-					$("#content").html("保存成功！")
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				}else if(data==2){
-					$("#content").html("是否更改当前志愿？<br><span style='font-size:12px;color:red;'>*注意将会覆盖之前的！<span>")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-					$("#alert-confirm").fadeIn();
-				}else if(data==3){
-					$("#content").html("是否更改为当前选题为此志愿？<br><span style='font-size:12px;color:red;'>*注意将会覆盖之前的！<span>")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-					$("#alert-confirm2").fadeIn();
-				}else if(data==4){
-					$("#content").html("你已经选择当前志愿！")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}else{
-					$("#content").html("保存失败！请重试！")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
-		
-	}
-	//确定键1
-	$("#confirm").click(function(){
-		hide();
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/student/updateIntentionTopic.do",
-			data:{"choice":choice1,"id":id1,"type":"1"},
-			dataType:"json",
-			success:function(data){
-				if(data==1){
-					$("#content").html("更新成功！")
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				}else{
-					$("#content").html("更新失败！请重试！")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
-	})
-	//确定键2
-	$("#confirm2").click(function(){
-		hide();
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/student/updateIntentionTopic.do",
-			data:{"choice":choice1,"id":id1,"type":"2"},
-			dataType:"json",
-			success:function(data){
-				if(data==1){
-					$("#content").html("更新成功！")
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				}else{
-					$("#content").html("更新失败！请重试！")
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
-	})
-	//取消键
-	$("#cancel").click(function(){
-		$("#alert").fadeOut();
-	})
-	//取消键
-	$("#cancel2").click(function(){
-		$("#alert").fadeOut();
-	})
-	//close
-	$("#alert-close").click(function(){
-		$("#alert").fadeOut();
-	})
+	
+	
 	
 	//设置留言获取id
+	var messageId;
 	function getId(id){
-		$("#id").val(id);
+		messageId = id;
 	}
 	
+	var messageUrl = "<%=request.getContextPath() %>/swap/leavMessage.do";
+	//设置留言
+	function saveMessage(){
+		
+		var message = $("#message").val();
+		$.ajax({
+			type:"post",
+			url:messageUrl,
+			data:{"id":messageId,"message":message},
+			dataType:"json",
+			success:function(data){
+				if(data==1){
+					swal("留言成功!", "", "success");
+					window.setTimeout(reload,800);
+				}else{
+					swal("留言失败！", "请重试！", "error");
+				}
+			},
+			error:function(msg){
+				console.log(msg)
+			}
+		})	
+	}
+	function reload(){
+		location.reload()
+	}
 </script>	
 	
 </body>

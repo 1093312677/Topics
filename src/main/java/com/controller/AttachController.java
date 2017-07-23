@@ -275,7 +275,7 @@ public class AttachController {
 		boolean isNow = (boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String gradeId = (String) session.getAttribute("gradeId");
+	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
 			if(attachService.submitInstructorReview(path, studentId, mediumScore, file)) {
 				request.setAttribute("message", "成功！");
@@ -339,7 +339,7 @@ public class AttachController {
 		boolean isNow = (boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String gradeId = (String) session.getAttribute("gradeId");
+	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
 			if(attachService.submitMidReview(path, studentId, score, file)) {
 				request.setAttribute("message", "成功！");
@@ -409,7 +409,7 @@ public class AttachController {
 		boolean isNow = (boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String gradeId = (String) session.getAttribute("gradeId");
+	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
 			if(attachService.submitReplyResults(path, studentId, score, file, level)) {
 				request.setAttribute("message", "成功！");
@@ -449,7 +449,7 @@ public class AttachController {
 	    response.addHeader("Cache-Control", "no-cache"); 
 	    
 	    
-	    attachService.downAttach(response, path, String.valueOf(gradeId));
+	    attachService.downAttach(response, path, gradeId);
 		return null;
 	}
 	

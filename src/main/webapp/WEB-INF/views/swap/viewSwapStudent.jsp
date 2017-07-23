@@ -24,15 +24,17 @@
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                           系内调剂学生
+	                           <!--
 	          <a href="<%=request.getContextPath() %>/student/exportStudent.do">
 	         	<span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出"></span>                  
 	          </a>
+	           
 	          <a href="#" data-toggle="modal" data-target="#import1" id="import"> 
 	          	<span class="glyphicon glyphicon-import" style="color:green;float:right;margin-right:40px" data-toggle="tooltip" data-placement="bottom" title="导入"></span>
 	          </a>
     		
 	          <a href="#" data-toggle="modal" data-target="#myModal" id="add"> <span class="glyphicon glyphicon-plus-sign" style="color:green;float:right;margin-right:40px" data-toggle="tooltip" data-placement="bottom" title="添加"></span></a>
-    			
+    		 -->
 	    </div>
     </div>
     <div id="t1" class="t1">

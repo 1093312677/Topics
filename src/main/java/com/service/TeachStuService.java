@@ -112,8 +112,8 @@ public class TeachStuService {
 	 * @param gradeId
 	 * @return
 	 */
-	public HSSFWorkbook exportStudentGrade(String gradeId) {
-		List<Topics> topics = daoImpl.findByTwo("Topics", "gradeId", gradeId,"state","1");
+	public HSSFWorkbook exportStudentGrade(Long gradeId) {
+		List<Student> students = studentDao.getStudents(gradeId, 0, 10000);
 		
 		//创建HSSFWorkbook对象(excel的文档对象)
 	     HSSFWorkbook wb = new HSSFWorkbook();
@@ -145,43 +145,35 @@ public class TeachStuService {
 		
 		HSSFRow row = null;
 		int count = 0;
-		for (int i=0;i<topics.size();i++) {
-			List<Student> students = topics.get(i).getStudents();
-			for(int j=0;j<students.size();j++) {
-				row = sheet.createRow(count+2);
-				
-				row.createCell(0).setCellValue(students.get(j).getNo());
-				row.createCell(1).setCellValue(students.get(j).getName());
-				row.createCell(2).setCellValue(students.get(j).getSex());
-				row.createCell(3).setCellValue(students.get(j).getClazz().getClassName());
-				row.createCell(4).setCellValue(students.get(j).getClazz().getDirection().getDirectionName());
+		for (int j=0;j<students.size();j++) {
+			row = sheet.createRow(count+2);
+			
+			row.createCell(0).setCellValue(students.get(j).getNo());
+			row.createCell(1).setCellValue(students.get(j).getName());
+			row.createCell(2).setCellValue(students.get(j).getSex());
+			row.createCell(3).setCellValue(students.get(j).getClazz().getClassName());
+			row.createCell(4).setCellValue(students.get(j).getClazz().getDirection().getDirectionName());
+			if(students.get(j).getTopics() != null)
 				row.createCell(5).setCellValue(students.get(j).getTopics().getTopicsName());
-				
-				if(students.get(j).getScore() != null) {
-					float score1 = students.get(j).getScore().getMediumScore();
-					float score2 = students.get(j).getScore().getHeadScore();
-					float score3 = students.get(j).getScore().getReplyResult();
-					row.createCell(6).setCellValue(score1);
-					row.createCell(7).setCellValue(score2);
-					row.createCell(8).setCellValue(score3);
-					row.createCell(9).setCellValue(students.get(j).getScore().getLevel());
-					if(students.get(j).getScore().getLevel() == null || "".equals(students.get(j).getScore().getLevel())) {
-						row.createCell(10).setCellValue("评阅尚未完成");
-					} else {
-						row.createCell(10).setCellValue(score1 + score2 + score3);
-					}
+			
+			if(students.get(j).getScore() != null) {
+				float score1 = students.get(j).getScore().getMediumScore();
+				float score2 = students.get(j).getScore().getHeadScore();
+				float score3 = students.get(j).getScore().getReplyResult();
+				row.createCell(6).setCellValue(score1);
+				row.createCell(7).setCellValue(score2);
+				row.createCell(8).setCellValue(score3);
+				row.createCell(9).setCellValue(students.get(j).getScore().getLevel());
+				if(students.get(j).getScore().getLevel() == null || "".equals(students.get(j).getScore().getLevel())) {
+					row.createCell(10).setCellValue("评阅尚未完成");
+				} else {
+					row.createCell(10).setCellValue(score1 + score2 + score3);
 				}
-				
-				
-				
-				
-				
-				
-				count++;
 			}
+				
+			count++;
 			
 		}
-		daoImpl.closeSession();
 		return wb;
 	}
 	/**

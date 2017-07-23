@@ -83,14 +83,20 @@ public class SwapController {
 	@RequestMapping("/changeSwapInTeacher")
 	public String changeSwapInTeacher(String intenId, String state, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		if(swapService.swapInTeacher(state, intenId)){
-			request.setAttribute("message", "修改成功");
-			request.setAttribute("path", "student/viewIntentionTopic.do");
-			return "common/success";
+			try {
+				response.getWriter().print(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
-			request.setAttribute("message", "修改失败");
-			request.setAttribute("path", "student/viewIntentionTopic.do");
-			return "common/failed";
+			try {
+				response.getWriter().print(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
+		return null;
 	}
 	/**
 	 * 留言
@@ -104,14 +110,19 @@ public class SwapController {
 	@RequestMapping("/leavMessage")
 	public String leavMessage(String id, String message, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		if(swapService.leavMessage(id, message)){
-			request.setAttribute("message", "留言成功");
-			request.setAttribute("path", "student/viewIntentionTopic.do");
-			return "common/success";
+			try {
+				response.getWriter().print(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
-			request.setAttribute("message", "留言失败");
-			request.setAttribute("path", "student/viewIntentionTopic.do");
-			return "common/failed";
+			try {
+				response.getWriter().print(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		return null;
 	}
 	/**
 	 * 教师调配前选择题目
@@ -170,7 +181,7 @@ public class SwapController {
 	 * @return
 	 */
 	@RequestMapping("/viewSwapStudentDept")
-	public String swapStudentDept(long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+	public String viewSwapStudentDept(long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		int page = 0;
 		int eachPage = 100000;
 		

@@ -317,12 +317,12 @@ $(function (){
     if(month < 10) {
         month = "0" + month;
     }
-    var day = date.getDay();
+    var day = date.getDate();
     if(day < 10) {
         day = "0" + day;
     }
     var d = date.getFullYear()+"-"+month+"-"+day+"T23:59";
-    if($(".form-control").val() == "") {
+    if($(".form-control").val() == '') {
     	$(".form-control").val(d);
     }
 }) 

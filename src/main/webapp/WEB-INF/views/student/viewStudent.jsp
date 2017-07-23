@@ -220,12 +220,14 @@
 			            <input type="file" name="file" required class="file" class="form-control" accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
 			        </div>
 					<br>
-					<input type="submit" value="导入" class="btn btn-primary" style="width:150px"/>
+					<input type="submit" id="submit" value="导入" class="btn btn-primary" style="width:150px"/>
 				</form>
 				
 				<br>
 				<br>
 				<a href="<%=request.getContextPath() %>/upload/importStudent.xlsx">下载示例文件</a>
+				<br>
+				<img id="wait" src="<%=request.getContextPath() %>/images/wait.gif" style="margin-left:40%;" hidden/>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
@@ -886,7 +888,9 @@
 		$(".alert").hide();
 	} 
 	
-	
+	$("#submit").click(function(){
+		$("#wait").show();
+	})
 </script>	
 <script type="text/javascript"> //验证手机号码
 		//当tel失去焦点的时候，验证是否是正确的手机号码，如果不是，在tel_tip中提示错误

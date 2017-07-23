@@ -167,7 +167,7 @@ public class StudentController {
 	 */
 	@RequestMapping("/batchImportStudent")
 	public String batchImportStudent(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 //		获取登录人员的信息
 		String path = request.getSession().getServletContext().getRealPath("upload");
 		List<Student> students = null;
@@ -199,8 +199,8 @@ public class StudentController {
 	 */
 	@RequestMapping("/exportStudent")
 	public String exportStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
-		List<Student> students = studentService.viewStudents(gradeId, 0, 1000000);
+		Long gradeId = (Long) session.getAttribute("gradeId");
+		List<Student> students = studentService.viewStudents(String.valueOf(gradeId), 0, 1000000);
 		
 		//创建HSSFWorkbook对象(excel的文档对象)
 	     HSSFWorkbook wb = new HSSFWorkbook();
@@ -409,12 +409,8 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewIntentionTopic")
 	public String viewIntentionTopic(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Student> infor =  (List<Student>)session.getAttribute("infor");
-		String studentId = "0" ;
-		if(infor.size()>0){
-			studentId = String.valueOf(infor.get(0).getId());
-		}
-		List<IntentionTopic> intentionTopics = commonService.findBy("IntentionTopic", "studentId", studentId);
+		Long studentId = (Long) session.getAttribute("studentId");
+		List<IntentionTopic> intentionTopics = commonService.findBy("IntentionTopic", "studentId", String.valueOf(studentId));
 		commonService.closeSession();
 		
 		request.setAttribute("intentionTopics", intentionTopics);

@@ -9,6 +9,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.IFormDao;
+import com.dao.IStudentDao;
 import com.dao.impl.AttachDaoImpl;
 import com.dao.impl.CommonDaoImpl;
+import com.dto.AttachDTO;
 import com.entity.Form;
 import com.entity.Score;
 import com.entity.Setting;
@@ -42,8 +45,13 @@ public class AttachService {
 	private IFormDao formDao;
 	
 	@Autowired
+	private IStudentDao studentDao;
+	
+	@Autowired
 	private SessionFactory sessionFactory;
 	private Session session;
+	
+	private Logger logger = Logger.getLogger(AttachService.class);
 	
 	/**
 	 * 获取学生，得到文档信息
@@ -681,140 +689,77 @@ public class AttachService {
 	 * @param path
 	 * @param gradeId
 	 */
-	public void downAttach(HttpServletResponse response, String path, String gradeId){
+	public void downAttach(HttpServletResponse response, String path, Long gradeId){
 		List<Student> students = null;
+		List<AttachDTO> attachs = new ArrayList<AttachDTO>();
 		try{
-			ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 			session = sessionFactory.getCurrentSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
+			
+			ZipOutputStream zos = new ZipOutputStream(response.getOutputStream());
 //			查找出该年级学生
-			students = commonDaoImpl.viewStudents(gradeId, 0, 10000);
+			students = commonDaoImpl.getStudents(gradeId);
+			AttachDTO attach = null;
 			for(int i=0;i<students.size();i++) {
-				String title = students.get(i).getNo()+"_"+students.get(i).getName();
+				System.out.println(students.get(i).getName());
+				
+				attach = new AttachDTO();
+				attach.setName(students.get(i).getName());
+				attach.setNo(students.get(i).getNo());
+				if(students.get(i).getTopics() != null) {
+					attach.setTopicsUrl(students.get(i).getTopics().getTaskBookName());
+				}
+				if(students.get(i).getSubTopic() != null){
+					attach.setSubTopicUrl(students.get(i).getSubTopic().getTaskBookName());
+				}
+				
 				if(students.get(i).getForm() != null) {
-					Form form = students.get(i).getForm();
-//					开题报告
-					if(form.getOpeningReport() != null) {
-						File file1 = new File(path,form.getOpeningReport());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_开题报告"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
-						
-					}
-//					中期报告
-					if(form.getInterimReport() != null) {
-						File file1 = new File(path,form.getInterimReport());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_中期报告"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
-					}
-//					毕业论文
-					if(form.getFileName() != null) {
-						File file1 = new File(path,form.getFileName());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_毕业论文"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
-					}
-//					指导教师评价表
-					if(form.getInterimEvalForm() != null) {
-						File file1 = new File(path,form.getInterimEvalForm());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_指导教师评阅表"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
-					}
-//					小组评价表
-					if(form.getReviewEvalForm() != null) {
-						File file1 = new File(path,form.getReviewEvalForm());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_评阅人评阅表"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
-					}
-//					答辩评阅表
-					if(form.getReplyRecord() != null) {
-						File file1 = new File(path,form.getReplyRecord());
-						if(file1.exists()) {
-							FileInputStream fis = new FileInputStream(file1);
-//							获取后缀名
-							int newNameIndex = file1.getName().lastIndexOf('.');
-							String suffix = file1.getName().substring(newNameIndex);
-							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_答辩评阅表"+suffix));
-							int len;
-							byte[] buffer = new byte[1024];
-							//读入需要下载的文件的内容，打包到zip文件
-						    while((len = fis.read(buffer))!= -1) {
-							  zos.write(buffer,0,len);
-						    }
-						    fis.close();
-						}
+					attach.setInterimEvalForm(students.get(i).getForm().getInterimEvalForm());
+					attach.setInterimReport(students.get(i).getForm().getInterimReport());
+					attach.setOpeningReport(students.get(i).getForm().getOpeningReport());
+					attach.setReplyRecord(students.get(i).getForm().getReplyRecord());
+					attach.setReviewEvalForm(students.get(i).getForm().getReviewEvalForm());
+					attach.setReviewTable(students.get(i).getForm().getReviewTable());
+				}
+				
+				
+				attachs.add(attach);
+			}
+			
+			for(int i=0;i<attachs.size();i++) {
+				String title = attachs.get(i).getNo()+"_"+attachs.get(i).getName();
+				logger.info(title);
+				System.out.println(title);
+				attach = attachs.get(i);
+//				开题报告
+				if(attach.getOpeningReport() != null) {
+					File file1 = new File(path,attach.getOpeningReport());
+					if(file1.exists()) {
+						FileInputStream fis = new FileInputStream(file1);
+//						获取后缀名
+						int newNameIndex = file1.getName().lastIndexOf('.');
+						String suffix = file1.getName().substring(newNameIndex);
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_开题报告"+suffix));
+						int len;
+						byte[] buffer = new byte[1024];
+						//读入需要下载的文件的内容，打包到zip文件
+					    while((len = fis.read(buffer))!= -1) {
+						  zos.write(buffer,0,len);
+					    }
+					    fis.close();
 					}
 					
-				} //关于学生评阅表
-				
-//				主题目
-				if(students.get(i).getTopics() != null) {
-					File file1 = new File(path,students.get(i).getTopics().getTaskBookName());
+				}
+//				中期报告
+				if(attach.getInterimReport() != null) {
+					File file1 = new File(path,attach.getInterimReport());
 					if(file1.exists()) {
 						FileInputStream fis = new FileInputStream(file1);
 //						获取后缀名
 						int newNameIndex = file1.getName().lastIndexOf('.');
 						String suffix = file1.getName().substring(newNameIndex);
-						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_主题目"+suffix));
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_中期报告"+suffix));
 						int len;
 						byte[] buffer = new byte[1024];
 						//读入需要下载的文件的内容，打包到zip文件
@@ -824,15 +769,15 @@ public class AttachService {
 					    fis.close();
 					}
 				}
-//				子题目
-				if(students.get(i).getSubTopic() != null) {
-					File file1 = new File(path,students.get(i).getSubTopic().getTaskBookName());
+//				毕业论文
+				if(attach.getFileName() != null) {
+					File file1 = new File(path,attach.getFileName());
 					if(file1.exists()) {
 						FileInputStream fis = new FileInputStream(file1);
 //						获取后缀名
 						int newNameIndex = file1.getName().lastIndexOf('.');
 						String suffix = file1.getName().substring(newNameIndex);
-						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_子题目"+suffix));
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_毕业论文"+suffix));
 						int len;
 						byte[] buffer = new byte[1024];
 						//读入需要下载的文件的内容，打包到zip文件
@@ -842,15 +787,257 @@ public class AttachService {
 					    fis.close();
 					}
 				}
-				
-				
+//				指导教师评价表
+				if(attach.getInterimEvalForm() != null) {
+					File file1 = new File(path,attach.getInterimEvalForm());
+					if(file1.exists()) {
+						FileInputStream fis = new FileInputStream(file1);
+//						获取后缀名
+						int newNameIndex = file1.getName().lastIndexOf('.');
+						String suffix = file1.getName().substring(newNameIndex);
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_指导教师评阅表"+suffix));
+						int len;
+						byte[] buffer = new byte[1024];
+						//读入需要下载的文件的内容，打包到zip文件
+					    while((len = fis.read(buffer))!= -1) {
+						  zos.write(buffer,0,len);
+					    }
+					    fis.close();
+					}
+				}
+//				小组评价表
+				if(attach.getReviewEvalForm() != null) {
+					File file1 = new File(path,attach.getReviewEvalForm());
+					if(file1.exists()) {
+						FileInputStream fis = new FileInputStream(file1);
+//						获取后缀名
+						int newNameIndex = file1.getName().lastIndexOf('.');
+						String suffix = file1.getName().substring(newNameIndex);
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_评阅人评阅表"+suffix));
+						int len;
+						byte[] buffer = new byte[1024];
+						//读入需要下载的文件的内容，打包到zip文件
+					    while((len = fis.read(buffer))!= -1) {
+						  zos.write(buffer,0,len);
+					    }
+					    fis.close();
+					}
+				}
+//				答辩评阅表
+				if(attach.getReplyRecord() != null) {
+					File file1 = new File(path,attach.getReplyRecord());
+					if(file1.exists()) {
+						FileInputStream fis = new FileInputStream(file1);
+//						获取后缀名
+						int newNameIndex = file1.getName().lastIndexOf('.');
+						String suffix = file1.getName().substring(newNameIndex);
+						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_答辩评阅表"+suffix));
+						int len;
+						byte[] buffer = new byte[1024];
+						//读入需要下载的文件的内容，打包到zip文件
+					    while((len = fis.read(buffer))!= -1) {
+						  zos.write(buffer,0,len);
+					    }
+					    fis.close();
+					}
+				}
+//			主题目
+				File file1 = new File(path,attach.getTopicsUrl());
+				if(file1.exists()) {
+					FileInputStream fis = new FileInputStream(file1);
+//					获取后缀名
+					int newNameIndex = file1.getName().lastIndexOf('.');
+					String suffix = file1.getName().substring(newNameIndex);
+					zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_主题目"+suffix));
+					int len;
+					byte[] buffer = new byte[1024];
+					//读入需要下载的文件的内容，打包到zip文件
+				    while((len = fis.read(buffer))!= -1) {
+					  zos.write(buffer,0,len);
+				    }
+				    fis.close();
+				}
+//			子题目
+				File file2 = new File(path,attach.getSubTopicUrl());
+				if(file2.exists()) {
+					FileInputStream fis = new FileInputStream(file2);
+//					获取后缀名
+					int newNameIndex = file2.getName().lastIndexOf('.');
+					String suffix = file2.getName().substring(newNameIndex);
+					zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_子题目"+suffix));
+					int len;
+					byte[] buffer = new byte[1024];
+					//读入需要下载的文件的内容，打包到zip文件
+				    while((len = fis.read(buffer))!= -1) {
+					  zos.write(buffer,0,len);
+				    }
+				    fis.close();
+				}
+			
+			
+//				if(students.get(i).getForm() != null) {
+//					Form form = students.get(i).getForm();
+////					开题报告
+//					if(form.getOpeningReport() != null) {
+//						File file1 = new File(path,form.getOpeningReport());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_开题报告"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//						
+//					}
+////					中期报告
+//					if(form.getInterimReport() != null) {
+//						File file1 = new File(path,form.getInterimReport());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_中期报告"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//					}
+////					毕业论文
+//					if(form.getFileName() != null) {
+//						File file1 = new File(path,form.getFileName());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_毕业论文"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//					}
+////					指导教师评价表
+//					if(form.getInterimEvalForm() != null) {
+//						File file1 = new File(path,form.getInterimEvalForm());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_指导教师评阅表"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//					}
+////					小组评价表
+//					if(form.getReviewEvalForm() != null) {
+//						File file1 = new File(path,form.getReviewEvalForm());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_评阅人评阅表"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//					}
+////					答辩评阅表
+//					if(form.getReplyRecord() != null) {
+//						File file1 = new File(path,form.getReplyRecord());
+//						if(file1.exists()) {
+//							FileInputStream fis = new FileInputStream(file1);
+////							获取后缀名
+//							int newNameIndex = file1.getName().lastIndexOf('.');
+//							String suffix = file1.getName().substring(newNameIndex);
+//							zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_答辩评阅表"+suffix));
+//							int len;
+//							byte[] buffer = new byte[1024];
+//							//读入需要下载的文件的内容，打包到zip文件
+//						    while((len = fis.read(buffer))!= -1) {
+//							  zos.write(buffer,0,len);
+//						    }
+//						    fis.close();
+//						}
+//					}
+//					
+//				} //关于学生评阅表
+//				
+////				主题目
+//				if(students.get(i).getTopics() != null) {
+//					File file1 = new File(path,students.get(i).getTopics().getTaskBookName());
+//					if(file1.exists()) {
+//						FileInputStream fis = new FileInputStream(file1);
+////						获取后缀名
+//						int newNameIndex = file1.getName().lastIndexOf('.');
+//						String suffix = file1.getName().substring(newNameIndex);
+//						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_主题目"+suffix));
+//						int len;
+//						byte[] buffer = new byte[1024];
+//						//读入需要下载的文件的内容，打包到zip文件
+//					    while((len = fis.read(buffer))!= -1) {
+//						  zos.write(buffer,0,len);
+//					    }
+//					    fis.close();
+//					}
+//				}
+////				子题目
+//				if(students.get(i).getSubTopic() != null) {
+//					File file1 = new File(path,students.get(i).getSubTopic().getTaskBookName());
+//					if(file1.exists()) {
+//						FileInputStream fis = new FileInputStream(file1);
+////						获取后缀名
+//						int newNameIndex = file1.getName().lastIndexOf('.');
+//						String suffix = file1.getName().substring(newNameIndex);
+//						zos.putNextEntry(new ZipEntry("documents/"+title+"/"+title+"_子题目"+suffix));
+//						int len;
+//						byte[] buffer = new byte[1024];
+//						//读入需要下载的文件的内容，打包到zip文件
+//					    while((len = fis.read(buffer))!= -1) {
+//						  zos.write(buffer,0,len);
+//					    }
+//					    fis.close();
+//					}
+//				}
+//				
+//				
 			}
 			zos.closeEntry();
 			zos.flush();
 			zos.close();
-		} catch(Exception e) {
-		}  finally{
 			session.getTransaction().commit();
+		} catch(Exception e) {
+			
+		}  finally{
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 	}
 	

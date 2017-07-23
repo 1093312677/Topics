@@ -3,6 +3,7 @@ package com.service;
 import java.io.File;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,8 @@ public class DocumentService {
 	private Session session;
 	@Autowired
 	private CommonDaoImpl commonDaoImpl;
+	
+	public  Logger logger = Logger.getLogger(DocumentService.class);
 	/**
 	 * 上传相关文档
 	 * @param file
@@ -69,6 +72,7 @@ public class DocumentService {
 	 * @return
 	 */
 	public List<Document> viewDocument(long departmentId){
+		logger.info("view document");
 		List<Document> documents = null;
 		try{
 			session = sessionFactory.getCurrentSession();
@@ -80,6 +84,27 @@ public class DocumentService {
 			return documents;
 		}  finally{
 			session.getTransaction().commit();
+		}
+	}
+	/**
+	 * 删除模板文档
+	 * @param document
+	 * @return
+	 */
+	public boolean deleteDocument(Document document) {
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			commonDaoImpl.setSession(session);
+			commonDaoImpl.delete(document);
+			session.getTransaction().commit();
+			return true;
+		} catch(Exception e) {
+			return false;
+		}  finally{
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 	}
 	

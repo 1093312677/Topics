@@ -2,9 +2,7 @@ package com.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -111,6 +109,29 @@ public class DocumentController {
 			e.printStackTrace();
 		}
 		
+		return null;
+	}
+	
+	/**
+	 * 删除模板文档
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping("/deleteDocument")
+	public String deleteDocument(HttpServletResponse response, Document document) {
+		if(documentService.deleteDocument(document)) {
+			try {
+				response.getWriter().println(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				response.getWriter().println(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		return null;
 	}
 	
