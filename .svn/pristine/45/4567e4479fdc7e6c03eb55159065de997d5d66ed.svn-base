@@ -1,0 +1,105 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<link rel="stylesheet" href="<%=request.getContextPath() %>/css/common.css"/>
+<link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap.min.css">
+<link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap-theme.min.css">
+
+<script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
+<script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>修改密码</title>
+<script type="text/javascript">
+	function onload(){
+		var flag=${temp};
+		if(flag==1){
+			window.open("../index.jsp");
+		}
+	}
+</script>
+</head>
+<body onload="onload()">
+
+   <!-- 
+	<form action="alertpw.do" method="post">
+		<c:if test="${privilege==4}">
+			<c:out value="学号："/>
+		</c:if>
+		<c:if test="${privilege==3}">
+			<c:out value="工号："/>
+		</c:if>${username}<br>
+		
+		密码：<input type="password" name="oldpw" value="${oldpw}"><br>
+		新密码：<input type="password" name="newpw1" value="${newpw1}"><br>
+		确定密码：<input type="password" name="newpw2" value="${newpw2}"><br>
+		<c:choose>
+			<c:when test="${temp==0}">
+				<c:out value="密码错误"/><br>
+			</c:when>
+			<c:when test="${temp==2}">
+				<c:out value="密码不一致"/><br>
+			</c:when>
+		</c:choose>
+		<input value="修改" type="submit">
+	</form>
+	 -->
+	
+	<!-- zhao -->
+
+	<form>
+		<div class="panel panel-default" style="margin:0">
+	   	 	<div class="panel-body">
+	              	更改<span class="glyphicon glyphicon-leaf">密码</span>
+	        </div>
+	    </div>
+	    &nbsp;
+		<c:if test="${privilege==4}">
+			<c:out value="学号："/>
+		</c:if>
+		<c:if test="${privilege==3}">
+		<c:out   value="工号："/>
+	</c:if>${username}<br>
+	<br>
+	</form>   
+<center>
+	<!-- 修改表单 -->
+ 		<form action="alertpw.do" method="post" style = "width:600px;">
+		    <div class="input-group input-group-lg">
+		        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+		        <input type="password" class="form-control" id="edit" name="oldpw" placeholder="密码">
+		    </div>
+		   
+		      
+		    <div class="input-group input-group-lg">
+		        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+		        <input type="password" class="form-control" id="edit" name="newpw1" value="${newpw1}" placeholder="新密码">
+		    </div>
+		    
+		    <div class="input-group input-group-lg">
+		        <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+		        <input type="password" class="form-control" id="edit" name="newpw2" value="${newpw2}" placeholder="确认新密码">
+		    </div>
+ 		
+ 		<c:choose>
+			<c:when test="${temp==0}">
+				<c:out value="密码错误"/><br>
+			</c:when>
+			<c:when test="${temp==2}">
+				<c:out value="密码不一致"/><br>
+			</c:when>
+		</c:choose>
+		<br>
+ 		<div class="modal-footer">
+                <button type="reset" class="btn btn-default" data-dismiss="modal">重置</button>
+                <button type="submit" class="btn btn-primary" id="addConfirm">确认修改</button>
+        </div>	
+</form>
+</center>
+	
+</body>
+</html>

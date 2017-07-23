@@ -1,0 +1,121 @@
+package com.test;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
+import org.apache.log4j.Logger;
+import org.apache.log4j.PropertyConfigurator;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.Test;
+
+public class TestMain {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+	@Test
+	public void testLog(){
+		PropertyConfigurator.configure( "D:\\server\\apache-tomcat-7.0.75\\webapps\\TopicsSelection3\\WEB-INF\\classes\\config\\properties\\log4j.properties" );
+		Logger logger  =  Logger.getLogger(TestMain. class );
+        logger.debug( " debug " );
+        logger.error( " error " );
+	}
+	
+	@Test
+	public void addStudents(){
+		System.out.println("8888.0".substring(0, "8888.0".lastIndexOf('.')));
+		String path = "d:/test.xlsx";
+		File excelFile2 = new File(path); //创建文件对象  
+		String sub = path.substring(path.lastIndexOf('.'));
+		System.out.println(sub);
+		try{
+            InputStream str = new FileInputStream(excelFile2);
+            Workbook xwb = null;//WorkbookFactory.create(str);  //利用poi读取excel文件流
+            if (".xlsx".equals(sub)) {
+            	xwb = new XSSFWorkbook(str);
+            } else {
+            	xwb = new HSSFWorkbook(str);
+            }
+            
+            Sheet st = xwb.getSheetAt(0);  //读取sheet的第一个工作表
+            int rows=st.getLastRowNum();//总行数
+            int cols;//总列数
+            for(int i=0;i<rows;i++){
+                Row row=st.getRow(i);//读取某一行数据
+                if(row!=null){
+                    //获取行中所有列数据
+                    cols=row.getLastCellNum();
+                for(int j=0;j<cols;j++){
+                	Cell cell=row.getCell(j);
+                    if(cell==null){
+                        System.out.print("   ");  
+                    }else{
+                    //判断单元格的数据类型
+                    switch (cell.getCellType()) {  
+                        case Cell.CELL_TYPE_NUMERIC: // 数字  
+                            System.out.print(cell.getNumericCellValue() + "   ");  
+                            break;  
+                        case Cell.CELL_TYPE_STRING: // 字符串  
+                            System.out.print(cell.getStringCellValue() + "   ");  
+                            break;  
+                        case Cell.CELL_TYPE_BOOLEAN: // Boolean  
+                            System.out.println(cell.getBooleanCellValue() + "   ");  
+                            break;  
+                        case Cell.CELL_TYPE_FORMULA: // 公式  
+                            System.out.print(cell.getCellFormula() + "   ");  
+                            break;  
+                        case Cell.CELL_TYPE_BLANK: // 空值  
+                            System.out.println("");  
+                            break;  
+                        case Cell.CELL_TYPE_ERROR: // 故障  
+                            System.out.println("故障");  
+                            break;  
+                        default:  
+                            System.out.print("未知类型   ");  
+                            break;  
+                        }  
+                }
+                }
+                }
+            }
+        }catch(Exception e){
+            e.printStackTrace();   
+        }
+		
+	}
+	
+	@Test
+	public void testFile(){
+		File fromFile = new File("D:\\kone.xls");
+		File toFile = new File("D:\\kone1.xls");
+		
+		FileInputStream ins;
+		try {
+			ins = new FileInputStream(fromFile);
+			FileOutputStream out = new FileOutputStream(toFile);
+	        byte[] b = new byte[1024];
+	        int n=0;
+	        while((n=ins.read(b))!=-1){
+	            out.write(b, 0, b.length);
+	        }
+	        
+	        ins.close();
+	        out.close();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        
+	}
+
+}

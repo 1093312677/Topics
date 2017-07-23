@@ -1,0 +1,684 @@
+package com.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddress;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.alibaba.fastjson.JSONObject;
+import com.common.Pagination;
+import com.common.QueryCondition;
+import com.dto.DealData;
+import com.entity.Clazz;
+import com.entity.CourseAndGrade;
+import com.entity.CourseGrade;
+import com.entity.Grade;
+import com.entity.IntentionTopic;
+import com.entity.Score;
+import com.entity.Setting;
+import com.entity.Student;
+import com.entity.Teacher;
+import com.entity.Topics;
+import com.entity.User;
+import com.service.CommonService;
+import com.service.StudentService;
+
+/**
+ * 学生相关操作Controller
+ * @author kone
+ * 2016-1-13
+ */
+@Controller
+@RequestMapping("/student")
+public class StudentController {
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private DealData dealData;
+	@Autowired
+	private StudentService studentService;
+	
+	
+	public CommonService getCommonService() {
+		return commonService;
+	}
+
+	public void setCommonService(CommonService commonService) {
+		this.commonService = commonService;
+	}
+
+	public DealData getDealData() {
+		return dealData;
+	}
+
+	public void setDealData(DealData dealData) {
+		this.dealData = dealData;
+	}
+	/**
+	 * 查看年级，选择年级后选择学生
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param pagination
+	 * @param gradeId
+	 * @return
+	 */
+	@RequestMapping("/viewGrade")
+	public String viewGrade(HttpSession session,HttpServletRequest request,HttpServletResponse response){
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		List<Grade> grades = null;
+		if(teachers.size()>0){
+			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()));
+		}
+		request.setAttribute("grades", grades);
+		request.setAttribute("message", "view");
+//		获取完数据后关闭session
+		commonService.closeSession();
+		return "student/viewGrade";
+	}
+	/**
+	 * 查看学生
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param page
+	 * @return
+	 */
+	@RequestMapping("/viewStudent")
+	public String viewStudent(HttpSession session,HttpServletRequest request,HttpServletResponse response, String pageType, String type,Pagination pagination, String gradeId){
+//		将gradeId保存为session，后面返回使用
+		session.setAttribute("gradeId", gradeId);
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		if(teachers.size()>0){
+			request.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
+		}
+//		如果是输入的页数进行减一
+		if("1".equals(pageType)) {
+			pagination.setPage(pagination.getPage() - 1);
+		}
+		
+		int eachPage = 15;
+		pagination.setEachPage(eachPage);
+		pagination.setTotleSize(studentService.getStudentsNum(gradeId));//获取总记录数
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+		List<Student> students = studentService.viewStudents(gradeId, pagination.getPage()*eachPage, eachPage);
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+//		处理分页数据
+		pagination = dealData.getPagination(students, pagination);
+		
+		if(type==null){
+			type="null";
+		}
+		if(type.equals("json")){
+			try {
+				JSONObject json = new JSONObject();
+				json.put("students", students);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}else{
+			request.setAttribute("students", students);
+			request.setAttribute("pagination", pagination);
+			request.setAttribute("message", "view");
+			request.setAttribute("gradeId", gradeId);
+			return "student/viewStudent";
+		}
+	}
+	/**
+	 * 保存学生
+	 * @param classId
+	 * @param student
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/addStudent")
+	public String addStudent(long classId,Student student,HttpServletRequest request,HttpServletResponse response){
+		Clazz clazz = new Clazz();
+		clazz.setId(classId);
+		student.setClazz(clazz);
+		student.setAge("0");
+		
+//		设置登录信息
+		User user = new User();
+		user.setPassword("123456");
+		user.setUsername(student.getNo());
+		user.setPrivilege("4");
+		
+		student.setUser(user);
+		try {
+			if(commonService.save(student)){
+				response.getWriter().println("1");
+			}else{
+				response.getWriter().println("0");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * 批量保存学生信息
+	 * @param file
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/batchImportStudent")
+	public String batchImportStudent(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		String gradeId = (String) session.getAttribute("gradeId");
+//		获取登录人员的信息
+		String path = request.getSession().getServletContext().getRealPath("upload");
+		List<Student> students = null;
+		if (!file.isEmpty()) {
+			students = studentService.batchImportStudent(file, path);
+			if (students.size() == 0) {
+				request.setAttribute("message", "上传文件错误，或者是上传出错！");
+				request.setAttribute("path", "student/viewStudent.do?gradeId="+gradeId);
+				return "common/failed";
+			} else {
+				commonService.batchImport(students);
+			}
+			request.setAttribute("path", "student/viewStudent.do?gradeId="+gradeId);
+			return "common/success";
+//			request.setAttribute("students", students);
+//			return "student/viewStudent2";
+		}
+		request.setAttribute("message", "请选择文件！");
+		request.setAttribute("path", "student/viewStudent.do?gradeId="+gradeId);
+		return "common/failed";
+	}
+	
+	/**
+	 * 
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/exportStudent")
+	public String exportStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		String gradeId = (String) session.getAttribute("gradeId");
+		List<Student> students = studentService.viewStudents(gradeId, 0, 1000000);
+		
+		//创建HSSFWorkbook对象(excel的文档对象)
+	     HSSFWorkbook wb = new HSSFWorkbook();
+		//建立新的sheet对象（excel的表单）
+		HSSFSheet sheet=wb.createSheet("学生信息表");
+		//在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+		HSSFRow row1=sheet.createRow(0);
+		//创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+		HSSFCell cell=row1.createCell(0);
+		      //设置单元格内容
+		cell.setCellValue("学生信息表");
+		//合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
+		sheet.addMergedRegion(new CellRangeAddress(0,0,0,12));
+		
+		//在sheet里创建第二行
+		HSSFRow row2=sheet.createRow(1);    
+        //创建单元格并设置单元格内容
+        row2.createCell(0).setCellValue("学号");
+        row2.createCell(1).setCellValue("姓名");    
+        row2.createCell(2).setCellValue("性别");
+		row2.createCell(3).setCellValue("电话");  
+		row2.createCell(4).setCellValue("QQ"); 
+		row2.createCell(5).setCellValue("邮箱"); 
+		row2.createCell(6).setCellValue("班级"); 
+		row2.createCell(7).setCellValue("方向"); 
+		row2.createCell(8).setCellValue("专业");
+		row2.createCell(9).setCellValue("年级"); 
+		row2.createCell(10).setCellValue("系"); 
+		row2.createCell(11).setCellValue("学院"); 
+		
+		HSSFRow row = null;
+		for (int i=0;i<students.size();i++) {
+			row = sheet.createRow(i+2);
+			row.createCell(0).setCellValue(students.get(i).getNo());
+			row.createCell(1).setCellValue(students.get(i).getName());
+			row.createCell(2).setCellValue(students.get(i).getSex());
+			row.createCell(3).setCellValue(students.get(i).getTelephone());
+			row.createCell(4).setCellValue(students.get(i).getQq());
+			row.createCell(5).setCellValue(students.get(i).getEmail());
+			row.createCell(6).setCellValue(students.get(i).getClazz().getClassName());
+			row.createCell(7).setCellValue(students.get(i).getClazz().getDirection().getDirectionName());
+			row.createCell(8).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getSpecialtyName());
+			row.createCell(9).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getGrade().getGradeName());
+			row.createCell(10).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getGrade().getDepartment().getDepartmentName());
+			row.createCell(11).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getGrade().getDepartment().getCollege().getCollegeName());
+			
+		}
+		
+	   try {
+		//输出Excel文件
+	    OutputStream output=response.getOutputStream();
+	    if (output instanceof HttpServletResponse) {  
+	        setResponseHeader((HttpServletResponse) output, "kone");  
+	    }  
+	    response.reset();
+	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); 
+	    response.setContentType("application/octet-stream;charset=utf-8");
+	    response.setHeader("Content-Disposition", "attachment;filename="  
+	            + java.net.URLEncoder.encode("名单"+ new SimpleDateFormat("yyyy-MM-dd-HH").format(new Date()) + ".xls", "utf-8"));
+	    //  客户端不缓存  
+	    response.addHeader("Pragma", "no-cache");  
+	    response.addHeader("Cache-Control", "no-cache"); 
+	    //输出Excel文件
+			wb.write(output);
+			output.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	    commonService.closeSession();
+		return null;
+	}
+
+	private void setResponseHeader(HttpServletResponse output, String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/**
+	 * 学生查看题目，选择题目
+	 * @return
+	 */
+	@RequestMapping("/viewTopicsStudent")
+	public String viewTopicsStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Set<Topics> topics = null;
+		
+		Setting setting = (Setting) session.getAttribute("setting");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		if (setting != null) {
+			try {
+//				当前时间
+				Date now = new Date();
+//				第一轮选题开始，结束时间
+				Date oneStart = sdf.parse(setting.getOneSelectStartTime().replace("T"," ").concat(":00"));
+				Date oneEnd = sdf.parse(setting.getOneSelectEndTimeOne().replace("T"," ").concat(":00"));
+				
+//				第二轮选题开始，结束时间
+				Date twoStart = sdf.parse(setting.getTwoSelectStartTime().replace("T"," ").concat(":00"));
+				Date twoEnd = sdf.parse(setting.getTwoSelectEndTimeOne().replace("T"," ").concat(":00"));
+				
+//				第三轮选题开始，结束时间
+//				Date threeStart = sdf.parse(setting.getThreeSelectStartTime().replace("T"," ").concat(":00"));
+//				Date threeEnd = sdf.parse(setting.getThreeSelectEndTimeOne().replace("T"," ").concat(":00"));
+				
+//				在第一轮选题时间之间
+				if(now.getTime() > oneStart.getTime() && now.getTime() < oneEnd.getTime() ) {
+					List<Student> infor =  (List<Student>)session.getAttribute("infor");
+					topics = studentService.viewTopic(infor.get(0), 1);
+					request.setAttribute("message", "第一轮选题");
+					
+//				在第二轮选题时间之间
+				} else if(now.getTime() > twoStart.getTime() && now.getTime() < twoEnd.getTime() ) {
+					List<Student> infor =  (List<Student>)session.getAttribute("infor");
+					topics = studentService.viewTopic(infor.get(0), 2);
+					request.setAttribute("message", "第二轮选题");
+					
+//				在第三轮选题时间之间
+//				} else if(now.getTime() > threeStart.getTime() && now.getTime() < threeEnd.getTime() ) {
+//					List<Student> infor =  (List<Student>)session.getAttribute("infor");
+//					topics = studentService.viewTopic(infor.get(0), 3);
+//					request.setAttribute("message", "第三轮选题");
+//				不是选题时间
+				} else {
+					request.setAttribute("message", "不是选题的时间！");
+				}
+				
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		} else {
+			request.setAttribute("message", "不是选题的时间！");
+		}
+	
+		
+		request.setAttribute("topics", topics);
+		return "student/viewTopics";
+	}
+	/**
+	 * 学生选择意向题目
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/selectIntentionTopic")
+	public String selectIntentionTopic(int choice,Topics topic,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		Setting setting = (Setting) session.getAttribute("setting");
+		PrintWriter out = null;
+		try {
+			out =  response.getWriter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(infor.size()>0 ) {
+//			获取当前日期是第几次选题
+			int batch = dealData.getBatch(setting);
+			int result = studentService.selectIntentionTopic(infor.get(0), choice, batch, topic);
+			if(result == 1){
+//				直接保存
+				IntentionTopic intent = studentService.getIntentionTopic(infor.get(0), choice, batch, topic);
+				if(commonService.save(intent)){
+					commonService.closeSession();
+					out.print(1);
+				}else{
+					out.print(0);
+				}
+				return null;
+			}else if(result == 2){
+//				题目相同，志愿不同，是否更改志愿
+				out.print(2);
+				return null;
+			}else if(result == 3){
+//				志愿相同，题目不同，是否更改题目
+				out.print(3);
+				return null;
+			}else if(result == 4){
+//				已经选择了该题目的该志愿
+				out.print(4);
+				return null;
+			}else{
+				out.print(0);
+				return null;
+			}
+			
+
+		}else{
+			out.print(0);
+			return null;
+		}//判断获取的个人信息是否有效结束
+		
+		
+	}
+	
+	/**
+	 * 更新意向题目
+	 * @param type 判断是更改志愿字段还是 题目字段
+	 * @param choice
+	 * @param topic
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/updateIntentionTopic")
+	public String updateIntentionTopic(int type,int choice,Topics topic,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		
+		Setting setting = (Setting) session.getAttribute("setting");
+		PrintWriter out = null;
+		try {
+			out =  response.getWriter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		if(infor.size() > 0 ) {
+//			获取当前日期是第几次选题
+			int batch = dealData.getBatch(setting);
+//			先删除之前选的
+			if(studentService.getIntentionTopicDelete(infor.get(0), choice, batch, topic, 1)!=null){
+				commonService.delete(studentService.getIntentionTopicDelete(infor.get(0), choice, batch, topic, 1));
+				commonService.closeSession();
+			}
+			if(studentService.getIntentionTopicDelete(infor.get(0), choice, batch, topic, 2)!=null){
+				commonService.delete(studentService.getIntentionTopicDelete(infor.get(0), choice, batch, topic, 2));
+				commonService.closeSession();
+			}
+				
+			IntentionTopic intent = studentService.getIntentionTopic(infor.get(0), choice, batch, topic);
+			if(commonService.save(intent)){
+				commonService.closeSession();
+				out.print(1);
+			}else{
+				out.print(0);
+			}
+			return null;
+		}
+		return null;
+	}
+	/**
+	 * 查看意向题目
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewIntentionTopic")
+	public String viewIntentionTopic(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		String studentId = "0" ;
+		if(infor.size()>0){
+			studentId = String.valueOf(infor.get(0).getId());
+		}
+		List<IntentionTopic> intentionTopics = commonService.findBy("IntentionTopic", "studentId", studentId);
+		commonService.closeSession();
+		
+		request.setAttribute("intentionTopics", intentionTopics);
+		return "student/viewIntentionTopic";
+	}
+	/**
+	 * 查看学生详情	
+	 * @param id
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewStudentOne")
+	public String viewStudentOne(String filter, String id, String no, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+		List<Teacher> infor =  (List<Teacher>)session.getAttribute("infor");
+		
+		if(infor.size() > 0) {
+			String gradeId = (String) session.getAttribute("gradeId");
+			List<Student> students = commonService.find("Student", id);
+			request.setAttribute("students", students);
+			List<CourseAndGrade> courseAndGrades = null;
+			commonService.closeSession();
+			courseAndGrades = commonService.findBy("CourseAndGrade", "no", no);
+			commonService.closeSession();
+			if("yes".equals(filter)) {
+				courseAndGrades = studentService.getCourseAndGradesFilter(courseAndGrades, infor.get(0), gradeId, no);
+			}
+			
+//			计算平均分
+			float total = 0;
+			for(int i=0;i<courseAndGrades.size();i++) {
+				total += courseAndGrades.get(i).getScore();
+			}
+			request.setAttribute("courseAndGrades", courseAndGrades);
+			request.setAttribute("average", total/courseAndGrades.size());
+		}
+		
+		return "student/viewStudentDetials";
+	}
+	
+	/**
+	 * 学生查看成绩
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewScoreStudent")
+	public String viewScoreStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Student> students = (List<Student>) session.getAttribute("infor");
+		if (students.size() > 0) {
+			request.setAttribute("student", students.get(0));
+		}
+		return "student/viewScore";
+	}
+	
+	/**
+	 * 学生查看最终选题
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/finalSelection")
+	public String finalSelection(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Student> students = (List<Student>) session.getAttribute("infor");
+		if (students.size() > 0) {
+			request.setAttribute("student", students.get(0));
+		}
+		return "student/finalSelection";
+	}
+	
+//	/**
+//	 * 提交论文
+//	 * @param file
+//	 * @param request
+//	 * @param response
+//	 * @param session
+//	 * @return
+//	 */
+//	@RequestMapping("/submitThesis")
+//	public String submitThesis(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+//		List<Student> students = (List<Student>) session.getAttribute("infor");
+//		if (students.size() > 0) {
+//			List<Score> scores = commonService.findBy("Score", "studentId", String.valueOf(students.get(0).getId()));
+//			commonService.closeSession();
+////			获取当前时间
+//			SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//			String time = df.format(new Date());
+//			Score score = new Score();
+//			score.setStudent(students.get(0));
+//			
+//			score.setTime(time);
+//			
+//			String fileName = "";
+//			String origName = "";
+//			File file2 = null;
+//			if(!file.isEmpty()){
+//				String path = request.getSession().getServletContext().getRealPath("upload");
+//				origName = file.getOriginalFilename();
+////				int newNameIndex = origName.lastIndexOf('.');
+////				String suffix = origName.substring(newNameIndex);
+////				long name = System.currentTimeMillis();
+//////				文件随机名称
+////				fileName = String.valueOf(name)+suffix;
+//				file2 = new File(path,origName);
+//				if(!file2.exists()){
+//					file2.mkdirs();
+//				}
+//				score.setFileName(origName);
+//			}
+////			从未上传文件
+//			if (scores.size() == 0) {
+////				保存信息
+//				if (commonService.save(score)) {
+//					try {
+//						//保存文件
+//						if(!file.isEmpty()){
+//							file.transferTo(file2);
+//						}
+//						
+//					} catch (Exception e) {
+//						e.printStackTrace();
+//					}
+//					request.setAttribute("message", "上传成功！");
+//					request.setAttribute("path", "student/goSubmitThesis.do");
+//					return "common/success";
+//				} else {
+//					request.setAttribute("path", "student/goSubmitThesis.do");
+//					request.setAttribute("message", "上传失败！保存出错！");
+//					return "common/failed";
+//				}
+//			} else {
+////				上传了文件，更新
+////				QueryCondition queryCondition = new QueryCondition();
+////				queryCondition.setTable("Score");
+////				queryCondition.setConunt(2);
+////				queryCondition.setRow1("fileName");
+////				queryCondition.setValue1(origName);
+////				queryCondition.setRow2("time");
+////				queryCondition.setValue2(time);
+////				commonService.updateByFree(queryCondition);
+//				scores.get(0).setFileName(origName);
+//				scores.get(0).setTime(time); 
+//				if ( commonService.update(scores.get(0)) ) {
+//					request.setAttribute("path", "student/goSubmitThesis.do");
+//					request.setAttribute("message", "更新成功！");
+//					return "common/success";
+//				}
+//				request.setAttribute("path", "student/goSubmitThesis.do");
+//				request.setAttribute("message", "更新失败！");
+//				return "common/failed";
+//			}
+//			
+//		} else {
+//			request.setAttribute("path", "student/goSubmitThesis.do");
+//			request.setAttribute("message", "上传失败！登录信息失效！请重新登录");
+//			return "common/failed";
+//		}
+//		
+//		
+//		
+//	}
+	
+	
+//	/**
+//	 * 前往题目提交界面
+//	 * @param request
+//	 * @param response
+//	 * @param session
+//	 * @return
+//	 */
+//	@RequestMapping("/goSubmitThesis")
+//	public String goSubmitThesis(HttpServletRequest request, HttpServletResponse response, HttpSession session){
+////		获取时间
+//		Setting settings = (Setting) session.getAttribute("setting");
+//		String startTime = settings.getMidReportStartTime();
+//		String endTime = settings.getMidReportEndTime();
+//	    boolean isNow = dealData.isNow(startTime, endTime);
+//		
+////		查询是否提交论文
+//		List<Student> students = (List<Student>) session.getAttribute("infor");
+//		List<Score> scores = null;
+//		if (students.size() > 0) {
+//			scores = commonService.findBy("Score", "studentId", String.valueOf(students.get(0).getId()));
+//			commonService.closeSession();
+//		}
+//		request.setAttribute("scores", scores);
+//		
+//		request.setAttribute("result", isNow);
+//
+//		return "student/submitThesis";
+//	}
+//	
+	
+}

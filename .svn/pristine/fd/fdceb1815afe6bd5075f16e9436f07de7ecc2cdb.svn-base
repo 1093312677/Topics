@@ -1,0 +1,133 @@
+package com.guo.dao.impl;
+
+import javax.annotation.Resource;
+import javax.persistence.Basic;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
+
+import com.entity.Clazz;
+import com.entity.Student;
+import com.entity.User;
+import com.guo.dao.IStudentDao;
+@Repository(value="studentDao1")
+public class StudentDao extends BaseDao implements IStudentDao {
+	private Session session;
+	//根据学号获得学生
+	public Student get(String no) {
+		Student student=null;
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="from Student stu where stu.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("no", no);
+			student=(Student) query.uniqueResult();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} 
+		return student;
+	}
+/**
+ * private Integer id;
+	private String no;//学号
+	private String name;
+	private String sex;
+	private String age;
+	private String qq;
+	private String telephone;
+	private String email;
+ */
+	//修改部分学生信息
+	@Override
+	public int update(Student stu) {
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="update Student s set s.qq=:qq,s.telephone=:phone,s.email=:email where s.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("qq", stu.getQq());
+			query.setString("phone", stu.getTelephone());
+			query.setString("email", stu.getEmail());
+			query.setString("no", stu.getNo());
+			query.executeUpdate();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			{
+				if(session.isOpen()){
+					session.close();
+				}
+			}
+		}
+		return 1;
+	}
+@Override
+//根据id得到学生
+public Student get(int id) {
+	Student student=null;
+	try{
+		session=getSession();
+		session.beginTransaction();
+		String hql="from Student stu where stu.id=:id";
+		Query query=session.createQuery(hql);
+		query.setInteger("id", id);
+		student=(Student) query.uniqueResult();
+		session.getTransaction().commit();			
+	}catch(Exception e){
+		e.printStackTrace();
+	} 
+	return student;
+}
+@Override
+public void closeSession() {
+	session.close();
+}
+@Override
+/* private Integer id;
+	private String no;//学号
+	private String name;
+	private String sex;
+	private String age;
+	private String qq;
+	private String telephone;
+	private String email;
+	private int swapInDepa;//是否允许在系内调配
+	private Clazz clazz;
+	修改学生所有信息
+ */
+public int updateInfo(Student stu,long clazzId) {
+	try{
+		session=getSession();
+		session.beginTransaction();
+		String hql="update Student s set s.no=:no,s.name=:name,s.sex=:sex,s.qq=:qq,s.telephone=:phone,s.email=:email,s.clazz=:clazz where s.id=:id";
+		Query query=session.createQuery(hql);
+		query.setLong("id", stu.getId());
+		query.setString("no", stu.getNo());
+		query.setString("name", stu.getName());
+		query.setString("sex", stu.getSex());
+		query.setString("qq", stu.getQq());
+		query.setString("phone", stu.getTelephone());
+		query.setString("email", stu.getEmail());
+		query.setLong("clazz", clazzId);
+		query.executeUpdate();
+		session.getTransaction().commit();			
+	}catch(Exception e){
+		e.printStackTrace();
+	} finally {
+		{
+			if(session.isOpen()){
+				session.close();
+			}
+		}
+	}
+	return 0;
+}
+}

@@ -1,0 +1,35 @@
+package com.dao.impl;
+
+import org.hibernate.Session;
+
+import com.dao.daoAdapter.DaoAdapter;
+/**
+ * 通用的dao
+ * @author kone
+ *
+ * @param <T>
+ */
+public class CommonDaoImpl<T> extends DaoAdapter<T>{
+	private Session session;
+	String hql = "";
+	public void setSession(Session session){
+		this.session = session;
+	}
+	@Override
+	public boolean save(T entity) {
+		session.save(entity);
+		return false;
+	}
+
+	@Override
+	public boolean delete(T entity) {
+		session.delete(entity);
+		return false;
+	}
+	
+	@Override
+	public boolean update(T entity) {
+		session.update(entity);
+		return false;
+	}
+}

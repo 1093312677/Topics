@@ -1,0 +1,255 @@
+package com.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddress;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dao.impl.CommonDaoImpl;
+import com.dao.impl.DaoImpl;
+import com.entity.Student;
+import com.entity.Topics;
+/**
+ * <p>教师和学生相关逻辑处理</p>
+ * @author kone
+ * 2017.4.18
+ */
+@Service
+public class TeachStuService {
+	@Autowired
+	private SessionFactory sessionFactory;
+	private Session session;
+	@Autowired
+	private DaoImpl daoImpl;
+	@Autowired
+	private CommonDaoImpl commonDaoImpl;
+	public void closeSession(){
+		if(session.isOpen()) {
+			session.close();
+		}
+	}
+	
+	/**
+	 * 查看指导学生
+	 * @param teacherId
+	 * @return
+	 */
+	public List<Student> viewGuideStudent(long teacherId) {
+		List<Topics> topics =  null;
+		List<Student> students =  new ArrayList<Student>();
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			传递session保证是同一个session进行事务处理
+			commonDaoImpl.setSession(session); 
+			topics = commonDaoImpl.findBy("Topics", "teacherId", String.valueOf(teacherId));
+			for(int i=0;i<topics.size();i++) {
+				students.addAll(topics.get(i).getStudents());
+//				for(int j=0;j<topics.get(i).getStudents().size();j++) {
+//					topics.get(i).getStudents().get(j).getTopics();
+//				}
+			}
+			session.getTransaction().commit();
+			
+			return students;
+		}catch(Exception e){
+			e.printStackTrace();
+			return students;
+		} 
+	}
+	
+	/**
+	 * 获取学生人数
+	 * @param gradeId
+	 * @return
+	 */
+	public int getStudentsNum(String gradeId) {
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+//			传递session保证是同一个session进行事务处理
+			commonDaoImpl.setSession(session); 
+			int count = commonDaoImpl.getStudentsNum(gradeId);
+			session.getTransaction().commit();
+			return count;
+		}catch(Exception e){
+			session.getTransaction().rollback();
+			e.printStackTrace();
+			return 0;
+		} finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+	}
+	
+	/**
+	 * 查看学生
+	 * @param gradeId
+	 * @param page
+	 * @param eachPage
+	 * @return
+	 */
+	public List<Student> viewStudents(String gradeId, int page, int eachPage) {
+		List<Student> students =  new ArrayList<Student>();
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			传递session保证是同一个session进行事务处理
+			commonDaoImpl.setSession(session); 
+			students = commonDaoImpl.viewStudents(gradeId, page, eachPage);
+			for(int i=0;i<students.size();i++) {
+				if(students.get(i).getTopics() != null) {
+					System.out.println(students.get(i).getTopics().getTopicsName());
+				}
+			}
+			session.getTransaction().commit();
+			
+			return students;
+		}catch(Exception e){
+			session.getTransaction().commit();
+			e.printStackTrace();
+			return students;
+		} 
+	}
+	
+	/**
+	 * 导出学生成绩
+	 * @param gradeId
+	 * @return
+	 */
+	public HSSFWorkbook exportStudentGrade(String gradeId) {
+		List<Topics> topics = daoImpl.findByTwo("Topics", "gradeId", gradeId,"state","1");
+		
+		//创建HSSFWorkbook对象(excel的文档对象)
+	     HSSFWorkbook wb = new HSSFWorkbook();
+		//建立新的sheet对象（excel的表单）
+		HSSFSheet sheet=wb.createSheet("学生成绩表");
+		//在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+		HSSFRow row1=sheet.createRow(0);
+		//创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+		HSSFCell cell=row1.createCell(0);
+		      //设置单元格内容
+		cell.setCellValue("学生成绩表");
+		//合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
+		sheet.addMergedRegion(new CellRangeAddress(0,0,0,9));
+		
+		//在sheet里创建第二行
+		HSSFRow row2=sheet.createRow(1);    
+      //创建单元格并设置单元格内容
+       row2.createCell(0).setCellValue("学号");
+       row2.createCell(1).setCellValue("姓名");    
+       row2.createCell(2).setCellValue("性别");
+		row2.createCell(3).setCellValue("班级");  
+		row2.createCell(4).setCellValue("方向"); 
+		row2.createCell(5).setCellValue("题目名称");
+		row2.createCell(6).setCellValue("指导教师评阅成绩"); 
+		row2.createCell(7).setCellValue("小组评阅成绩"); 
+		row2.createCell(8).setCellValue("答辩成绩"); 
+		row2.createCell(9).setCellValue("等级"); 
+		row2.createCell(10).setCellValue("总分"); 
+		
+		HSSFRow row = null;
+		int count = 0;
+		for (int i=0;i<topics.size();i++) {
+			List<Student> students = topics.get(i).getStudents();
+			for(int j=0;j<students.size();j++) {
+				row = sheet.createRow(count+2);
+				
+				row.createCell(0).setCellValue(students.get(j).getNo());
+				row.createCell(1).setCellValue(students.get(j).getName());
+				row.createCell(2).setCellValue(students.get(j).getSex());
+				row.createCell(3).setCellValue(students.get(j).getClazz().getClassName());
+				row.createCell(4).setCellValue(students.get(j).getClazz().getDirection().getDirectionName());
+				row.createCell(5).setCellValue(students.get(j).getTopics().getTopicsName());
+				
+				if(students.get(j).getScore() != null) {
+					float score1 = students.get(j).getScore().getMediumScore();
+					float score2 = students.get(j).getScore().getHeadScore();
+					float score3 = students.get(j).getScore().getReplyResult();
+					row.createCell(6).setCellValue(score1);
+					row.createCell(7).setCellValue(score2);
+					row.createCell(8).setCellValue(score3);
+					row.createCell(9).setCellValue(students.get(j).getScore().getLevel());
+					if(students.get(j).getScore().getLevel() == null || "".equals(students.get(j).getScore().getLevel())) {
+						row.createCell(10).setCellValue("评阅尚未完成");
+					} else {
+						row.createCell(10).setCellValue(score1 + score2 + score3);
+					}
+				}
+				
+				
+				
+				
+				
+				
+				count++;
+			}
+			
+		}
+		daoImpl.closeSession();
+		return wb;
+	}
+	/**
+	 * 导出学生成绩
+	 * @param gradeId
+	 * @return
+	 */
+	public HSSFWorkbook exportNotSelectedStudent(String gradeId) {
+		List<Student> students = daoImpl.viewStudents(gradeId, 0, 10000);
+		
+		//创建HSSFWorkbook对象(excel的文档对象)
+	     HSSFWorkbook wb = new HSSFWorkbook();
+		//建立新的sheet对象（excel的表单）
+		HSSFSheet sheet=wb.createSheet("未选题学生统计表");
+		//在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+		HSSFRow row1=sheet.createRow(0);
+		//创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+		HSSFCell cell=row1.createCell(0);
+		      //设置单元格内容
+		cell.setCellValue("未选题学生统计表");
+		//合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
+		sheet.addMergedRegion(new CellRangeAddress(0,0,0,9));
+		
+		//在sheet里创建第二行
+		HSSFRow row2=sheet.createRow(1);    
+      //创建单元格并设置单元格内容
+       row2.createCell(0).setCellValue("学号");
+       row2.createCell(1).setCellValue("姓名");    
+       row2.createCell(2).setCellValue("性别");
+		row2.createCell(3).setCellValue("班级");  
+		row2.createCell(4).setCellValue("方向"); 
+		row2.createCell(5).setCellValue("专业");
+		row2.createCell(6).setCellValue("年级"); 
+		
+		HSSFRow row = null;
+		int count = 0;
+		for (int j=0;j<students.size();j++) {
+			if(students.get(j).getTopics() == null) {
+				row = sheet.createRow(count+2);
+				
+				row.createCell(0).setCellValue(students.get(j).getNo());
+				row.createCell(1).setCellValue(students.get(j).getName());
+				row.createCell(2).setCellValue(students.get(j).getSex());
+				row.createCell(3).setCellValue(students.get(j).getClazz().getClassName());
+				row.createCell(4).setCellValue(students.get(j).getClazz().getDirection().getDirectionName());
+				row.createCell(5).setCellValue(students.get(j).getClazz().getDirection().getSpceialty().getSpecialtyName());
+				row.createCell(6).setCellValue(students.get(j).getClazz().getDirection().getSpceialty().getGrade().getGradeName());
+				
+				count ++;
+			}
+			
+		}
+		daoImpl.closeSession();
+		return wb;
+	}
+	
+}

@@ -1,0 +1,72 @@
+package com.service;
+
+import java.util.List;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dao.baseDaoFactory.BaseDAOFactory;
+import com.dao.impl.CommonDaoImpl;
+import com.dao.impl.GroupDaoImpl;
+import com.entity.Group;
+import com.entity.Teacher;
+
+/**
+ * 关于题目人数限制的逻辑处理
+ * @author kone
+ *	2017.4.4
+ */
+@Service
+public class LimitService {
+	@Autowired
+	private SessionFactory sessionFactory;
+	private Session session;
+	@Autowired
+	private CommonDaoImpl commonDaoImpl;
+	
+	/**
+	 * 保存
+	 * @param group
+	 * @return
+	 */
+	public boolean save(Group group){
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			传递session保证是同一个session进行事务处理
+			commonDaoImpl.setSession(session); 
+//			保存分组
+			commonDaoImpl.save(group);
+			session.getTransaction().commit();
+			return true;
+		}catch(Exception e){
+			session.getTransaction().rollback();
+			e.printStackTrace();
+			return false;
+		}
+	}
+	
+	/**
+	 * 查看教师限制人数
+	 * @param departmentId
+	 * @return
+	 */
+	public List<Teacher> viewTeacher(String departmentId){
+		List<Teacher> teachers = null;
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			传递session保证是同一个session进行事务处理
+			commonDaoImpl.setSession(session); 
+			teachers = commonDaoImpl.findBy("Teacher", "departmentId", departmentId);
+			session.getTransaction().commit();
+			
+			return teachers;
+		}catch(Exception e){
+			e.printStackTrace();
+			return teachers;
+		} 
+	}
+}

@@ -1,0 +1,43 @@
+package com.service;
+
+import org.aspectj.lang.annotation.Before;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dao.baseDaoFactory.BaseDAOFactory;
+import com.dao.impl.GroupDao;
+import com.entity.Group;
+@Service
+public class GroupService {
+	@Autowired
+	private SessionFactory sessionFactory;
+	private Session session;
+	
+	public void before(){
+		System.out.println("before");
+	}
+	
+	public void save(Group group){
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			GroupDao<Object> dao =  (GroupDao<Object>) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
+			dao.setSession(session); 
+			dao.save(group);
+			session.getTransaction().commit();
+//			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+//			return false;
+		} finally {
+//			if( session.isOpen() ) {
+//				session.close();
+//			}
+		}
+		
+		System.out.println("service");
+//		return false;
+	}
+}

@@ -1,0 +1,67 @@
+package com.dao.impl;
+
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+
+import com.dao.daoAdapter.DaoAdapter;
+/**
+ * 通用的dao
+ * @author kone
+ *
+ * @param <T>
+ */
+public class CommonDaoImpl<T> extends DaoAdapter<T>{
+	private Session session;
+	String hql = "";
+	public void setSession(Session session){
+		this.session = session;
+	}
+	@Override
+	public boolean save(T entity) {
+		session.save(entity);
+		return false;
+	}
+
+	@Override
+	public boolean delete(T entity) {
+		session.delete(entity);
+		return false;
+	}
+	
+	@Override
+	public boolean update(T entity) {
+		session.update(entity);
+		return false;
+	}
+	
+	@Override
+	public List findBy(String table, String col, String value) {
+		hql ="FROM "+table+" WHERE "+col+"="+value;
+		Query query = session.createQuery(hql);
+		return query.list();
+	}
+	
+	@Override
+	public int getNum(String table, String col, String value) {
+		hql = "SELECT COUNT(*) FROM "+table+" WHERE "+col+"="+value;
+		Query query =  session.createQuery(hql);
+//		query.setString(0, table);
+//		query.setString(1, value);
+		return ((Number)query.uniqueResult()).intValue();
+	}
+	
+	@Override
+	public List findBy(String table, String col, String value, int page, int eachPage) {
+		hql = "FROM "+table+" WHERE "+col+"="+value;
+		Query query =  session.createQuery(hql);
+//		query.setString(0, table);
+//		query.setString(1, value);
+		
+		query.setMaxResults(eachPage);
+		query.setFirstResult(page);
+		
+		return query.list();
+	}
+}

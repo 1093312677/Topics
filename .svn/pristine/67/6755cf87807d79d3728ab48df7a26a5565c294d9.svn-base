@@ -1,0 +1,263 @@
+package com.service;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.hibernate.Query;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.common.QueryCondition;
+import com.dao.impl.DaoImpl;
+import com.entity.Direction;
+import com.entity.IntentionTopic;
+import com.entity.Setting;
+import com.entity.Student;
+import com.entity.Teacher;
+import com.entity.Topics;
+
+@Service
+public class TeacherService<T> {
+	@Autowired
+	private DaoImpl<T> daoImpl;
+	/**
+	 * student view topics
+	 * @param directions
+	 * @return
+	 */
+	public Set<T> viewTopic(Student student) {
+		Direction direction = null;
+		direction = student.getClazz().getDirection();
+		List<Direction> directions = new ArrayList<Direction>();
+		directions.add(direction);
+		
+//		将获取的数据封装进集合，出去重复的
+		Set<T> set = new HashSet<T>();
+		List<T> list = daoImpl.viewTopic(directions);
+		daoImpl.closeSession();
+		for(int i=0;i<list.size();i++){
+			set.add(list.get(i));
+		}
+		return set;
+	}
+	
+	/**
+	 * 查看选择了该老师题目的学生
+	 * @param teacher
+	 * @param gradeId
+	 * @return
+	 */
+	public Set<Topics> viewSelected(Teacher teacher, String gradeId, Setting setting){
+		int batch = 0;
+		int choice = 0;
+		int bc[] = getBatchChoice(setting);
+		batch = bc[0];
+		choice = bc[1];
+		List<Topics> topics = (List<Topics>) daoImpl.findBy("Topics", "teacherId", String.valueOf(teacher.getId()));
+		
+		Set<Topics> topics2 = new HashSet<Topics>();
+		Topics topic = null;
+		
+		for(int i=0;i<topics.size();i++){
+			if( topics.get(i).getDirections().size() > 0) {
+				boolean flag = false;
+				int count = 0;//统计有多少个意向学生
+//				判断是否是当前年级
+				if(Long.valueOf(gradeId) == topics.get(i).getDirections().get(0).getSpceialty().getGrade().getId() ) {
+					for(int j=0;j<topics.get(i).getIntentionTopics().size();j++){
+					    flag = false;
+//						根据设定的时间来判断当前是第几轮选题 ,和第几志愿
+						if(topics.get(i).getIntentionTopics().get(j).getBatch() == batch && topics.get(i).getIntentionTopics().get(j).getChoice() == choice){
+							flag = true;
+							count++;
+						} else { //判断当前是第几轮选题 ,和第几志愿结束
+							topics.get(i).getIntentionTopics().get(j).setStudent(null);;;  //如果不是当前批次的，或者当前志愿的学生，清除掉
+						}
+						
+//						如果有当前志愿，和当前轮次的题目
+					} //遍历意向题目结束
+					topics.get(i).setIntentionNumber(count);
+					if(flag) {
+						topics2.add(topics.get(i));
+					}
+				} // 判断是否是当前年级结束
+			}//遍历题目
+		}
+		
+		daoImpl.closeSession();
+		return topics2;
+	}
+	
+	public int[] getBatchChoice(Setting setting) {
+		int batch = 0;
+		int choice = 0;
+//		查询时间
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//		当前时间
+		Date now = new Date();
+		try {
+//			第一次选题第一志愿
+			Date oneAdmissionStartTime = sdf.parse(setting.getOneAdmissionStartTime().replace("T"," ").concat(":00"));
+			Date oneFirstChoiceDeadline = sdf.parse(setting.getOneFirstChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第二志愿
+			Date oneSecondChoiceDeadline = sdf.parse(setting.getOneSecondChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第三志愿
+			Date oneThirdChoiceDeadline = sdf.parse(setting.getOneThirdChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			比较
+			if(now.getTime() > oneAdmissionStartTime.getTime() && now.getTime() < oneFirstChoiceDeadline.getTime() ) {
+				batch = 1;
+				choice = 1;
+			} else if (now.getTime() > oneFirstChoiceDeadline.getTime() && now.getTime() < oneSecondChoiceDeadline.getTime()) {
+				batch = 1;
+				choice = 2;
+			} else if (now.getTime() > oneSecondChoiceDeadline.getTime() && now.getTime() < oneThirdChoiceDeadline.getTime()) {
+				batch = 1;
+				choice = 3;
+			}
+			
+			
+//			第二次选题第一志愿
+			Date twoAdmissionStartTime = sdf.parse(setting.getTwoAdmissionStartTime().replace("T"," ").concat(":00"));
+			Date twoFirstChoiceDeadline = sdf.parse(setting.getTwoFirstChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第二志愿
+			Date twoSecondChoiceDeadline = sdf.parse(setting.getTwoSecondChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第三志愿
+			Date twoThirdChoiceDeadline = sdf.parse(setting.getTwoThirdChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			比较
+			if(now.getTime() > twoAdmissionStartTime.getTime() && now.getTime() < twoFirstChoiceDeadline.getTime() ) {
+				batch = 2;
+				choice = 1;
+			} else if (now.getTime() > twoFirstChoiceDeadline.getTime() && now.getTime() < twoSecondChoiceDeadline.getTime()) {
+				batch = 2;
+				choice = 2;
+			} else if (now.getTime() > twoSecondChoiceDeadline.getTime() && now.getTime() < twoThirdChoiceDeadline.getTime()) {
+				batch = 2;
+				choice = 3;
+			}
+			
+//			第三次选题第一志愿
+			Date threeAdmissionStartTime = sdf.parse(setting.getThreeAdmissionStartTime().replace("T"," ").concat(":00"));
+			Date threeFirstChoiceDeadline = sdf.parse(setting.getThreeFirstChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第二志愿
+			Date threeSecondChoiceDeadline = sdf.parse(setting.getThreeSecondChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			第三志愿
+			Date threeThirdChoiceDeadline = sdf.parse(setting.getThreeThirdChoiceDeadline().replace("T"," ").concat(":00"));
+			
+//			比较
+			if(now.getTime() > threeAdmissionStartTime.getTime() && now.getTime() < threeFirstChoiceDeadline.getTime() ) {
+				batch = 3;
+				choice = 1;
+			} else if (now.getTime() > threeFirstChoiceDeadline.getTime() && now.getTime() < threeSecondChoiceDeadline.getTime()) {
+				batch = 3;
+				choice = 2;
+			} else if (now.getTime() > threeSecondChoiceDeadline.getTime() && now.getTime() < threeThirdChoiceDeadline.getTime()) {
+				batch = 3;
+				choice = 3;
+			}
+			
+			
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		int [] bc = new int[2];
+		bc[0] = batch;
+		bc[1] = choice;
+		return bc;
+	}
+	
+	/**
+	 * 取认选择学生
+	 * @param topicId
+	 * @param studentId
+	 * @return
+	 */
+	public boolean confirmStudent(String topicId, String studentId) {
+		List<Topics> topics = (List<Topics>) daoImpl.find("Topics", topicId);
+		daoImpl.closeSession();
+		if (topics.size()>0) {
+//			选择的人数小于可选学生人数
+			if ( topics.get(0).getEnableSelect() > topics.get(0).getSelectedStudent() ) {
+//				选择此学生
+				QueryCondition queryCondition = new QueryCondition();
+				queryCondition.setConunt(1);
+				queryCondition.setTable("Student");
+				
+				queryCondition.setRow4("topicsId");
+				queryCondition.setValue4(topicId);
+				
+				queryCondition.setRow1("id");
+				queryCondition.setValue1(studentId);
+				
+//				更新
+				if( daoImpl.updateByFree(queryCondition) ) {
+//					将题目的选择人数增加
+					int select = topics.get(0).getSelectedStudent() + 1;
+					queryCondition.setTable("Topics");
+					
+					queryCondition.setRow4("selectedStudent");
+					queryCondition.setValue4(String.valueOf(select));
+					
+					queryCondition.setRow1("id");
+					queryCondition.setValue1(String.valueOf(topics.get(0).getId()));
+					
+					daoImpl.updateByFree(queryCondition);
+					return true;
+				}
+				return false;
+			}else{
+				return false;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * 查看未选题的学生
+	 * @param gradeId
+	 * @param page
+	 * @param eachPage
+	 * @return
+	 */
+	public List<T> viewNotSelected(String gradeId, int page, int eachPage) {
+		return daoImpl.viewNotSelected(gradeId, page, eachPage);
+	}
+	/**
+	 * 获取未选题学生个数
+	 * @param gradeId
+	 * @return
+	 */
+	public int getNotSelectedNum(String gradeId) {
+		return daoImpl.getNotSelectedNum(gradeId);
+	}
+	
+	
+	/**
+	 * check this grade student
+	 * @param gradeId
+	 * @return
+	 */
+	public List<T> viewStudents(String gradeId, int page, int eachPage) {
+		return daoImpl.viewStudents(gradeId, page, eachPage);
+	}
+	/**
+	 * check the number of students in this grade
+	 * @return
+	 */
+	public int getStudentsNum(String gradeId) {
+		return daoImpl.getStudentsNum(gradeId);
+	}
+}

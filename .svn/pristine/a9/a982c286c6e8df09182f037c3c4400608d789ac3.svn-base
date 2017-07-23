@@ -1,0 +1,8 @@
+package com.guo.dao;
+
+import com.entity.User;
+
+public interface IUserDao {
+	public User get(String username);
+	public int update(String newpw,User user);
+}

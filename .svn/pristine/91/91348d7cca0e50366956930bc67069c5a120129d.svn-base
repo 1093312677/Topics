@@ -1,0 +1,97 @@
+package com.service;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import com.dao.baseDaoFactory.BaseDAOFactory;
+import com.dao.impl.GroupDaoImpl;
+import com.dao.impl.SwapDaoImpl;
+
+/**
+ * 关于swap的逻辑处理
+ * @author kone
+ *	2017.3.30
+ */
+@Service
+public class SwapService {
+	@Autowired
+	private SessionFactory sessionFactory;
+	private Session session;
+	
+	/**
+	 * 修改系内调配
+	 * @param id
+	 * @return
+	 */
+	public boolean swapInDepart(String state,String id) {
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			获取groupDao
+			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
+			
+//			传递session保证是同一个session进行事务处理
+			dao.setSession(session); 
+//			
+			dao.swapInDepart(state, id);
+			session.getTransaction().commit();
+			
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		} 
+	}
+	/**
+	 * 修改老师调配
+	 * @param id
+	 * @return
+	 */
+	public boolean swapInTeacher(String state,String intentId) {
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			获取groupDao
+			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
+			
+//			传递session保证是同一个session进行事务处理
+			dao.setSession(session); 
+//			
+			dao.swapInTeacher(state, intentId);
+			session.getTransaction().commit();
+			
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		} 
+	}
+	/**
+	 * 留言
+	 * @param id
+	 * @param message
+	 * @return
+	 */
+	public boolean leavMessage(String id,String message) {
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+//			获取groupDao
+			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
+			
+//			传递session保证是同一个session进行事务处理
+			dao.setSession(session); 
+//			
+			dao.leavMessage(id, message);
+			session.getTransaction().commit();
+			
+			return true;
+		}catch(Exception e){
+			e.printStackTrace();
+			return false;
+		} 
+	}
+	
+}

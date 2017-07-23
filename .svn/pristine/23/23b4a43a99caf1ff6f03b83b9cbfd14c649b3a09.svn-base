@@ -1,0 +1,120 @@
+package com.controller;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.common.Pagination;
+import com.dto.DealData;
+import com.entity.Course;
+import com.entity.Grade;
+import com.entity.Teacher;
+import com.service.CommonService;
+/**
+ * 选题的操作
+ * @author kone
+ *	2017-1-16
+ */
+@Controller
+@RequestMapping("/course")
+public class CourseController {
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private DealData dealData;
+	public CommonService getCommonService() {
+		return commonService;
+	}
+	public void setCommonService(CommonService commonService) {
+		this.commonService = commonService;
+	}
+	public DealData getDealData() {
+		return dealData;
+	}
+	public void setDealData(DealData dealData) {
+		this.dealData = dealData;
+	}
+	/**
+	 * 添加课程
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/addCourse")
+	public String addCourse(Course course, long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Grade grade = new Grade();
+		grade.setId(gradeId);
+		
+		course.setGrade(grade);
+		try {
+			PrintWriter out = response.getWriter();
+			if(commonService.save(course)){
+				out.println(1);
+				return null;
+			} 
+			out.print(0);
+			return null;
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	
+	/**
+	 * 获取课程信息
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param pagination
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewCourse")
+	public String viewCourse(HttpServletRequest request,HttpServletResponse response,String type,String gradeId,Pagination pagination,HttpSession session){
+		List<Course> courses = null;
+		int page = 0;
+		int eachPage = 15;
+		if(gradeId != null || gradeId != ""){
+			courses = commonService.findBy("Course", "gradeId", gradeId, page, eachPage);
+		}
+		
+		request.setAttribute("courses", courses);
+		request.setAttribute("gradeId", gradeId);
+		commonService.closeSession();
+		return "course/viewCourse";
+	}
+	
+	/**
+	 * 查看年级获取课程
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/viewGradeCourse")
+	public String viewGradeCourse( HttpSession session,HttpServletRequest request,HttpServletResponse response){
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		List<Grade> grades = null;
+		if(teachers.size()>0){
+			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()));
+		}
+		request.setAttribute("grades", grades);
+//		获取完数据后关闭session
+		commonService.closeSession();
+		return "course/viewGradeCourse";
+	}
+	
+	
+	
+	
+}

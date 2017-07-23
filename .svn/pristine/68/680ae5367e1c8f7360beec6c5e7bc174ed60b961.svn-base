@@ -1,0 +1,9 @@
+package com.guo.dao;
+
+import com.entity.Student;
+import com.entity.User;
+
+public interface IStudentDao {
+	public Student get(String no);
+	public int update(Student  stu);
+}

@@ -1,0 +1,20 @@
+package com.dao.daoAdapter;
+
+import com.dao.DaoInterface;
+
+public class DaoAdapter<T> implements DaoInterface<T>{
+
+	@Override
+	public boolean save(T entity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(T entity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+
+}

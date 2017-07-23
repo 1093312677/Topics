@@ -1,0 +1,22 @@
+package com.dao.impl;
+
+import java.util.List;
+
+import org.hibernate.Session;
+
+import com.dao.daoAdapter.DaoAdapter;
+
+public class TeacherDaoImpl<Teacher> extends DaoAdapter<Teacher> {
+	private Session session;
+	private String hql = "";
+	public void setSession(Session session){
+		this.session = session;
+	}
+	@Override
+	public List<Teacher> view(String id) {
+		hql ="FROM Teacher WHERE departmentId="+id;
+		@SuppressWarnings("unchecked")
+		List<Teacher> teachers = session.createQuery(hql).list();
+		return teachers;
+	}
+}

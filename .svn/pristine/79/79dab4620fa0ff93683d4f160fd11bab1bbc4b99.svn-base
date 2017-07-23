@@ -1,0 +1,99 @@
+package com.guo.dao.impl;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.springframework.stereotype.Repository;
+import com.entity.Teacher;
+import com.guo.dao.ITeacherDao;
+@Repository(value="teacherDao1")
+public class TeacherDao extends BaseDao implements ITeacherDao {
+	Session session=null;
+	@Override
+	public Teacher get(String no) {
+		Teacher teacher=new Teacher();
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="from Teacher t where t.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("no", no);
+			teacher=(Teacher) query.uniqueResult();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return teacher;
+	}
+
+	@Override
+	public int update(Teacher teacher) {
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="update Teacher t set t.qq=:qq,t.telephone=:phone,t.email=:email,t.remark=:remark where t.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("qq", teacher.getQq());
+			query.setString("phone", teacher.getTelephone());
+			query.setString("email", teacher.getEmail());
+			query.setString("no", teacher.getNo());
+			query.setString("remark", teacher.getRemark());
+			query.executeUpdate();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			{
+				if(session.isOpen()){
+					session.close();
+				}
+			}
+		}
+		return 1;
+	}
+
+	@Override
+	public void closeSession() {
+		if(session.isOpen()){
+			session.close();
+		}
+	}
+/*
+ 	private String no;//工号
+	private String name;
+	private String sex;
+	private String qq;
+	private String position;//职称
+	private String telephone;
+	private String email;
+	private String privilege;//权限
+ */
+	@Override
+	public int updateInfo(Teacher teacher) {
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="update Teacher t set t.no=:no,t.name=:name,t.sex=:sex,t.position=:position, t.qq=:qq,t.telephone=:phone,t.email=:email,t.remark=:remark where t.id=:id";
+			Query query=session.createQuery(hql);
+			query.setLong("id", teacher.getId());
+			query.setString("no", teacher.getNo());
+			query.setString("name", teacher.getName());
+			query.setString("sex", teacher.getSex());
+			query.setString("position", teacher.getPosition());
+			query.setString("qq", teacher.getQq());
+			query.setString("phone", teacher.getTelephone());
+			query.setString("email", teacher.getEmail());
+			query.setString("remark", teacher.getRemark());
+			query.executeUpdate();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			{
+				if(session.isOpen()){
+					session.close();
+				}
+			}
+		}
+		return 0;
+	}	
+}

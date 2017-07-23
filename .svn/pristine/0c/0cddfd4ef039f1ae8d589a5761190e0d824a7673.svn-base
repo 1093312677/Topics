@@ -1,0 +1,6 @@
+package com.dao;
+
+public interface DaoInterface<T> {
+	public boolean save(T entity);
+	public boolean delete(T entity);
+}

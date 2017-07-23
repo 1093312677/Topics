@@ -1,0 +1,11 @@
+package com.guo.dao;
+
+import com.entity.Student;
+import com.entity.Teacher;
+
+public interface ITeacherDao {
+	public Teacher get(String no);
+	public int update(Teacher  teacher);
+	public void closeSession();
+	public int updateInfo(Teacher  teacher);
+}

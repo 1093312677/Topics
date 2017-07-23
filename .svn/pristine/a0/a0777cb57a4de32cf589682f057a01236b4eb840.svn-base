@@ -1,0 +1,30 @@
+package com.dao.impl;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.dao.daoAdapter.DaoAdapter;
+import com.entity.Group;
+
+public class GroupDao<T> extends DaoAdapter<T>{
+	private Session session;
+//	@Autowired
+//	private SessionFactory sessionFactory;
+//	
+//	public SessionFactory getSessionFactory() {
+//		return sessionFactory;
+//	}
+//	public void setSessionFactory(SessionFactory sessionFactory) {
+//		this.sessionFactory = sessionFactory;
+//	}
+	public void setSession(Session session){
+		this.session = session;
+	}
+	public boolean save(Group entity) {
+//		System.out.println("group dao");
+//		session = sessionFactory.getCurrentSession();
+		session.save(entity);
+		return true;
+	}
+}

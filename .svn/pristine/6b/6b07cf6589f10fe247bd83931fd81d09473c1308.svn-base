@@ -1,0 +1,146 @@
+package com.dao.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+
+import com.entity.Topics;
+
+@Repository
+public class TopicDaoImpl {
+	@Autowired
+	private SessionFactory sessionFactory;
+	private Session session;
+	private String hql;
+	
+	
+	public void closeSession(){
+		if(session.isOpen()) {
+			session.close();
+		}
+	}
+	/**
+	 * 查看未通过题目
+	 * @param gradeId
+	 * @param teacherId
+	 * @return
+	 */
+	public List<Topics> viewNotThoughtTopic(String gradeId, long teacherId, String state) {
+		hql = "SELECT topics FROM Topics as topics join topics.grade as grade  WHERE grade.id = "+gradeId+" AND topics.teacherId = "+teacherId+" AND topics.state = "+state;
+
+//		hql = "FROM Topics WHERE  teacherId = ? AND state = ?";
+		
+		List<Topics> topics = null;
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+//			query.setString(0, gradeId);
+//			query.setLong(1, teacherId);
+//			query.setString(2, state);
+			topics = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return topics;
+	}
+	
+	public List<Topics> findByTwo(String table, String col, String value, String col2, String value2) {
+		hql = "from "+table+" where "+col+"='"+value+"' AND "+col2+" ='"+value2+"'";
+		List<Topics> entitys = new ArrayList<Topics>();
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			entitys = session.createQuery(hql).list();
+			session.getTransaction().commit();
+			return entitys;
+		}catch(Exception e){
+			return entitys;
+		}
+	}
+	
+	/**
+	 * 系主任查看题目
+	 * @param gradeId
+	 * @param teacherId
+	 * @return
+	 */
+	public List<Topics> viewTopic(String gradeId, String state, int page, int eachPage) {
+		hql = "SELECT topics FROM Topics as topics join topics.grade as grade  WHERE grade.id = "+gradeId+"  AND topics.state = "+state;
+		List<Topics> topics = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setFirstResult(page);
+			query.setMaxResults(eachPage);
+			topics = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			
+		}
+		return topics;
+	}
+	/**
+	 * 系主任查看题目数量
+	 * @param gradeId
+	 * @param teacherId
+	 * @return
+	 */
+	public int viewTopicNum(String gradeId, String state) {
+		hql = "SELECT COUNT(*) FROM Topics as topics join topics.grade as grade  WHERE grade.id = "+gradeId+"  AND topics.state = "+state;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			session.getTransaction().commit();
+			return ((Number)query.uniqueResult()).intValue();
+		}catch(Exception e){
+			return 0;
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		
+	}
+	/**
+	 * 退选毕业选题
+	 * @param gradeId
+	 * @param state
+	 * @return
+	 */
+	public boolean withdrawalTopic(String studentId, String topicId) {
+		
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+//			更新学生题目状态
+			hql = "update Student set topicsId = null where id = "+studentId;
+			session.createQuery(hql).executeUpdate();
+//			更新选题人数
+			hql = "update Topics set selectedStudent = selectedStudent-1 where id = "+topicId;
+			session.createQuery(hql).executeUpdate();
+			session.getTransaction().commit();
+			return true;
+		}catch(Exception e){
+			return false;
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		
+	}
+	
+}

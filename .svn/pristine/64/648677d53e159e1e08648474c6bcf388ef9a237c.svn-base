@@ -1,0 +1,17 @@
+package com.dao.baseDaoFactory.mysqlDaoFactory;
+
+import com.dao.DaoInterface;
+import com.dao.baseDaoFactory.BaseDAOFactory;
+import com.dao.impl.GroupDao;
+
+public class MysqlDAOFactory<T> extends BaseDAOFactory<T>{
+
+	@Override
+	public DaoInterface<T> getDaoInterface(String name) {
+		if("GroupDao".equals(name)){
+			return new GroupDao<T>();
+		}
+		return new GroupDao<T>();
+	}
+
+}

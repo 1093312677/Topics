@@ -1,0 +1,121 @@
+package com.controller;
+
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.dto.DealData;
+import com.entity.Setting;
+import com.entity.Student;
+import com.entity.User;
+import com.service.AccountService;
+
+@Controller
+@RequestMapping("/account")
+public class AccountController {
+	@Autowired
+	private AccountService accountService;
+	
+	public AccountService getAccountService() {
+		return accountService;
+	}
+	public void setAccountService(AccountService accountService) {
+		this.accountService = accountService;
+	}
+	@Autowired
+	private DealData dealData;
+	private static Logger logger =LoggerFactory.getLogger(AccountController.class);
+	/**
+	 * 登录
+	 * @param request
+	 * @param response
+	 * @param user
+	 * @return
+	 */
+	@RequestMapping("/login")
+	public String login(HttpServletRequest request,HttpServletResponse response,HttpSession session, User user){
+		logger.debug("IP:"+request.getRemoteAddr()+"username:"+user.getUsername());
+		if(accountService.login(user)){
+			//查找出相应id
+			List<User> users = accountService.findBy("User", "username", user.getUsername());
+			accountService.closeSession();
+			List infor = null;
+			if(users.size()>0){
+				if(users.get(0).getPrivilege().equals("2")||users.get(0).getPrivilege().equals("3")){
+//					管理员或者老师
+					infor = accountService.findBy("Teacher", "no", user.getUsername());
+					accountService.closeSession();
+				} else if( "4".equals(users.get(0).getPrivilege()) ){
+//					学生
+					List<Student> inforStu = accountService.findBy("Student", "no",user.getUsername());
+					accountService.closeSession();
+//					题目设置相关
+					infor = inforStu;
+					List<Setting> settings = accountService.findBy("Setting", "gradeId"
+							, String.valueOf(inforStu.get(0).getClazz().getDirection().getSpceialty().getGrade().getId()));
+					if (settings.size() > 0) {
+						session.setAttribute("setting", settings.get(0));
+					}
+					accountService.closeSession();
+				}
+			}
+			session.setAttribute("user", users.get(0));
+			session.setAttribute("privilege", users.get(0).getPrivilege());
+			session.setAttribute("infor", infor);
+			session.setAttribute("username", user.getUsername());
+			return "background";
+		}else{
+			try {
+				request.setAttribute("loginMessage", "error");
+				 request.getRequestDispatcher("../index.jsp").forward(request, response); 
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			return null;
+		}
+		
+	}
+	/**
+	 * 欢迎主页
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/mainpage")
+	public String mainpage(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		return "common/mainpage";
+	}
+	/**
+	 * 登出
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/loginOut")
+	public String loginout(HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		session.removeAttribute("user");
+		session.removeAttribute("infor");
+		session.removeAttribute("privilege");
+		session.removeAttribute("setting");
+		try {
+			response.sendRedirect("../index.jsp");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		return null;
+	}
+}

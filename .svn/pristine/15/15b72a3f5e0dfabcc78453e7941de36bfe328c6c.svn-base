@@ -1,0 +1,37 @@
+package com.guo.service.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.entity.Direction;
+import com.entity.Topics;
+import com.guo.dao.IDirectionDao;
+import com.guo.dao.ITopicDao;
+import com.guo.service.ITopicService;
+
+@Service(value="topicService1")
+public class TopicService implements ITopicService {
+	@Resource(name="topicDao1")
+	ITopicDao topicDao;
+	@Resource(name="directionDao1")
+	IDirectionDao directionDao;
+	@Override
+	public Topics geTopic(long id) {
+		return topicDao.geTopic(id);
+	}
+
+	@Override
+	public void closeSession() {
+		topicDao.closeSession();
+	}
+
+	@Override
+	public void updateInfo(Topics topics,long directionIds[]) {
+		topicDao.updateInfo(topics,directionIds);
+	}
+
+}

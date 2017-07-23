@@ -1,0 +1,672 @@
+package com.controller;
+
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.CellRangeAddress;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.alibaba.fastjson.JSONObject;
+import com.common.Pagination;
+import com.common.QueryCondition;
+import com.dto.DealData;
+import com.entity.Department;
+import com.entity.Grade;
+import com.entity.Score;
+import com.entity.Setting;
+import com.entity.Student;
+import com.entity.Teacher;
+import com.entity.Topics;
+import com.entity.User;
+import com.service.CommonService;
+import com.service.TeacherService;
+/**
+ * 老师相关操作
+ * @author kone
+ * 2017-1-16
+ */
+@Controller
+@RequestMapping("/teacher")
+public class TeacherController {
+	@Autowired
+	private CommonService commonService;
+	@Autowired
+	private DealData dealData;
+	
+	@Autowired
+	private TeacherService teacherService;
+	public CommonService getCommonService() {
+		return commonService;
+	}
+	public void setCommonService(CommonService commonService) {
+		this.commonService = commonService;
+	}
+	public DealData getDealData() {
+		return dealData;
+	}
+	public void setDealData(DealData dealData) {
+		this.dealData = dealData;
+	}
+	/**
+	 * 保存老师信息
+	 * @param departmentId
+	 * @param teacher
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/addTeacher")
+	public String addTeacher(Teacher teacher,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Teacher> deans = (List<Teacher>) session.getAttribute("infor");
+		if(deans.size()>0){
+//			设置老师的登录信息
+			User user = new User();
+			user.setPassword("123456");
+			user.setPrivilege("3");
+			user.setUsername(teacher.getNo());
+			teacher.setUser(user);
+//			设置系
+			teacher.setDepartment(deans.get(0).getDepartment());
+			try {
+				if(commonService.save(teacher)){
+					response.getWriter().println("1");
+				}else{
+					response.getWriter().println("0");
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else{
+			try {
+				response.getWriter().println("0");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		return null;
+	}
+	
+	/**
+	 * 保存系主任信息
+	 * @param departmentId
+	 * @param teacher
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/addDean")
+	public String addDean(long departmentId,Teacher teacher,HttpServletRequest request,HttpServletResponse response){
+//		和系相关联
+		Department department = new Department();
+		department.setId(departmentId);
+		teacher.setDepartment(department);
+//		设置老师的登录信息
+		User user = new User();
+		user.setPassword("123456");
+		user.setPrivilege("2");
+		user.setUsername(teacher.getNo());
+		teacher.setUser(user);
+		try {
+			if(commonService.save(teacher)){
+				response.getWriter().println("1");
+			}else{
+				response.getWriter().println("0");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	/**
+	 * 查看老师信息
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping("/viewTeacher")
+	public String viewTeacher(HttpSession session, HttpServletRequest request,HttpServletResponse response,String type,Pagination pagination, String pageType){
+//		如果是输入的页数进行减一
+		if("1".equals(pageType)) {
+			pagination.setPage(pagination.getPage() - 1);
+		}
+		int eachPage = 15;
+		pagination.setEachPage(eachPage);
+		List<Teacher> teachers2 = (List<Teacher>) session.getAttribute("infor");
+		
+		List<Teacher> teachers = null;
+		int count = commonService.getCount("Teacher","departmentId", String.valueOf(teachers2.get(0).getDepartment().getId()));//获取总记录数
+		commonService.closeSession();
+		if(teachers2.size() > 0) {
+			teachers =  commonService.findBy("Teacher", "departmentId", String.valueOf(teachers2.get(0).getDepartment().getId() ), pagination.getPage()*eachPage, eachPage);
+//			保留老师，去掉系主任
+			Iterator<Teacher> it = teachers.iterator();
+			while(it.hasNext()) {
+				if( "2".equals( it.next().getUser().getPrivilege() ) ) {
+					it.remove();
+					count --;
+				}
+			}
+			commonService.closeSession();
+//			设置总条数
+			pagination.setTotleSize(count);
+//			处理分页数据
+			pagination = dealData.getPagination(teachers, pagination);
+		}
+		
+		
+		if(type==null){
+			type="null";
+		}
+		if(type.equals("json")){
+			try {
+				JSONObject json = new JSONObject();
+				json.put("teachers", teachers);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+//			获取完数据后关闭session
+			commonService.closeSession();
+			return null;
+		}else{
+			request.setAttribute("teachers", teachers);
+			request.setAttribute("message", "view");
+			request.setAttribute("pagination", pagination);
+//			获取完数据后关闭session
+			commonService.closeSession();
+			return "teacher/viewTeacher";
+		}
+	}
+	/**
+	 * 查看系主任信息
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping("/viewDean")
+	public String viewDean(HttpServletRequest request,HttpServletResponse response,String type,Pagination pagination){
+		int eachPage = 15;
+		pagination.setEachPage(eachPage);
+		pagination.setTotleSize(commonService.getCount("Teacher"));//获取总记录数
+		commonService.closeSession();
+		
+		List<Teacher> teachers = commonService.view("Teacher", pagination.getPage()*eachPage, eachPage);
+//		保留系主任，去掉老师
+		for(int i=0;i<teachers.size();i++){
+			if( "3".equals( teachers.get(i).getUser().getPrivilege() ) ) {
+				teachers.remove(i);
+			}
+		}
+		commonService.closeSession();
+		if(type==null){
+			type="null";
+		}
+		if(type.equals("json")){
+			try {
+				JSONObject json = new JSONObject();
+				json.put("teachers", teachers);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+//			获取完数据后关闭session
+			commonService.closeSession();
+			return null;
+		}else{
+			request.setAttribute("teachers", teachers);
+			request.setAttribute("message", "view");
+//			获取完数据后关闭session
+			commonService.closeSession();
+			return "teacher/viewDean";
+		}
+	}
+	/**
+	 * 查看老师信息
+	 * @param request
+	 * @param response
+	 * @param type
+	 * @param pagination
+	 * @return
+	 */
+	@RequestMapping("/viewTeacherOne")
+	public String viewTeacherOne(String id,HttpServletRequest request,HttpServletResponse response,String type){
+		if(type.equals("json")){
+			
+			return null;
+		}else{
+			List<Teacher> teacher = commonService.find("Teacher", id);
+			commonService.closeSession();
+			if(teacher.size()>0){
+				request.setAttribute("teacher", teacher.get(0));
+			}
+			return "teacher/viewTeacherDetials";
+		}
+	}
+	
+	/**
+	 * 查看选择了意向题目，选择年级
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewGradeSelectedIntent")
+	public String viewGradeSelectedIntent(String viewType, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		List<Grade> grades = null;
+		if(teachers.size()>0){
+			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()));
+		}
+		request.setAttribute("grades", grades);
+		request.setAttribute("viewType", viewType);
+//		获取完数据后关闭session
+		commonService.closeSession();
+		return "teacher/viewGradeSelect";
+	}
+	
+	
+	
+	/**
+	 * 查看选择了意向题目的学生
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@RequestMapping("/viewStudentSelectedIntent")
+	public String viewStudentSelectedIntent(String gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+//		获取选题设置
+		List<Setting> settings = (List<Setting>) commonService.findBy("Setting", "gradeId", gradeId);
+		Set<Topics> topics = null;
+		int bc[] = null;
+		commonService.closeSession();
+		if ( settings.size() > 0) {
+			Setting setting = settings.get(0);
+			topics = teacherService.viewSelected(teachers.get(0), gradeId, setting);
+			bc = teacherService.getBatchChoice(setting);
+		}
+		
+		
+		request.setAttribute("topics", topics);
+		session.setAttribute("gradeId", gradeId);
+		request.setAttribute("bc", bc);
+		return "teacher/viewTopicsSelected";
+	}
+	
+	/**
+	 * 确认学生
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/comfirmStudent")
+	public String comfirmStudent(String gradeId, String topicId, String studentId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+		if( teacherService.confirmStudent(topicId, studentId) ) {
+			request.setAttribute("message", "选择成功！");
+			request.setAttribute("path", "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId);
+			return "common/success";
+		}
+		request.setAttribute("message", "选择失败！此题达到最大选择数量！");
+		request.setAttribute("path", "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId);
+		return "common/failed";
+	}
+	/**
+	 * 审核题目
+	 * @param topicId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/auditTopic")
+	public String auditTopic(String topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+		QueryCondition queryCondition = new QueryCondition();
+		queryCondition.setConunt(1);
+		queryCondition.setTable("Topics");
+		queryCondition.setRow1("id");
+		queryCondition.setValue1(topicId);
+		
+		queryCondition.setRow4("state");
+		queryCondition.setValue4("1");
+		if( commonService.updateByFree(queryCondition) ) {
+			try {
+				PrintWriter out = response.getWriter();
+				out.print(1);
+				
+				return null;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
+		PrintWriter out;
+		try {
+			out = response.getWriter();
+			out.print(0);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
+	
+	/**
+	 * 查看未选题的学生
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewNotSelected")
+	public String viewNotSelected(String viewType, String pageType, String type,Pagination pagination, String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+//		如果是输入的页数进行减一
+		if("1".equals(pageType)) {
+			pagination.setPage(pagination.getPage() - 1);
+		}
+		
+		int eachPage = 1000000;
+		pagination.setEachPage(eachPage);
+		//pagination.setTotleSize(teacherService.getNotSelectedNum(gradeId));//获取总记录数
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+		List<Student> students = commonService.viewStudents(gradeId, 0, eachPage);
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+//		处理分页数据
+		pagination = dealData.getPagination(students, pagination);
+		
+		request.setAttribute("students", students);
+		request.setAttribute("pagination", pagination);
+		request.setAttribute("message", "view");
+		request.setAttribute("gradeId", gradeId);
+		request.setAttribute("viewType", viewType);
+		
+		return "teacher/viewStudentNotSelected";
+	}
+	/**
+	 * 题目评测
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/topicEvaluation")
+	public String topicEvaluation(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		List<Topics> topics = null;
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		if(teachers.size() > 0) {
+			topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
+		}
+		for(int i=0;i<topics.size();i++) {
+			for(int j=0;j<topics.get(i).getStudents().size();j++) {
+				Score score = topics.get(i).getStudents().get(j).getScore();
+			}
+		}
+		
+		request.setAttribute("topics",topics);
+		commonService.closeSession();
+		return "teacher/topicEvaluation";
+	}
+	
+	/**
+	 * 录入成绩
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/entryScore")
+	public String entryScore(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		List<Topics> topics = null;
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		if(teachers.size() > 0) {
+			topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
+		}
+		for(int i=0;i<topics.size();i++) {
+			for(int j=0;j<topics.get(i).getStudents().size();j++) {
+				Score score = topics.get(i).getStudents().get(j).getScore();
+			}
+		}
+		request.setAttribute("topics",topics);
+		request.setAttribute("gradeId", gradeId);
+		commonService.closeSession();
+		return "teacher/entryScore";
+	}
+	/**
+	 * 批量录入学生成绩
+	 * @param id
+	 * @param score
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/batchEntryScore")
+	public String batchEntryScore(String gradeId, String []id, String []score, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		QueryCondition queryCondition = null;
+		boolean flag = true;
+		for(int i=0;i<id.length;i++){
+			queryCondition = new QueryCondition();
+			queryCondition.setTable("Score");
+			queryCondition.setConunt(1);
+			queryCondition.setValue4(score[i]);
+			queryCondition.setRow4("score");
+			queryCondition.setRow1("id");
+			queryCondition.setValue1(id[i]);
+			if( !commonService.updateByFree(queryCondition) ) {
+				flag = false;
+			}
+		}
+		if (flag) {
+			request.setAttribute("message", "录入成功！");
+			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
+			return "common/success";
+		} else {
+			request.setAttribute("message", "录入失败！");
+			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
+			return "common/failed";
+		}
+		
+		
+	}
+	/**
+	 * 查看成绩
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewResults")
+	public String viewResults(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		List<Topics> topics = null;
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		User user = (User) session.getAttribute("user");
+		if(teachers.size() > 0) {
+			if("3".equals(user.getPrivilege())) {
+				topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
+			} else if ("2".equals(user.getPrivilege())) {
+				topics = commonService.findBy("Topics", "gradeId", gradeId);
+			}
+			
+		}
+		for(int i=0;i<topics.size();i++) {
+			for(int j=0;j<topics.get(i).getStudents().size();j++) {
+				Score score = topics.get(i).getStudents().get(j).getScore();
+			}
+		}
+		request.setAttribute("topics",topics);
+		commonService.closeSession();
+		return "teacher/viewResults";
+	}
+	/**
+	 * 查看最后选题
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param pageType
+	 * @param type
+	 * @param pagination
+	 * @param gradeId
+	 * @return
+	 */
+	@RequestMapping("/viewLastSelect")
+	public String viewLastSelect(HttpSession session,HttpServletRequest request,HttpServletResponse response, String pageType, String type,Pagination pagination, String gradeId){
+//		将gradeId保存为session，后面返回使用
+		session.setAttribute("gradeId", gradeId);
+		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+//		如果是输入的页数进行减一
+		if("1".equals(pageType)) {
+			pagination.setPage(pagination.getPage() - 1);
+		}
+		
+		int eachPage = 15;
+		pagination.setEachPage(eachPage);
+		pagination.setTotleSize(teacherService.getStudentsNum(gradeId));//获取总记录数
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+		List<Student> students = teacherService.viewStudents(gradeId, pagination.getPage()*eachPage, eachPage);
+		
+		System.out.println(students.size());
+//		处理分页数据
+		pagination = dealData.getPagination(students, pagination);
+		
+		if(type==null){
+			type="null";
+		}
+		if(type.equals("json")){
+			try {
+				JSONObject json = new JSONObject();
+				json.put("students", students);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		}else{
+			request.setAttribute("students", students);
+			request.setAttribute("pagination", pagination);
+			request.setAttribute("message", "view");
+			request.setAttribute("gradeId", gradeId);
+			return "teacher/viewLastSelect";
+		}
+	}
+	/**
+	 * 导出最后选题
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param gradeId
+	 * @return
+	 */
+	@RequestMapping("/exportLastSelect")
+	public String exportLastSelect(HttpSession session,HttpServletRequest request,HttpServletResponse response){
+		String gradeId = (String) session.getAttribute("gradeId");
+		List<Student> students = teacherService.viewStudents(gradeId, 0, 100000);
+		//创建HSSFWorkbook对象(excel的文档对象)
+	     HSSFWorkbook wb = new HSSFWorkbook();
+		//建立新的sheet对象（excel的表单）
+		HSSFSheet sheet=wb.createSheet("学生最终选题信息表");
+		//在sheet里创建第一行，参数为行索引(excel的行)，可以是0～65535之间的任何一个
+		HSSFRow row1=sheet.createRow(0);
+		//创建单元格（excel的单元格，参数为列索引，可以是0～255之间的任何一个
+		HSSFCell cell=row1.createCell(0);
+		      //设置单元格内容
+		cell.setCellValue("学生最终选题信息表");
+		//合并单元格CellRangeAddress构造参数依次表示起始行，截至行，起始列， 截至列
+		sheet.addMergedRegion(new CellRangeAddress(0,0,0,12));
+		
+		//在sheet里创建第二行
+		HSSFRow row2=sheet.createRow(1);    
+       //创建单元格并设置单元格内容
+        row2.createCell(0).setCellValue("学号");
+        row2.createCell(1).setCellValue("姓名");    
+        row2.createCell(2).setCellValue("性别");
+		row2.createCell(3).setCellValue("电话");  
+		row2.createCell(4).setCellValue("方向"); 
+		row2.createCell(5).setCellValue("专业");
+		row2.createCell(6).setCellValue("年级"); 
+		row2.createCell(7).setCellValue("系"); 
+		row2.createCell(8).setCellValue("题目名称"); 
+		row2.createCell(9).setCellValue("指导老师"); 
+		row2.createCell(10).setCellValue("指导老师电话"); 
+		row2.createCell(11).setCellValue("指导老师QQ"); 
+		
+		HSSFRow row = null;
+		for (int i=0;i<students.size();i++) {
+			row = sheet.createRow(i+2);
+			row.createCell(0).setCellValue(students.get(i).getNo());
+			row.createCell(1).setCellValue(students.get(i).getName());
+			row.createCell(2).setCellValue(students.get(i).getSex());
+			row.createCell(3).setCellValue(students.get(i).getTelephone());
+			row.createCell(4).setCellValue(students.get(i).getClazz().getDirection().getDirectionName());
+			row.createCell(5).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getSpecialtyName());
+			row.createCell(6).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getGrade().getGradeName());
+			row.createCell(7).setCellValue(students.get(i).getClazz().getDirection().getSpceialty().getGrade().getDepartment().getDepartmentName());
+			if (students.get(i).getTopics() != null) {
+				row.createCell(8).setCellValue(students.get(i).getTopics().getTopicsName());
+				row.createCell(9).setCellValue(students.get(i).getTopics().getTeacher().getName());
+				row.createCell(10).setCellValue(students.get(i).getTopics().getTeacher().getTelephone());
+				row.createCell(11).setCellValue(students.get(i).getTopics().getTeacher().getQq());
+			}
+		}
+		
+	   try {
+		//输出Excel文件
+	    OutputStream output=response.getOutputStream();
+	    response.reset();
+	    response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); 
+	    response.setContentType("application/octet-stream;charset=utf-8");
+	    response.setHeader("Content-Disposition", "attachment;filename="  
+	            + java.net.URLEncoder.encode("名单"+ new SimpleDateFormat("yyyy-MM-dd-HH").format(new Date()) + ".xls", "utf-8"));
+	    //  客户端不缓存  
+	    response.addHeader("Pragma", "no-cache");  
+	    response.addHeader("Cache-Control", "no-cache"); 
+	    //输出Excel文件
+			wb.write(output);
+			output.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+//		获取完数据后关闭session
+		commonService.closeSession();
+		
+		return null;
+	}
+	
+	
+	
+	
+}

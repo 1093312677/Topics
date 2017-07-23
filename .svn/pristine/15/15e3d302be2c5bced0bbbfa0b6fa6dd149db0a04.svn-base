@@ -1,0 +1,6 @@
+package com.guo.service;
+
+
+public interface IUserService {
+	public int update(String newpw,String oldpw,String username);
+}

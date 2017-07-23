@@ -1,0 +1,60 @@
+package com.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.entity.Group;
+import com.entity.Teacher;
+import com.service.LimitService;
+
+/**
+ * 题目限制人数相关操作
+ * @author kone
+ * 2017.4.4
+ */
+@Controller
+@RequestMapping("/limit")
+public class LimitNumberController {
+	@Autowired
+	private LimitService limitService;
+	
+	
+	public LimitService getLimitService() {
+		return limitService;
+	}
+
+
+	public void setLimitService(LimitService limitService) {
+		this.limitService = limitService;
+	}
+
+
+	/**
+	 * 查看老师
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @param gradeId
+	 * @return
+	 */
+	@RequestMapping("/viewTeacher")
+	public String viewTeacher(HttpServletRequest request,HttpServletResponse response,HttpSession session,String gradeId){
+		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
+		if(infor.size() > 0 ){
+			List<Teacher> teachers = limitService.viewTeacher(gradeId);
+//			teachers.get(0).getLimitNumbers().get(0).getTeacher().get
+//			request.setAttribute("groups", groups);
+			session.setAttribute("gradeId", gradeId);
+		}
+		
+		
+		return "group/viewGroup";
+	}
+}

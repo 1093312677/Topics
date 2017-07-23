@@ -1,0 +1,40 @@
+package com.guo.controller;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import com.guo.service.IUserService;
+@Controller
+public class UserController_guo {
+	@Resource
+	IUserService userService;
+	
+	@RequestMapping("/student/alertpw.do")
+	public String toalertpw(HttpServletRequest request){
+		HttpSession session=request.getSession();
+		String username=(String) session.getAttribute("username");
+		request.setAttribute("username",username);
+		return "student/alertpw_guo";
+	}
+	@RequestMapping(value="/student/alertpw.do",method=RequestMethod.POST)
+	public String alterpw(HttpServletRequest request){
+		String url="student/alertpw_guo";
+		HttpSession session=request.getSession();
+		String username=(String) session.getAttribute("username");
+		String newpw=request.getParameter("newpw");
+		String oldpw=request.getParameter("oldpw");
+		String newpw2=request.getParameter("newpw2");
+		if(!newpw.equals(newpw2)){
+			request.setAttribute("temp", 2);
+		}
+		else{
+			request.setAttribute("temp",userService.update(newpw, oldpw, username));
+		}
+		return url;
+	}
+}

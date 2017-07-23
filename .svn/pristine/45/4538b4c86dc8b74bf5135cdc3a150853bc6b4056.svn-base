@@ -1,0 +1,11 @@
+package com.guo.service;
+
+import com.entity.Student;
+
+public interface IStudentService {
+	public Student get(String no);
+	public Student get(int id);
+	public int update(Student  stu);
+	public int updateInfo(Student stu,long clazzId);
+	public void closeSession();
+}

@@ -19,6 +19,23 @@
 <div class="panel panel-default">
 	<div class="panel-heading">
 		<h3 class="panel-title" align="center">
+			模板文档
+		</h3>
+	</div>
+	<div class="panel-body" align="center">
+		<c:if test="${privilege == 4 }">
+			<a href="<%=request.getContextPath() %>/document/viewDocument.do?type=student">下载模板文档</a>
+		</c:if>
+		<c:if test="${privilege == 3 }">
+			<a href="<%=request.getContextPath() %>/document/viewDocument.do?type=teacher">下载模板文档</a>
+		</c:if>
+	</div>
+	
+</div>
+
+<div class="panel panel-default">
+	<div class="panel-heading">
+		<h3 class="panel-title" align="center">
 			时间安排
 		</h3>
 	</div>

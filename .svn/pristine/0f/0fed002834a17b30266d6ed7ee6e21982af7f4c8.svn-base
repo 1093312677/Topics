@@ -1,0 +1,71 @@
+package com.guo.dao.impl;
+
+import javax.annotation.Resource;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.springframework.stereotype.Repository;
+
+import com.entity.Student;
+import com.entity.User;
+import com.guo.dao.IStudentDao;
+@Repository(value="studentDao1")
+public class StudentDao extends BaseDao implements IStudentDao {
+	private Session session;
+	public Student get(String no) {
+		Student student=null;
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="from Student stu where stu.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("no", no);
+			student=(Student) query.uniqueResult();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			{
+				if(session.isOpen()){
+					session.close();
+				}
+			}
+		}		
+		return student;
+	}
+/**
+ * private Integer id;
+	private String no;//学号
+	private String name;
+	private String sex;
+	private String age;
+	private String qq;
+	private String telephone;
+	private String email;
+ */
+	@Override
+	public int update(Student stu) {
+		try{
+			session=getSession();
+			session.beginTransaction();
+			String hql="update Student s set s.qq=:qq,s.telephone=:phone,s.email=:email where s.no=:no";
+			Query query=session.createQuery(hql);
+			query.setString("qq", stu.getQq());
+			query.setString("phone", stu.getTelephone());
+			query.setString("email", stu.getEmail());
+			query.setString("no", stu.getNo());
+			query.executeUpdate();
+			session.getTransaction().commit();			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			{
+				if(session.isOpen()){
+					session.close();
+				}
+			}
+		}
+		return 1;
+	}
+}

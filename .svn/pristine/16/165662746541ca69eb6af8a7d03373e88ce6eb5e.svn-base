@@ -1,0 +1,29 @@
+package com.guo.service.impl;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.entity.Student;
+import com.guo.dao.IStudentDao;
+
+import com.guo.service.IStudentService;
+
+@Service(value="studentService1")
+public class StudentService implements IStudentService {
+	
+	@Resource(name="studentDao1")
+	IStudentDao studentDao;
+	
+	@Override
+	public Student get(String no) {
+		
+		return studentDao.get(no);
+	}
+
+	@Override
+	public int update(Student stu) {
+		return studentDao.update(stu);	 
+	}
+
+}
