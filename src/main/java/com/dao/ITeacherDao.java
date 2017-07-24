@@ -27,4 +27,12 @@ public interface ITeacherDao {
 	 * @return
 	 */
 	public Integer getTeachersCount(Long departmentId);
+	
+	/**
+	 * 更新题目状态
+	 * @param topicId
+	 * @param state
+	 * @return
+	 */
+	public boolean updateTopicState(Long topicId, int state);
 }

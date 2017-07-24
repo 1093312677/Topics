@@ -2,18 +2,23 @@ package com.test;
 
 import org.junit.Test;
 
+import com.common.SimilarAlgorithm;
 import com.common.Similarity;
 
 public class SimilaryTest {
 	@Test
 	public void similary() {
-		String strA = "AR室内查看";  
+		String strA = "aa";  
 		  
-        String strB = "AR景区查看";  
+        String strB = "ba";  
   
         
 		Similarity s = new Similarity();
 		double result=s.SimilarDegree(strA, strB); 
 		System.out.println(result);
+		
+		double d =SimilarAlgorithm.getSimilarityRatio("", "");
+		System.out.println(d);
 	}
 }
+	

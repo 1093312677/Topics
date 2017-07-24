@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,8 @@ public class TeachStuController {
 	private TeachStuService teachStuService;
 	@Autowired
 	private DealData dealData;
+	
+	private Logger logger = Logger.getLogger(TeachStuController.class);
 	
 	/**
 	 * <p>教师查看指导的学生</p>
@@ -166,15 +169,25 @@ public class TeachStuController {
 	@RequestMapping("/automaticSelection")
 	public String automaticSelection(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long gradeId = (Long) session.getAttribute("gradeId");
+		logger.info("一键选题：gradeId="+gradeId);
 		if(teachStuService.automaticSelection(String.valueOf(gradeId))) {
-			request.setAttribute("path", "teacher/viewNotSelected.do?gradeId="+gradeId);
-			request.setAttribute("message", "匹配成功！");
-			return "common/success";
+//			request.setAttribute("path", "teacher/viewNotSelected.do?gradeId="+gradeId);
+//			request.setAttribute("message", "匹配成功！");
+//			return "common/success";
+			try {
+				response.getWriter().println(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
-			request.setAttribute("path", "teacher/viewNotSelected.do?gradeId="+gradeId);
-			request.setAttribute("message", "匹配失败！");
-			return "common/failed";
+			try {
+				response.getWriter().println(0);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
+		return null;
 		
 	}
 	/**

@@ -13,6 +13,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.common.SimilarAlgorithm;
 import com.common.Similarity;
 import com.dao.IStudentDao;
 import com.dao.ITopicDao;
@@ -285,19 +286,26 @@ public class TeachStuService {
 							for(int k=0;k<topics.size();k++) {
 //								判断题目是否可选
 								if((topics.get(k).getEnableSelect() > topics.get(k).getSelectedStudent() )&& topics.get(k).getState() == 1) {
-									for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
-//											学生的方向和题目的方向相同
-										if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
-											String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
-											String topicsName = topics.get(k).getTopicsName();
-											double result = s.SimilarDegree(intentName, topicsName);
-//												相似度大的保存值及其题目的id号
-											if(result >= sim) {
-												sim = result;
-												topicId = topics.get(k).getId();
-											}
-										}//学生的方向和题目的方向相同 end
-									}
+//									判断方向不为空
+									if(topics.get(k).getDirections() != null) {
+										for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
+	//											学生的方向和题目的方向相同
+											if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
+												String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
+												String topicsName = topics.get(k).getTopicsName();
+												double result = 0;
+												if(intentName != null && topicsName != null) {
+													result = SimilarAlgorithm.getSimilarityRatio(intentName, topicsName);
+												}
+	//												相似度大的保存值及其题目的id号
+												if(result >= sim) {
+													sim = result;
+													topicId = topics.get(k).getId();
+												}
+											}//学生的方向和题目的方向相同 end
+										}
+									}//判断方向不为空 end
+									
 								}//判断题目是否可选 end
 							}
 							
@@ -305,19 +313,26 @@ public class TeachStuService {
 //								第一轮许选题，第2志愿
 							for(int k=0;k<topics.size();k++) {
 								if((topics.get(k).getEnableSelect() > topics.get(k).getSelectedStudent() )&& topics.get(k).getState() == 1) {
-									for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
-//											学生的方向和题目的方向相同
-										if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
-											String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
-											String topicsName = topics.get(k).getTopicsName();
-											double result = s.SimilarDegree(intentName, topicsName);
-//												相似度大的保存值及其题目的id号
-											if(result >= sim1) {
-												sim1 = result;
-												topicId1 = topics.get(k).getId();
+//									判断方向不为空
+									if(topics.get(k).getDirections() != null) {
+										for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
+	//											学生的方向和题目的方向相同
+											if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
+												String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
+												String topicsName = topics.get(k).getTopicsName();
+												double result = 0;
+												if(intentName != null && topicsName != null) {
+//													result = s.SimilarDegree(intentName, topicsName);
+													result = SimilarAlgorithm.getSimilarityRatio(intentName, topicsName);
+												}
+	//												相似度大的保存值及其题目的id号
+												if(result >= sim1) {
+													sim1 = result;
+													topicId1 = topics.get(k).getId();
+												}
 											}
 										}
-									}
+									}//判断方向不为空 end
 								}
 							}
 							
@@ -325,21 +340,25 @@ public class TeachStuService {
 //								第2轮许选题，第1志愿
 							for(int k=0;k<topics.size();k++) {
 								if((topics.get(k).getEnableSelect() > topics.get(k).getSelectedStudent()) && topics.get(k).getState() == 1) {
-									for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
-//											学生的方向和题目的方向相同
-										if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
-											String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
-											String topicsName = topics.get(k).getTopicsName();
-//												System.out.println(intentName+"-----2----1----"+topicsName);
-											double result = s.SimilarDegree(intentName, topicsName);
-//												System.out.println(students.get(i).getName()+"  "+ students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName()+" and "+topics.get(k).getTopicsName() +" sim="+ result );
-//												相似度大的保存值及其题目的id号
-											if(result >= sim2) {
-												sim2 = result;
-												topicId2 = topics.get(k).getId();
+//									判断方向不为空
+									if(topics.get(k).getDirections() != null) {
+										for(int kk =0;kk<topics.get(k).getDirections().size();kk++) {
+	//											学生的方向和题目的方向相同
+											if(topics.get(k).getDirections().get(kk).getId() == students.get(i).getClazz().getDirection().getId()) {
+												String intentName = students.get(i).getIntentionTopics().get(j).getTopic().getTopicsName();
+												String topicsName = topics.get(k).getTopicsName();
+												double result = 0;
+												if(intentName != null && topicsName != null) {
+													result = SimilarAlgorithm.getSimilarityRatio(intentName, topicsName);
+												}
+	//												相似度大的保存值及其题目的id号
+												if(result >= sim2) {
+													sim2 = result;
+													topicId2 = topics.get(k).getId();
+												}
 											}
 										}
-									}
+									} //判断方向不为空 end
 								}
 							}//第2轮许选题，第1志愿 end
 							

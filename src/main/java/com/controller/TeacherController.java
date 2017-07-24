@@ -278,22 +278,13 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/auditTopic")
-	public String auditTopic(String topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String auditTopic(Long topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		String privilege = (String) session.getAttribute("privilege");
 		if("2".equals(privilege)) {
-			QueryCondition queryCondition = new QueryCondition();
-			queryCondition.setConunt(1);
-			queryCondition.setTable("Topics");
-			queryCondition.setRow1("id");
-			queryCondition.setValue1(topicId);
-			
-			queryCondition.setRow4("state");
-			queryCondition.setValue4("1");
-			if( commonService.updateByFree(queryCondition) ) {
+			if( teacherService.updateTopicState(topicId, 1) ) {
 				try {
 					PrintWriter out = response.getWriter();
 					out.print(1);
-					
 					return null;
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -306,7 +297,6 @@ public class TeacherController {
 			out = response.getWriter();
 			out.print(0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -321,22 +311,13 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/notAuditTopic")
-	public String notAuditTopic(String topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String notAuditTopic(Long topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		String privilege = (String) session.getAttribute("privilege");
 		if("2".equals(privilege)) {
-			QueryCondition queryCondition = new QueryCondition();
-			queryCondition.setConunt(1);
-			queryCondition.setTable("Topics");
-			queryCondition.setRow1("id");
-			queryCondition.setValue1(topicId);
-			
-			queryCondition.setRow4("state");
-			queryCondition.setValue4("3");
-			if( commonService.updateByFree(queryCondition) ) {
+			if( teacherService.updateTopicState(topicId, 3) ) {
 				try {
 					PrintWriter out = response.getWriter();
 					out.print(1);
-					
 					return null;
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -349,7 +330,6 @@ public class TeacherController {
 			out = response.getWriter();
 			out.print(0);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

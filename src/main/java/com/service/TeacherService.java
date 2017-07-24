@@ -413,4 +413,14 @@ public class TeacherService {
 	public Integer getStudentsNotSelectCount(Long gradeId) {
 		return studentDao.getStudentsNotSelectCount(gradeId);
 	}
+	
+	/**
+	 * 更新题目状态
+	 * @param topicId
+	 * @param state
+	 * @return
+	 */
+	public boolean updateTopicState(Long topicId, int state) {
+		return teacherDao.updateTopicState(topicId, state);
+	}
 }

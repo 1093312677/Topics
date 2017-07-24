@@ -111,6 +111,32 @@ public class TeachersDaoImpl implements ITeacherDao{
 			}
 		}
 	}
+
+
+	@Override
+	public boolean updateTopicState(Long topicId, int state) {
+		hql = "UPDATE Topics"
+				+ " SET state=:state "
+				+ " WHERE "
+				+ " id=:topicId";
+		try{
+			session = sessionFactory.openSession();
+			session.getTransaction().begin();
+			Query query = session.createQuery(hql);
+			query.setLong("topicId", topicId);
+			query.setLong("state", state);
+			query.executeUpdate();
+			session.getTransaction().commit();
+			
+			return true;
+		}catch(Exception e){
+			return false;
+		} finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+	}
 	
 	
 }

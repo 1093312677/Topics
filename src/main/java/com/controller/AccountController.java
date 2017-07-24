@@ -54,7 +54,7 @@ public class AccountController {
 					infor = accountService.findBy("Teacher", "no", user.getUsername());
 					List<Teacher> teachers = infor;
 					accountService.closeSession();
-					
+					session.setAttribute("teacherId", teachers.get(0).getId());
 					session.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
 				} else if( "4".equals(user1.getPrivilege()) ){
 //					学生
@@ -64,7 +64,7 @@ public class AccountController {
 					infor = inforStu;
 					Long gradeId = inforStu.get(0).getClazz().getDirection().getSpceialty().getGrade().getId();
 					Setting setting = settingService.getSetting(gradeId);
-						session.setAttribute("setting", setting);
+					session.setAttribute("setting", setting);
 					session.setAttribute("studentId", inforStu.get(0).getId());
 				}
 			session.setAttribute("user", user1);

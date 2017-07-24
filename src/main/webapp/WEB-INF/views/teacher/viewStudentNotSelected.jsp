@@ -14,6 +14,10 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<c:if test="${message =='success'}">
@@ -39,8 +43,8 @@
 	         <a href="<%=request.getContextPath() %>/teachStu/exportNotSelectedStudent.do">
 	        	 <span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出"></span>
 	   		 </a>
-	   		 <a href="<%=request.getContextPath() %>/teachStu/automaticSelection.do" style="float:right;margin-right:80px">
-		   		 <button class="btn btn-primary">
+	   		 <a href="javascript:void(0)" style="float:right;margin-right:80px">
+		   		 <button class="btn btn-primary" id="onekey">
 		   		 	一键选题
 		   		 </button>
 		     </a>              
@@ -116,7 +120,40 @@
 	   <!-- /分页--> 
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
+	$("#onekey").click(function(){
+		swal({
+			  title: "是否一键选题？",
+			  text: "注意设置为不服从系内调配的学生将不会不选择题目！",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath() %>/teachStu/automaticSelection.do",
+				data:{},
+				dataType:"json",
+				success:function(data){
+					if(data==1){
+						swal("一键选题成功!", "", "success");
+						window.setTimeout(reload,700);
+					}else{
+						swal("一键选题失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					console.log(msg)
+				}
+			})	
+		});
+	})
 	
+	function reload(){
+		location.reload()
+	}
 </script>	
 	
 </body>

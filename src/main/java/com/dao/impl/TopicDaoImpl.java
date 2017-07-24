@@ -326,6 +326,13 @@ public class TopicDaoImpl implements ITopicDao{
 			Query query = session.createQuery(hql);
 			query.setString("gradeId", gradeId);
 			topics = query.list();
+			for(int i=0;i<topics.size();i++) {
+				if(topics.get(i).getDirections() != null) {
+					for(int j=0;j<topics.get(i).getDirections().size();j++) {
+						System.out.println(topics.get(i).getDirections().get(j).getDirectionName());
+					}
+				}
+			}
 			return topics;
 		} catch(Exception e){
 			return topics;
