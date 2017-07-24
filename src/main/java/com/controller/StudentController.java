@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.common.Pagination;
 import com.common.ServerResponse;
+import com.dao.ISettingDao;
 import com.dto.DealData;
 import com.entity.Clazz;
 import com.entity.CourseAndGrade;
@@ -60,6 +61,9 @@ public class StudentController {
 	
 	@Autowired
 	private GradeService gradeService;
+	
+	@Autowired
+	private ISettingDao settingDao;
 	/**
 	 * 查看年级，选择年级后选择学生
 	 * @param session
@@ -666,6 +670,7 @@ public class StudentController {
 			
 			
 			Student stu = new Student();
+			stu.setId(new Long(0));
 			stu.setTopics(topic);
 			stu.setSubTopic(sub);
 			commonService.closeSession();
@@ -683,7 +688,7 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewTopicsStudentApp")
 	@ResponseBody
-	public ServerResponse<Set<Topics>> viewTopicsStudentApp(String userId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+	public ServerResponse<List<Topics>> viewTopicsStudentApp(String userId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		List<Topics> topics = null;
 		List<Student> students = (List<Student>) commonService.find("Student", userId);
 		commonService.closeSession();
@@ -733,7 +738,7 @@ public class StudentController {
 						obj.setTeacher(t);
 					}
 					
-					return null;
+					return ServerResponse.response(200, "已选择题目！", topics);
 				} else {
 					return ServerResponse.response(201, "已选择题目！", null);
 				}
@@ -779,5 +784,64 @@ public class StudentController {
 		return ServerResponse.response(200, "获取成功", intentionTopics);
 	}
 	
+	/**
+	 * 学生选择意向题目APP
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/selectIntentionTopicAPP")
+	public String selectIntentionTopicAPP(Long gradeId, Long userId, int choice,Topics topic,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Setting setting = settingDao.getSetting(gradeId);
+		PrintWriter out = null;
+		try {
+			out =  response.getWriter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		 
+//			获取当前日期是第几次选题
+		int batch = dealData.getBatch(setting);
+		Student student = new Student();
+		student.setId(userId);
+		int result = studentService.selectIntentionTopic(student, choice, batch, topic);
+		
+		out.print(result);
+		return null;
+	}
+	
+	
+	/**
+	 * 更新意向题目
+	 * @param type 判断是更改志愿字段还是 题目字段APP
+	 * @param choice
+	 * @param id 题目id
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/updateIntentionTopicAPP")
+	public String updateIntentionTopicAPP(Long gradeId, Long userId, int type,int choice,Long id,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Setting setting = settingDao.getSetting(gradeId);
+		PrintWriter out = null;
+		try {
+			out =  response.getWriter();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+//			获取当前日期是第几次选题
+		int batch = dealData.getBatch(setting);
+		boolean result = studentService.updateIntentionTopic(userId, choice, batch, id, type);
+		if(result) {
+			out.print(1);
+		}else{
+			out.print(0);
+		}
+		return null;
+	}
 	
 }

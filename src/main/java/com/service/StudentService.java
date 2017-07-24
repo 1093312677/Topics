@@ -52,7 +52,6 @@ public class StudentService<T> {
 	@Autowired
 	private ITopicDao topicDao;
 	
-	private Logger logger = LoggerFactory.getLogger(StudentService.class);
 	/**
 	 * student view topics
 	 * @param directions
@@ -116,8 +115,6 @@ public class StudentService<T> {
 	 * @return
 	 */
 	public int selectIntentionTopic(Student student,int choice,int batch,Topics topic){
-		logger.info("select intention topic, userId ="+student.getId());
-		logger.debug("select intention topic, userId ="+student.getId());
 		List<IntentionTopic> intentionTopics = null;
 		intentionTopics = studentDao.viewIntentions(student.getId(), batch);
 		
