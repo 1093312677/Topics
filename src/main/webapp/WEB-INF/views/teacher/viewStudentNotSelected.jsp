@@ -47,7 +47,8 @@
 		   		 <button class="btn btn-primary" id="onekey">
 		   		 	一键选题
 		   		 </button>
-		     </a>              
+		     </a>        
+		           
 	    </div>
     </div>
     <table class="table table-hover table-striped" >
@@ -123,7 +124,7 @@
 	$("#onekey").click(function(){
 		swal({
 			  title: "是否一键选题？",
-			  text: "注意设置为不服从系内调配的学生将不会不选择题目！",
+			  text: "注意设置为不服从系内调配的学生将不会自动选择题目！",
 			  type: "warning",
 			  showCancelButton: true,
 			  confirmButtonColor: "#DD6B55",

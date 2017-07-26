@@ -10,5 +10,17 @@ public interface IFormDao {
 	 */
 	public Form getStudentForm(Long studentId);
 	
+	/**
+	 * 更新
+	 * @param form
+	 * @return
+	 */
+	public boolean updateForm(Form form);
 	
+	/**
+	 * 保存form
+	 * @param form
+	 * @return
+	 */
+	public boolean saveForm(Form form);
 }

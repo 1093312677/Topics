@@ -39,10 +39,12 @@ public class DaoImpl<T> implements IDao<T>{
 	public boolean save(T entity) {
 		try{
 			session = sessionFactory.openSession();
+			session.beginTransaction();
 			session.save(entity);
-			
+			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
+			session.getTransaction().rollback();
 			e.printStackTrace();
 			return false;
 		} finally {

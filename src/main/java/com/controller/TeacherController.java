@@ -79,7 +79,6 @@ public class TeacherController {
 			try {
 				response.getWriter().println("0");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -187,18 +186,13 @@ public class TeacherController {
 	 */
 	@RequestMapping("/viewTeacherOne")
 	public String viewTeacherOne(String view, String id,HttpServletRequest request,HttpServletResponse response,String type){
-		if(type.equals("json")){
-			
-			return null;
-		}else{
-			List<Teacher> teacher = commonService.find("Teacher", id);
-			commonService.closeSession();
-			if(teacher.size()>0){
-				request.setAttribute("teacher", teacher.get(0));
-				request.setAttribute("view", view);
-			}
-			return "teacher/viewTeacherDetials";
+		List<Teacher> teacher = commonService.find("Teacher", id);
+		commonService.closeSession();
+		if(teacher.size()>0){
+			request.setAttribute("teacher", teacher.get(0));
+			request.setAttribute("view", view);
 		}
+		return "teacher/viewTeacherDetials";
 	}
 	
 	/**
@@ -231,18 +225,13 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/viewStudentSelectedIntent")
-	public String viewStudentSelectedIntent(String gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+	public String viewStudentSelectedIntent(Long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Long teacherId = (Long)session.getAttribute("teacherId");
 //		获取选题设置
-		List<Setting> settings = (List<Setting>) commonService.findBy("Setting", "gradeId", gradeId);
 		Set<Topics> topics = null;
 		int bc[] = null;
-		commonService.closeSession();
-		if ( settings.size() > 0) {
-			Setting setting = settings.get(0);
-			topics = teacherService.viewSelected(teachers.get(0), gradeId, setting);
-			bc = teacherService.getBatchChoice(setting);
-		}
+		topics = teacherService.viewSelected(teacherId, gradeId);
+		bc = teacherService.getBatchChoice(gradeId);
 		
 		
 		request.setAttribute("topics", topics);
@@ -259,15 +248,24 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/comfirmStudent")
-	public String comfirmStudent(String gradeId, String topicId, String studentId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String comfirmStudent(Long gradeId, Long topicId, Long studentId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		if( teacherService.confirmStudent(topicId, studentId) ) {
-			request.setAttribute("message", "选择成功！");
-			request.setAttribute("path", "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId);
-			return "common/success";
+			try {
+				PrintWriter out = response.getWriter();
+				out.print(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				PrintWriter out = response.getWriter();
+				out.print(0);
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-		request.setAttribute("message", "选择失败！此题达到最大选择数量！");
-		request.setAttribute("path", "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId);
-		return "common/failed";
+		return null;
 	}
 	/**
 	 * 审核题目通过

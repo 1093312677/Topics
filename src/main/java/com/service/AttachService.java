@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.IFormDao;
+import com.dao.IScoreDao;
+import com.dao.ISettingDao;
 import com.dao.IStudentDao;
 import com.dao.impl.AttachDaoImpl;
 import com.dao.impl.CommonDaoImpl;
@@ -46,6 +48,12 @@ public class AttachService {
 	
 	@Autowired
 	private IStudentDao studentDao;
+	
+	@Autowired
+	private ISettingDao settingDao;
+	
+	@Autowired
+	private IScoreDao scoreDao;
 	
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -86,7 +94,7 @@ public class AttachService {
 			try{
 				Student stu = new Student();
 				stu.setId(studentId);
-				session = sessionFactory.getCurrentSession();
+				session = sessionFactory.openSession();
 				session.beginTransaction();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
@@ -107,10 +115,13 @@ public class AttachService {
 					form.setStudent(stu);
 					session.update(form);
 				}
+				session.getTransaction().commit();
 			} catch(Exception e) {
 				return false;
 			}  finally{
-				session.getTransaction().commit();
+				if(session.isOpen()) {
+					session.close();
+				}
 			}
 			
 			try {
@@ -150,7 +161,7 @@ public class AttachService {
 			try{
 				Student stu = new Student();
 				stu.setId(studentId);
-				session = sessionFactory.getCurrentSession();
+				session = sessionFactory.openSession();
 				session.beginTransaction();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
@@ -171,9 +182,12 @@ public class AttachService {
 					form.setStudent(stu);
 					session.update(form);
 				}
+				session.getTransaction().commit();
 			} catch(Exception e) {
 			}  finally{
-				session.getTransaction().commit();
+				if(session.isOpen()) {
+					session.close();
+				}
 			}
 			
 			try {
@@ -215,7 +229,7 @@ public class AttachService {
 			Student stu = new Student();
 			stu.setId(studentId);
 			try{
-				session = sessionFactory.getCurrentSession();
+				session = sessionFactory.openSession();
 				session.beginTransaction();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
@@ -239,9 +253,12 @@ public class AttachService {
 					form.setFileName(fileName);
 					session.update(form);
 				}
+				session.getTransaction().commit();
 			} catch(Exception e) {
 			}  finally{
-				session.getTransaction().commit();
+				if(session.isOpen()) {
+					session.close();
+				}
 			}
 			
 			try {
@@ -264,7 +281,7 @@ public class AttachService {
 		List<Student> students  = new ArrayList<Student>();
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 //			查找出教师对应的题目
@@ -275,9 +292,12 @@ public class AttachService {
 					students.addAll(topics.get(i).getStudents());
 				}
 			}
+			session.getTransaction().commit();
 		} catch(Exception e) {
 		}  finally{
-			session.getTransaction().commit();
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 		return students;
 	}
@@ -286,19 +306,10 @@ public class AttachService {
 	 * @param gradeId
 	 * @return
 	 */
-	public List<Setting> getSetting(String gradeId) {
-		List<Setting> settings = null;
-		try{
-			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
-			commonDaoImpl.setSession(session);
-//			查找出教师对应的题目
-			settings = commonDaoImpl.findBy("Setting", "gradeId", gradeId);
-		} catch(Exception e) {
-		}  finally{
-			session.getTransaction().commit();
-		}
-		return settings;
+	public Setting getSetting(Long gradeId) {
+		Setting setting = null;
+		setting = settingDao.getSetting(gradeId);
+		return setting;
 	}
 	/**
 	 * 指导教师提交评阅表
@@ -311,97 +322,88 @@ public class AttachService {
 	public boolean submitInstructorReview(String path, long studentId, float mediumScore, MultipartFile file) {
 		String fileName =null;
 		File file2 = null;
+		Student student = new Student();
+		student.setId(studentId);
 		if(!file.isEmpty()) {
 			String origName = file.getOriginalFilename();
 			int newNameIndex = origName.lastIndexOf('.');
 			String suffix = origName.substring(newNameIndex);
 			long name = System.currentTimeMillis();
 //			文件随机名称
-			fileName = String.valueOf(name)+suffix;
+			fileName = String.valueOf(name)+(int)(Math.random()*10000)+suffix;
 			file2 = new File(path,fileName);
 			try{
-				session = sessionFactory.getCurrentSession();
-				session.beginTransaction();
-				commonDaoImpl.setSession(session);
 //				查找出教师对应的题目
-				List<Form> forms = commonDaoImpl.findBy("Form", "studentId", String.valueOf(studentId));
-				List<Score> score = commonDaoImpl.findBy("Score", "studentId", String.valueOf(studentId));
-				if(score.size() >0 && forms.size() > 0) {
+				Form form = formDao.getStudentForm(studentId);
+				Score score = scoreDao.getScoreParam(studentId);
+				if(score != null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getInterimEvalForm() != null) {
-						File file3 = new File(path,forms.get(0).getInterimEvalForm());
+					if(form.getInterimEvalForm() != null) {
+						File file3 = new File(path,form.getInterimEvalForm());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
-					forms.get(0).setInterimEvalForm(fileName);
-					score.get(0).setMediumScore(mediumScore);
-					commonDaoImpl.update(forms.get(0));
-					commonDaoImpl.update(score.get(0));
+					form.setInterimEvalForm(fileName);
+					score.setMediumScore(mediumScore);
 					file.transferTo(file2);
-				} else if (score.size() > 0) {
+					form.setStudent(student);
+					score.setStudent(student);
+					formDao.updateForm(form);
+					scoreDao.updateScore(score);
+				} else if (score != null && form == null) {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setInterimEvalForm(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 					
 //					score不为空，查询进行更新
-					score.get(0).setMediumScore(mediumScore);
-					commonDaoImpl.update(score.get(0));
+					score.setMediumScore(mediumScore);
+					scoreDao.updateScore(score);
 					
 					file.transferTo(file2);
 					
-				} else if (forms.size() > 0) {
+				} else if (score == null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getInterimEvalForm() != null) {
-						File file3 = new File(path,forms.get(0).getInterimEvalForm());
+					if(form.getInterimEvalForm() != null) {
+						File file3 = new File(path,form.getInterimEvalForm());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
 					
 //					如果form不为空，查询出来进行更新，
-					forms.get(0).setInterimEvalForm(fileName);
-					commonDaoImpl.update(forms.get(0));
+					form.setInterimEvalForm(fileName);
+					formDao.updateForm(form);
 //					score为空，直接保存
 					Score score2 = new Score();
 					score2.setMediumScore(mediumScore);
 					
-					Student student = new Student();
-					student.setId(studentId);
-					
 					score2.setStudent(student);
 					
-					commonDaoImpl.save(score2);
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
 					
 				} else {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setInterimEvalForm(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 //					score为空，直接保存
 					Score score2 = new Score();
 					score2.setMediumScore(mediumScore);
 					score2.setStudent(student);
 					
-					commonDaoImpl.save(score2);
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
 				}
-				
 				
 				return true;
 			} catch(Exception e) {
 				return false;
-			}  finally{
-				session.getTransaction().commit();
-			}
+			}  
 		}
 		return false;
 	}
@@ -416,7 +418,7 @@ public class AttachService {
 		List<Student> students  = new ArrayList<Student>();
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			attachDaoImpl.setSession(session);
 //			查找出教师对应的题目
@@ -424,9 +426,12 @@ public class AttachService {
 			for(int i=0;i<stuTeachGroups.size();i++) {
 				students.add(stuTeachGroups.get(i).getStudent());
 			}
+			session.getTransaction().commit();
 		} catch(Exception e) {
 		}  finally{
-			session.getTransaction().commit();
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 		return students;
 	}
@@ -439,9 +444,11 @@ public class AttachService {
 	 * @param file
 	 * @return
 	 */
-	public boolean submitMidReview(String path, long studentId, float score, MultipartFile file) {
+	public boolean submitMidReview(String path, long studentId, float score1, MultipartFile file) {
 		String fileName =null;
 		File file2 = null;
+		Student student = new Student();
+		student.setId(studentId);
 		if(!file.isEmpty()) {
 			String origName = file.getOriginalFilename();
 			int newNameIndex = origName.lastIndexOf('.');
@@ -451,86 +458,77 @@ public class AttachService {
 			fileName = String.valueOf(name)+(int)(Math.random()*10000)+suffix;
 			file2 = new File(path,fileName);
 			try{
-				session = sessionFactory.getCurrentSession();
-				session.beginTransaction();
-				commonDaoImpl.setSession(session);
 //				查找出教师对应的题目
-				List<Form> forms = commonDaoImpl.findBy("Form", "studentId", String.valueOf(studentId));
-				List<Score> scores = commonDaoImpl.findBy("Score", "studentId", String.valueOf(studentId));
-				if(scores.size() >0 && forms.size() > 0) {
+				Form form = formDao.getStudentForm(studentId);
+				Score score = scoreDao.getScoreParam(studentId);
+				if(score != null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getReviewEvalForm() != null) {
-						File file3 = new File(path,forms.get(0).getReviewEvalForm());
+					if(form.getReviewEvalForm() != null) {
+						File file3 = new File(path,form.getReviewEvalForm());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
-					forms.get(0).setReviewEvalForm(fileName);
-					scores.get(0).setHeadScore(score);
-					commonDaoImpl.update(forms.get(0));
-					commonDaoImpl.update(scores.get(0));
+					form.setReviewEvalForm(fileName);
+					score.setHeadScore(score1);
 					file.transferTo(file2);
-				} else if (scores.size() > 0) {
+					form.setStudent(student);
+					score.setStudent(student);
+					formDao.updateForm(form);
+					scoreDao.updateScore(score);
+				} else if (score != null && form == null) {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setReviewEvalForm(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 					
 //					score不为空，查询进行更新
-					scores.get(0).setHeadScore(score);
-					commonDaoImpl.update(scores.get(0));
+					score.setHeadScore(score1);
+					scoreDao.updateScore(score);
 					
 					file.transferTo(file2);
 					
-				} else if (forms.size() > 0) {
+				} else if (score == null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getReviewEvalForm() != null) {
-						File file3 = new File(path,forms.get(0).getReviewEvalForm());
+					if(form.getReviewEvalForm() != null) {
+						File file3 = new File(path,form.getReviewEvalForm());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
 					
 //					如果form不为空，查询出来进行更新，
-					forms.get(0).setReviewEvalForm(fileName);
-					commonDaoImpl.update(forms.get(0));
+					form.setReviewEvalForm(fileName);
+					formDao.updateForm(form);
 //					score为空，直接保存
 					Score score2 = new Score();
-					score2.setHeadScore(score);
-					
-					Student student = new Student();
-					student.setId(studentId);
+					score2.setHeadScore(score1);
 					
 					score2.setStudent(student);
 					
-					commonDaoImpl.save(score2);
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
 					
 				} else {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setReviewEvalForm(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 //					score为空，直接保存
 					Score score2 = new Score();
-					score2.setHeadScore(score);
+					score2.setHeadScore(score1);
 					score2.setStudent(student);
 					
-					commonDaoImpl.save(score2);
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
 				}
+				
 				return true;
 			} catch(Exception e) {
 				return false;
-			}  finally{
-				session.getTransaction().commit();
-			}
+			}  
 		}
 		return false;
 	}
@@ -544,7 +542,7 @@ public class AttachService {
 	public List<Student> replyResults(String gradeId, long teacherId) {
 		List<Student> students  = new ArrayList<Student>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			attachDaoImpl.setSession(session);
 //			查找出教师对应的题目
@@ -570,9 +568,12 @@ public class AttachService {
 					break;
 				}
 			}
+			session.getTransaction().commit();
 		} catch(Exception e) {
 		}  finally{
-			session.getTransaction().commit();
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 		return students;
 	}
@@ -585,9 +586,11 @@ public class AttachService {
 	 * @param level
 	 * @return
 	 */
-	public boolean submitReplyResults(String path, long studentId, float score, MultipartFile file, String level) {
+	public boolean submitReplyResults(String path, long studentId, float score1, MultipartFile file, String level) {
 		String fileName =null;
 		File file2 = null;
+		Student student = new Student();
+		student.setId(studentId);
 		if(!file.isEmpty()) {
 			String origName = file.getOriginalFilename();
 			int newNameIndex = origName.lastIndexOf('.');
@@ -597,89 +600,82 @@ public class AttachService {
 			fileName = String.valueOf(name)+(int)(Math.random()*10000)+suffix;
 			file2 = new File(path,fileName);
 			try{
-				session = sessionFactory.getCurrentSession();
-				session.beginTransaction();
-				commonDaoImpl.setSession(session);
 //				查找出教师对应的题目
-				List<Form> forms = commonDaoImpl.findBy("Form", "studentId", String.valueOf(studentId));
-				List<Score> scores = commonDaoImpl.findBy("Score", "studentId", String.valueOf(studentId));
-				if(scores.size() >0 && forms.size() > 0) {
+				Form form = formDao.getStudentForm(studentId);
+				Score score = scoreDao.getScoreParam(studentId);
+				if(score != null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getReplyRecord() != null) {
-						File file3 = new File(path,forms.get(0).getReplyRecord());
+					if(form.getReplyRecord() != null) {
+						File file3 = new File(path,form.getReplyRecord());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
-					forms.get(0).setReplyRecord(fileName);
-					scores.get(0).setReplyResult(score);
-					scores.get(0).setLevel(level);
-					commonDaoImpl.update(forms.get(0));
-					commonDaoImpl.update(scores.get(0));
+					form.setReplyRecord(fileName);
+					score.setReplyResult(score1);
 					file.transferTo(file2);
-				} else if (scores.size() > 0) {
+					form.setStudent(student);
+					
+					score.setLevel(level);
+					score.setStudent(student);
+					formDao.updateForm(form);
+					scoreDao.updateScore(score);
+				} else if (score != null && form == null) {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setReplyRecord(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 					
 //					score不为空，查询进行更新
-					scores.get(0).setReplyResult(score);
-					scores.get(0).setLevel(level);
-					commonDaoImpl.update(scores.get(0));
+					score.setReplyResult(score1);
+					score.setLevel(level);
+					scoreDao.updateScore(score);
 					
 					file.transferTo(file2);
 					
-				} else if (forms.size() > 0) {
+				} else if (score == null && form != null) {
 //					如果更新，删除之前文件
-					if(forms.get(0).getReviewEvalForm() != null) {
-						File file3 = new File(path,forms.get(0).getReviewEvalForm());
+					if(form.getReplyRecord() != null) {
+						File file3 = new File(path,form.getReplyRecord());
 						if(file3.exists()) {
 							file3.delete();
 						}
 					}
 					
 //					如果form不为空，查询出来进行更新，
-					forms.get(0).setReplyRecord(fileName);
-					commonDaoImpl.update(forms.get(0));
+					form.setReplyRecord(fileName);
+					formDao.updateForm(form);
 //					score为空，直接保存
 					Score score2 = new Score();
-					score2.setReplyResult(score);
+					score2.setReplyResult(score1);
 					score2.setLevel(level);
-					
-					Student student = new Student();
-					student.setId(studentId);
-					
 					score2.setStudent(student);
 					
-					commonDaoImpl.save(score2);
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
 					
 				} else {
 //					form为空，直接保存
 					Form form2 = new Form();
-					Student student = new Student();
-					student.setId(studentId);
 					form2.setReplyRecord(fileName);
 					form2.setStudent(student);
-					commonDaoImpl.save(form2);
+					formDao.saveForm(form2);
 //					score为空，直接保存
 					Score score2 = new Score();
-					score2.setReplyResult(score);
-					score2.setStudent(student);
+					score2.setReplyResult(score1);
 					score2.setLevel(level);
-					commonDaoImpl.save(score2);
+					score2.setStudent(student);
+					
+					scoreDao.saveScore(score2);
 					file.transferTo(file2);
+				
 				}
+				
 				return true;
 			} catch(Exception e) {
 				return false;
-			}  finally{
-				session.getTransaction().commit();
-			}
+			} 
 		}
 		return false;
 	}
@@ -693,7 +689,7 @@ public class AttachService {
 		List<Student> students = null;
 		List<AttachDTO> attachs = new ArrayList<AttachDTO>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 			

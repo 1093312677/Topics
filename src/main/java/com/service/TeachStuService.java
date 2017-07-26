@@ -16,11 +16,11 @@ import org.springframework.stereotype.Service;
 import com.common.SimilarAlgorithm;
 import com.common.Similarity;
 import com.dao.IStudentDao;
+import com.dao.ITeacherAutoSelectDao;
 import com.dao.ITopicDao;
 import com.dao.impl.CommonDaoImpl;
 import com.dao.impl.DaoImpl;
 import com.entity.Form;
-import com.entity.Grade;
 import com.entity.Student;
 import com.entity.Teacher;
 import com.entity.TeacherAutoSelect;
@@ -48,6 +48,9 @@ public class TeachStuService {
 	
 	@Autowired
 	private ITopicDao topicDao;
+	
+	@Autowired
+	private ITeacherAutoSelectDao teacherAutoSelectDao;
 	
 	public void closeSession(){
 		if(session.isOpen()) {
@@ -415,22 +418,14 @@ public class TeachStuService {
 	 * @param gradeId
 	 * @return
 	 */
-	public boolean viewTeacherAutoSelect(String gradeId, long teacherId) {
-		List<TeacherAutoSelect> teacherAutoSelects =  new ArrayList<TeacherAutoSelect>();
-		try{
-			teacherAutoSelects = daoImpl.findByTwo("TeacherAutoSelect", "gradeId", gradeId,"teacherId", String.valueOf(teacherId));
-			daoImpl.closeSession();
-			if(teacherAutoSelects.size() == 0) {
-				return false;
-			} else if(teacherAutoSelects.get(0).getAutoSelect() == 1) {
+	public boolean viewTeacherAutoSelect(Long gradeId, Long teacherId) {
+		TeacherAutoSelect teacherAutoSelect =  teacherAutoSelectDao.getTeacherAutoSelect(gradeId, teacherId);
+		if(teacherAutoSelect != null) {
+			if(teacherAutoSelect.getAutoSelect() == 1) {
 				return true;
-			} else {
-				return false;
 			}
-		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} 
+		}
+		return false;
 	}
 	/**
 	 * 设置教师自动选题
@@ -438,37 +433,19 @@ public class TeachStuService {
 	 * @param teacherId
 	 * @return
 	 */
-	public boolean setTeacherAutoSelect(String gradeId, long teacherId) {
-		List<TeacherAutoSelect> teacherAutoSelects =  new ArrayList<TeacherAutoSelect>();
-		try{
-			teacherAutoSelects = daoImpl.findByTwo("TeacherAutoSelect", "gradeId", gradeId,"teacherId", String.valueOf(teacherId));
-			daoImpl.closeSession();
-			TeacherAutoSelect teacherAutoSelect = new TeacherAutoSelect();
-			Grade grade = new Grade();
-			grade.setId(Long.valueOf(gradeId));
-			Teacher teacher = new Teacher();
-			teacher.setId(teacherId);
-			
-			teacherAutoSelect.setAutoSelect(1);
-			teacherAutoSelect.setGrade(grade);
-			teacherAutoSelect.setTeacher(teacher);
-			
-			if(teacherAutoSelects.size() == 0) {
-				daoImpl.save(teacherAutoSelect);
+	public boolean setTeacherAutoSelect(Long gradeId, Long teacherId) {
+		TeacherAutoSelect teacherAutoSelect =  teacherAutoSelectDao.getTeacherAutoSelect(gradeId, teacherId);
+		if(teacherAutoSelect != null) {
+			if(teacherAutoSelect.getAutoSelect() == 0) {
+				if(teacherAutoSelectDao.updateAutoSelect(1, teacherAutoSelect.getId()))
+					return true;
 			} else {
-				teacherAutoSelect = teacherAutoSelects.get(0);
-				if(teacherAutoSelect.getAutoSelect() == 1)
-					teacherAutoSelect.setAutoSelect(0);
-				else 
-					teacherAutoSelect.setAutoSelect(1);
-				
-				daoImpl.update(teacherAutoSelect);
+				if(teacherAutoSelectDao.updateAutoSelect(0, teacherAutoSelect.getId()))
+					return true;
 			}
-			return true;
-		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} 
+		}
+		return false;
+		
 	}
 	/**
 	 * 删除学生	
@@ -498,20 +475,11 @@ public class TeachStuService {
 			e.printStackTrace();
 			return false;
 		} 
-		
-		
-//		List<Student> students = daoImpl.find2("Student", studentId);
-//		if(students.size() > 0 ) {
-//			if(daoImpl.delete2(students.get(0)))
-//				return true;
-//			return false;
-//		}
-//		return false;
 	}
 	
 	
 	/**
-	 * 删除学生	
+	 * 删除教师	
 	 * @param studentId
 	 * @return
 	 */

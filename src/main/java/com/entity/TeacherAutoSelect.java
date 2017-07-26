@@ -16,7 +16,7 @@ public class TeacherAutoSelect {
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
-	private int id;
+	private Long id;
 	private int autoSelect;
 	
 //	和教师实现多对一
@@ -31,10 +31,18 @@ public class TeacherAutoSelect {
 	@Basic(fetch=FetchType.LAZY)
 	private Grade grade;
 	
-	public int getId() {
+	public TeacherAutoSelect() {
+	super();
+}
+	public TeacherAutoSelect(Long id, int autoSelect) {
+		super();
+		this.id = id;
+		this.autoSelect = autoSelect;
+	}
+	public Long getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public int getAutoSelect() {

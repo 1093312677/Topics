@@ -1,7 +1,5 @@
 package com.service;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -18,7 +16,7 @@ import org.apache.poi.hssf.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.common.QueryCondition;
+import com.dao.ISettingDao;
 import com.dao.IStudentDao;
 import com.dao.ITeacherDao;
 import com.dao.impl.DaoImpl;
@@ -39,43 +37,25 @@ public class TeacherService {
 	@Autowired
 	private IStudentDao studentDao;
 	
+	@Autowired
+	private ISettingDao settingDao;
+	
 	public void closeSession(){
 		daoImpl.closeSession();
 	}
-	/**
-	 * student view topics
-	 * @param directions
-	 * @return
-	 */
-//	public Set<T> viewTopic(Student student) {
-//		Direction direction = null;
-//		direction = student.getClazz().getDirection();
-//		List<Direction> directions = new ArrayList<Direction>();
-//		directions.add(direction);
-//		
-////		将获取的数据封装进集合，出去重复的
-//		Set<T> set = new HashSet<T>();
-//		List<T> list = daoImpl.viewTopic(directions);
-//		daoImpl.closeSession();
-//		for(int i=0;i<list.size();i++){
-//			set.add(list.get(i));
-//		}
-//		return set;
-//	}
-	
 	/**
 	 * 查看选择了该老师题目的学生
 	 * @param teacher
 	 * @param gradeId
 	 * @return
 	 */
-	public Set<Topics> viewSelected(Teacher teacher, String gradeId, Setting setting){
+	public Set<Topics> viewSelected(Long teacherId, Long gradeId){
 		int batch = 0;
 		int choice = 0;
-		int bc[] = getBatchChoice(setting);
+		int bc[] = getBatchChoice(gradeId);
 		batch = bc[0];
 		choice = bc[1];
-		List<Topics> topics = (List<Topics>) daoImpl.findBy("Topics", "teacherId", String.valueOf(teacher.getId()));
+		List<Topics> topics = (List<Topics>) daoImpl.findBy("Topics", "teacherId", String.valueOf(teacherId));
 		
 		Set<Topics> topics2 = new HashSet<Topics>();
 		Topics topic = null;
@@ -114,7 +94,8 @@ public class TeacherService {
 		return topics2;
 	}
 	
-	public int[] getBatchChoice(Setting setting) {
+	public int[] getBatchChoice(Long gradeId) {
+		Setting setting = settingDao.getSetting(gradeId);
 		int batch = 0;
 		int choice = 0;
 //		查询时间
@@ -206,44 +187,18 @@ public class TeacherService {
 	 * @param studentId
 	 * @return
 	 */
-	public boolean confirmStudent(String topicId, String studentId) {
-		List<Topics> topics = (List<Topics>) daoImpl.find("Topics", topicId);
-		daoImpl.closeSession();
-		if (topics.size()>0) {
-//			选择的人数小于可选学生人数
-			if ( topics.get(0).getEnableSelect() > topics.get(0).getSelectedStudent() ) {
+	public boolean confirmStudent(Long topicId, Long studentId) {
+		Topics topic = teacherDao.getTopicIsSelect(topicId);
+//		选择的人数小于可选学生人数
+		if ( topic.getEnableSelect() > topic.getSelectedStudent() ) {
 //				选择此学生
-				QueryCondition queryCondition = new QueryCondition();
-				queryCondition.setConunt(1);
-				queryCondition.setTable("Student");
-				
-				queryCondition.setRow4("topicsId");
-				queryCondition.setValue4(topicId);
-				
-				queryCondition.setRow1("id");
-				queryCondition.setValue1(studentId);
-				
-//				更新
-				if( daoImpl.updateByFree(queryCondition) ) {
-//					将题目的选择人数增加
-					int select = topics.get(0).getSelectedStudent() + 1;
-					queryCondition.setTable("Topics");
-					
-					queryCondition.setRow4("selectedStudent");
-					queryCondition.setValue4(String.valueOf(select));
-					
-					queryCondition.setRow1("id");
-					queryCondition.setValue1(String.valueOf(topics.get(0).getId()));
-					
-					daoImpl.updateByFree(queryCondition);
-					return true;
-				}
-				return false;
-			}else{
-				return false;
+			if(teacherDao.confirmSelect(topicId, studentId)) {
+				return true;
 			}
+			return false;
+		}else{
+			return false;
 		}
-		return false;
 	}
 	
 	/**

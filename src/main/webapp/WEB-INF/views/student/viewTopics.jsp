@@ -269,6 +269,7 @@ function findBy(){
 						  showCancelButton: true,
 						  confirmButtonColor: "#DD6B55",
 						  confirmButtonText: "　Yes　",
+						  showLoaderOnConfirm: true, 
 						  closeOnConfirm: false
 					},
 					function(){
@@ -303,6 +304,7 @@ function findBy(){
 						  showCancelButton: true,
 						  confirmButtonColor: "#DD6B55",
 						  confirmButtonText: "　Yes　",
+						  showLoaderOnConfirm: true, 
 						  closeOnConfirm: false
 					},
 					function(){

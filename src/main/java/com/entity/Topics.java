@@ -122,6 +122,15 @@ public class Topics {
 	}
 
 
+	public Topics(long id, String topicsName, int selectedStudent, int enableSelect) {
+		super();
+		this.id = id;
+		this.topicsName = topicsName;
+		this.selectedStudent = selectedStudent;
+		this.enableSelect = enableSelect;
+	}
+
+
 	public long getId() {
 		return id;
 	}

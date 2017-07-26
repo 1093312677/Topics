@@ -45,7 +45,7 @@ public class AccountController {
 	 */
 	@RequestMapping("/login")
 	public String login(HttpServletRequest request,HttpServletResponse response,HttpSession session, User user){
-		logger.info("info"+"IP:"+request.getRemoteAddr()+"username:"+user.getUsername());
+		logger.info("user->"+"IP:"+request.getRemoteAddr()+"->username:"+user.getUsername());
 		User user1 = accountService.login(user);
 		if(user1 != null){
 			List infor = null;

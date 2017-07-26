@@ -14,6 +14,10 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<div class="panel panel-default" style="margin:0">
@@ -38,7 +42,7 @@
 			   	    		<c:if test="${isAuto == true }">已设置为自动选题</c:if>
 			   	    		<c:if test="${isAuto == false }">已设置为非自动选题</c:if>
 			   	    	</td>
-			   	    	<td><a href="<%=request.getContextPath() %>/teachStu/setTeacherAutoSelect.do">修改</a></td>
+			   	    	<td><a href="javascript:void(0)" onclick="change()">修改</a></td>
 			   	   </tr>
 			    </table>
 			</div>
@@ -47,6 +51,37 @@
    </div> 
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
+	function change() {
+		swal({
+			  title: "确认更改？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
+			var url = "<%=request.getContextPath() %>/teachStu/setTeacherAutoSelect.do"
+			$.ajax({
+				type:"post",
+				url:url,
+				data:{},
+				dataType:"json",
+				success:function(data){
+					if(data==1){
+						swal("更改成功!", "请继续操作", "success");
+						window.setTimeout('location.reload()',700);
+					}else{
+						swal("更改失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					console.log(msg)
+				}
+			})	
+		});
+	}
 </script>	
 	
 </body>

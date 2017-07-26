@@ -1,5 +1,6 @@
 package com.controller;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,11 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dto.DealData;
 import com.entity.Form;
 import com.entity.Setting;
 import com.entity.Student;
-import com.entity.Teacher;
 import com.service.AttachService;
 
 /**
@@ -237,22 +238,16 @@ public class AttachController {
 	 */
 	@RequestMapping("/instructorReview")
 	public String instructorReview(Long gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		List<Setting> settings = attachService.getSetting(String.valueOf(gradeId));
+		Setting setting = attachService.getSetting(gradeId);
 		boolean isNow = false;
-		if(settings.size() > 0) {
-			
-			String startTime = settings.get(0).getInstructorReviewStartTime();
-			String endTime = settings.get(0).getInstructorReviewEndTime();
+		String startTime = setting.getInstructorReviewStartTime();
+		String endTime = setting.getInstructorReviewEndTime();
 //			判断是否是当前时间段
-		    isNow = dealData.isNow(startTime, endTime);
-		}
+	    isNow = dealData.isNow(startTime, endTime);
 		
-		
-    	List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+    	Long teacherId = (Long)session.getAttribute("teacherId");
 		List<Student> students = null;
-		if(teachers.size() > 0) {
-			students = attachService.instructorReview(String.valueOf(gradeId), teachers.get(0).getId());
-		}
+		students = attachService.instructorReview(String.valueOf(gradeId), teacherId);
 		request.setAttribute("students", students);
 		session.setAttribute("isNow", isNow);
 		session.setAttribute("gradeId", gradeId);
@@ -270,25 +265,50 @@ public class AttachController {
 	 * @return
 	 */
 	@RequestMapping("/submitInstructorReview")
-	public String submitInstructorReview(float mediumScore,long studentId, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String submitInstructorReview(float mediumScore,long studentId, @RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
 		boolean isNow = (boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
-			if(attachService.submitInstructorReview(path, studentId, mediumScore, file)) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/instructorReview.do?gradeId="+gradeId);
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/instructorReview.do?gradeId="+gradeId);
-				return "common/failed";
-			}
+	    	if(attachService.submitInstructorReview(path, studentId, mediumScore, file)) {
+	    		JSONObject json = new JSONObject();
+	    		json.put("result", 1);
+	    		try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    	} else {
+	    		JSONObject json = new JSONObject();
+	    		json.put("result", 0);
+	    		try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    	}
+	    	
+//			if(attachService.submitInstructorReview(path, studentId, mediumScore, file)) {
+//				request.setAttribute("message", "成功！");
+//				request.setAttribute("path", "attach/instructorReview.do?gradeId="+gradeId);
+//				return "common/success";
+//			} else {
+//				request.setAttribute("message", "失败！");
+//				request.setAttribute("path", "attach/instructorReview.do?gradeId="+gradeId);
+//				return "common/failed";
+//			}
 	    } else {
-	    	return null;
+	    	JSONObject json = new JSONObject();
+    		json.put("result", 0);
+    		try {
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+	    	
 	    }
+	    return null;
 	}
 	
 	/**
@@ -301,22 +321,17 @@ public class AttachController {
 	 */
 	@RequestMapping("/midReview")
 	public String midReview(Long gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		List<Setting> settings = attachService.getSetting(String.valueOf(gradeId));
+		Setting setting = attachService.getSetting(gradeId);
 		boolean isNow = false;
-		if(settings.size() > 0) {
-			
-			String startTime = settings.get(0).getMidReviewStartTime();
-			String endTime = settings.get(0).getMidReviewEndTime();
+		String startTime = setting.getMidReviewStartTime();
+		String endTime = setting.getMidReviewEndTime();
 //			判断是否是当前时间段
-		    isNow = dealData.isNow(startTime, endTime);
-		}
+	    isNow = dealData.isNow(startTime, endTime);
 		
 		
-    	List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+	    Long teacherId = (Long)session.getAttribute("teacherId");
 		List<Student> students = null;
-		if(teachers.size() > 0) {
-			students = attachService.midReview(String.valueOf(gradeId), teachers.get(0).getId());
-		}
+		students = attachService.midReview(String.valueOf(gradeId), teacherId);
 		request.setAttribute("students", students);
 		session.setAttribute("isNow", isNow);
 		session.setAttribute("gradeId", gradeId);
@@ -334,25 +349,31 @@ public class AttachController {
 	 * @return
 	 */
 	@RequestMapping("/submitMidReview")
-	public String submitMidReview(float score,long studentId, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String submitMidReview(float score,long studentId, @RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
 		boolean isNow = (boolean) session.getAttribute("isNow");
+		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
-			if(attachService.submitMidReview(path, studentId, score, file)) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/midReview.do?gradeId="+gradeId);
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/midReview.do?gradeId="+gradeId);
-				return "common/failed";
-			}
-	    } else {
-	    	return null;
-	    }
+	    	if(attachService.submitMidReview(path, studentId, score, file)) {
+	    		try {
+	    			json.put("result", 1);
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    		return null;
+	    	}
+	    } 
+	    
+		try {
+			 json.put("result", 0);
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    return null;
 	}
 	
 	/**
@@ -365,22 +386,17 @@ public class AttachController {
 	 */
 	@RequestMapping("/replyResults")
 	public String replyResults(Long gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		List<Setting> settings = attachService.getSetting(String.valueOf(gradeId));
+		Setting setting = attachService.getSetting(gradeId);
 		boolean isNow = false;
-		if(settings.size() > 0) {
-			
-			String startTime = settings.get(0).getReplyResultsStartTime();
-			String endTime = settings.get(0).getReplyResultsEndTime();
+		String startTime = setting.getReplyResultsStartTime();
+		String endTime = setting.getReplyResultsEndTime();
 //			判断是否是当前时间段
-		    isNow = dealData.isNow(startTime, endTime);
-		}
+	    isNow = dealData.isNow(startTime, endTime);
 		
 		
-    	List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+	    Long teacherId = (Long)session.getAttribute("teacherId");
 		List<Student> students = null;
-		if(teachers.size() > 0) {
-			students = attachService.replyResults(String.valueOf(gradeId), teachers.get(0).getId());
-		}
+		students = attachService.replyResults(String.valueOf(gradeId), teacherId);
 		if(students == null) {
 			request.setAttribute("isLeader", false);
 		} else {
@@ -407,22 +423,29 @@ public class AttachController {
 	public String submitReplyResults(String level, float score,long studentId, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
 		boolean isNow = (boolean) session.getAttribute("isNow");
+		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	Long gradeId = (Long) session.getAttribute("gradeId");
 	    	String path = request.getSession().getServletContext().getRealPath("upload");
 			if(attachService.submitReplyResults(path, studentId, score, file, level)) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/replyResults.do?gradeId="+gradeId);
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/replyResults.do?gradeId="+gradeId);
-				return "common/failed";
-			}
-	    } else {
-	    	return null;
+				json.put("result", 1);
+	    		try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+	    		return null;
+			} 
 	    }
+	    
+	    
+		try {
+			json.put("result", 0);
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	    return null;
 	}
 	/**
 	 * 下载附件

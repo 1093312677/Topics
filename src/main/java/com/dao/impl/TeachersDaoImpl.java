@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import com.dao.ITeacherDao;
 import com.entity.Grade;
 import com.entity.Teacher;
+import com.entity.Topics;
 
 @Repository
 public class TeachersDaoImpl implements ITeacherDao{
@@ -136,6 +137,65 @@ public class TeachersDaoImpl implements ITeacherDao{
 				session.close();
 			}
 		}
+	}
+
+
+	@Override
+	public Topics getTopicIsSelect(Long topicId) {
+		hql = "SELECT new Topics( id,  topicsName,  selectedStudent,  enableSelect)"
+				+ " FROM "
+				+ " Topics "
+				+ " WHERE "
+				+ " id =:id";
+		Topics topic = null;
+		try{
+			session = sessionFactory.openSession();
+			session.getTransaction().begin();
+			Query query = session.createQuery(hql);
+			query.setLong("id", topicId);
+			topic = (Topics) query.uniqueResult();
+			session.getTransaction().commit();
+			return topic;
+		}catch(Exception e){
+			return topic;
+		} finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+	}
+
+
+	@Override
+	public boolean confirmSelect(Long topicId, Long studentId) {
+		hql = "UPDATE "
+				+ " Topics "
+				+ " SET "
+				+ " selectedStudent = selectedStudent+1 "
+				+ " WHERE "
+				+ " id="+topicId;
+		String hql2 = "UPDATE "
+				+ " student"
+				+ " SET"
+				+ "  topicsId = "+topicId
+				+ " WHERE "
+				+ " id="+studentId;
+		try{
+			session = sessionFactory.openSession();
+			session.getTransaction().begin();
+			Query query = session.createQuery(hql);
+			query.executeUpdate();
+			session.createSQLQuery(hql2).executeUpdate();
+			session.getTransaction().commit();
+			return true;
+		}catch(Exception e){
+			return false;
+		} finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		
 	}
 	
 	

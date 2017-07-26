@@ -14,25 +14,12 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
-	<c:if test="${message =='success'}">
-		<div class="alert alert-success alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert"
-					aria-hidden="true">
-				&times;
-			</button>
-			成功！
-		</div>
-	</c:if>
-	<c:if test="${message =='failed'}">
-		<div class="alert alert-danger alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-				&times;
-			</button>
-			失败！
-		</div>	
-	</c:if>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                            第${bc[0] }批次第${bc[1] }志愿
@@ -92,7 +79,7 @@
 										    	<span class="caret"></span>
 										    </button>
 										    <ul class="dropdown-menu" role="menu" aria-labelledby="menu1">
-										    	<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=request.getContextPath() %>/teacher/comfirmStudent.do?gradeId=${gradeId }&studentId=<c:out value="${intentionTopics.student.id }"></c:out>&topicId=<c:out value="${items.id }"></c:out>">确认选择</a></li>
+										    	<li role="presentation"><a role="menuitem" tabindex="-1" href="javascript:void(0)" onclick="select(${gradeId },${intentionTopics.student.id },${items.id })">确认选择</a></li>
 										        <li role="presentation"><a role="menuitem" tabindex="-1" href="<%=request.getContextPath() %>/student/viewStudentOne.do?filter=yes&no=<c:out value="${intentionTopics.student.no }"></c:out>&id=<c:out value="${intentionTopics.student.id }"></c:out>">查看信息</a></li>
 										   		<li role="presentation"><a role="menuitem" tabindex="-1"  id="${intentionTopics.message }" class="mes"  data-toggle="modal" data-target="#myModal" href="javascript:void(0)" >查看留言</a></li>
 										   		<c:if test="${intentionTopics.swap == 1}">
@@ -131,6 +118,38 @@
 	</div><!-- /.modal -->
 </div>    
 <script>
+function select(gradeId, studentId, topicId) {
+	swal({
+		  title: "确认选择？",
+		  text: "选择后不可退选！",
+		  type: "warning",
+		  showCancelButton: true,
+		  confirmButtonColor: "#DD6B55",
+		  confirmButtonText: "　Yes　",
+		  closeOnConfirm: false
+	},
+	function(){
+		var url = "<%=request.getContextPath() %>/teacher/comfirmStudent.do"
+		$.ajax({
+			type:"post",
+			url:url,
+			data:{"gradeId":gradeId,"studentId":studentId,"topicId":topicId},
+			dataType:"json",
+			success:function(data){
+				if(data==1){
+					swal("选择成功!", "请继续操作", "success");
+					window.setTimeout('location.reload()',700);
+				}else{
+					swal("选择失败！", "请重试！", "error");
+				}
+			},
+			error:function(msg){
+				console.log(msg)
+			}
+		})	
+	});
+}
+
 	$(".mes").click(function(){
 		$("#messageContainer").html($(this).attr("id"));
 	})
@@ -138,6 +157,8 @@
 		$("#messageContainer").html($(this).attr("id"));
 	}
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
+	
+	
 	
 </script>	
 	

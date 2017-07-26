@@ -36,6 +36,20 @@ public class Score {
 	private Student student;
 	
 	
+	public Score(long id, float score, float mediumScore, float headScore, String level, String replyScore,
+		float replyResult) {
+	super();
+	this.id = id;
+	this.score = score;
+	this.mediumScore = mediumScore;
+	this.headScore = headScore;
+	this.level = level;
+	this.replyScore = replyScore;
+	this.replyResult = replyResult;
+}
+	public Score() {
+		super();
+	}
 	public long getId() {
 		return id;
 	}

@@ -16,11 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.alibaba.fastjson.JSONObject;
 import com.common.Pagination;
 import com.dto.DealData;
 import com.entity.Student;
-import com.entity.Teacher;
 import com.service.TeachStuService;
 
 /**
@@ -47,11 +45,9 @@ public class TeachStuController {
 	 */
 	@RequestMapping("/viewGuideStudent")
 	public String viewGuideStudent(Long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teacher = (List<Teacher>) session.getAttribute("infor");
+		Long teacherId = (Long)session.getAttribute("teacherId");
 		List<Student> students = null;
-		if(teacher.size() > 0) {
-			students = teachStuService.viewGuideStudent(teacher.get(0).getId());
-		}
+		students = teachStuService.viewGuideStudent(teacherId);
 		request.setAttribute("students", students);
 		session.setAttribute("gradeId", gradeId);
 		return "teacher/viewGuideStudent";
@@ -171,14 +167,11 @@ public class TeachStuController {
 		Long gradeId = (Long) session.getAttribute("gradeId");
 		logger.info("一键选题：gradeId="+gradeId);
 		if(teachStuService.automaticSelection(String.valueOf(gradeId))) {
-//			request.setAttribute("path", "teacher/viewNotSelected.do?gradeId="+gradeId);
-//			request.setAttribute("message", "匹配成功！");
-//			return "common/success";
-			try {
-				response.getWriter().println(1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		try {
+			response.getWriter().println(1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		} else {
 			try {
 				response.getWriter().println(0);
@@ -199,12 +192,10 @@ public class TeachStuController {
 	 * @return
 	 */
 	@RequestMapping("/viewTeacherAutoSelect")
-	public String viewTeacherAutoSelect(String gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+	public String viewTeacherAutoSelect(Long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Long teacherId = (Long)session.getAttribute("teacherId");
 		boolean isAuto = false;
-		if(teachers.size() > 0) {
-			isAuto = teachStuService.viewTeacherAutoSelect(gradeId, teachers.get(0).getId());
-		}
+		isAuto = teachStuService.viewTeacherAutoSelect(gradeId, teacherId);
 		request.setAttribute("isAuto", isAuto);
 		session.setAttribute("gradeId", gradeId);
 		return "teacher/viewTeacherAutoSelect";
@@ -219,17 +210,19 @@ public class TeachStuController {
 	 */
 	@RequestMapping("/setTeacherAutoSelect")
 	public String setTeacherAutoSelect(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		String gradeId = (String) session.getAttribute("gradeId");
-		if(teachers.size() > 0) {
-			if(teachStuService.setTeacherAutoSelect(gradeId, teachers.get(0).getId())) {
-				request.setAttribute("message", "更新成功！");
-				request.setAttribute("path", "teachStu/viewTeacherAutoSelect.do?gradeId="+gradeId);
-				return "common/success";
-			} else {
-				request.setAttribute("message", "更新失败！");
-				request.setAttribute("path", "teachStu/viewTeacherAutoSelect.do?gradeId="+gradeId);
-				return "common/failed";
+		Long teacherId = (Long)session.getAttribute("teacherId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
+		if(teachStuService.setTeacherAutoSelect(gradeId, teacherId)) {
+			try {
+				response.getWriter().println(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			try {
+				response.getWriter().println(0);
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 		return null;

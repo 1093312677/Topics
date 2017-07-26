@@ -6,10 +6,10 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.dao.IFormDao;
-import com.entity.Form;
+import com.dao.IScoreDao;
+import com.entity.Score;
 @Repository
-public class FormDaoImpl implements IFormDao{
+public class ScoreDaoImpl implements IScoreDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
@@ -19,40 +19,37 @@ public class FormDaoImpl implements IFormDao{
 		this.session = session;
 	}
 	@Override
-	public Form getStudentForm(Long studentId) {
-		hql = "SELECT new Form(id,  openingReport,  interimReport,  interimEvalForm,reviewEvalForm,  reviewTable,  replyRecord, fileName)"
-				+ " FROM "
-				+ " Form as form "
+	public Score getScoreParam(Long studentId) {
+		hql = "SELECT new Score(id,  score,  mediumScore,  headScore,  level,  replyScore, replyResult) "
+				+ " FROM Score as score1"
 				+ " WHERE"
-				+ " form.student.id=:studentId";
-		Form form = null;
+				+ " score1.student.id=:studentId";
+		Score score = null;
 		try{
 			session = sessionFactory.openSession();
 			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
-			query.setCacheable(true);
-			form = (Form) query.uniqueResult();
+			score = (Score) query.uniqueResult();
 			session.getTransaction().commit();
-		} catch(Exception e) {
-			
+		}catch(Exception e) {
+			e.printStackTrace();
 		} finally {
-			if(session.isOpen()) {
+			if(session.isOpen() ) {
 				session.close();
 			}
 		}
-		return form;
+		return score;
 	}
 	@Override
-	public boolean updateForm(Form form) {
+	public boolean updateScore(Score score) {
 		try{
 			session = sessionFactory.openSession();
 			session.beginTransaction();
-			session.update(form);
+			session.update(score);
 			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			session.getTransaction().rollback();
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -62,15 +59,14 @@ public class FormDaoImpl implements IFormDao{
 		}
 	}
 	@Override
-	public boolean saveForm(Form form) {
+	public boolean saveScore(Score score) {
 		try{
 			session = sessionFactory.openSession();
 			session.beginTransaction();
-			session.save(form);
+			session.save(score);
 			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			session.getTransaction().rollback();
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -79,6 +75,5 @@ public class FormDaoImpl implements IFormDao{
 			}
 		}
 	}
-	
 	
 }

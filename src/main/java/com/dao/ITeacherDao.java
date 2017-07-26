@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.entity.Grade;
 import com.entity.Teacher;
+import com.entity.Topics;
 
 public interface ITeacherDao {
 	/**
@@ -35,4 +36,19 @@ public interface ITeacherDao {
 	 * @return
 	 */
 	public boolean updateTopicState(Long topicId, int state);
+	
+	/**
+	 * 获取题目判断是否可以选择
+	 * @param topicId
+	 * @return
+	 */
+	public Topics getTopicIsSelect(Long topicId);
+	
+	/**
+	 * 取认选择学生
+	 * @param topicId
+	 * @param studentId
+	 * @return
+	 */
+	public boolean confirmSelect(Long topicId, Long studentId);
 }
