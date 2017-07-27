@@ -454,8 +454,8 @@ public class TeachStuService {
 			teacher.setId(teacherId);
 			teacherAutoSelect.setGrade(grade);
 			teacherAutoSelect.setTeacher(teacher);
-			teacherAutoSelectDao.saveTeacherAutoSelect(teacherAutoSelect);
-			return true;
+			if(teacherAutoSelectDao.saveTeacherAutoSelect(teacherAutoSelect))
+				return true;
 		}
 		
 		return false;
