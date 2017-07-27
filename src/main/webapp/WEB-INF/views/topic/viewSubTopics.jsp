@@ -19,6 +19,9 @@
 <script src="<%=request.getContextPath() %>/js/fileinput.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath() %>/js/fileinput_locale_zh.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath() %>/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 
 </head>
 <body>
@@ -75,7 +78,7 @@
                 <h4 class="modal-title" id="myModalLabel">上传子题目</h4>
             </div>
             <div class="modal-body">
-            	<form action="<%=request.getContextPath()%>/topic/saveSubTopic.do" method="post" enctype="multipart/form-data">
+            	<form id="form" action="" method="post" enctype="multipart/form-data">
             		<input type="hidden" name="studentId" id="studentId"/>
             		<input type="hidden" name="topicId" id="topicId"/>
             		
@@ -87,10 +90,10 @@
 			        <br>
 			         <div class="input-group">
 			            <span class="input-group-addon" style="border-radius: 0;">文件　 上传</span>
-			            <input type="file" name="file" class="file" class="form-control" placeholder="文件" required>
+			            <input type="file" name="file" class="file" id="file" class="form-control" placeholder="文件" required>
 			        </div>
 			        <br>
-			        <input type="submit" class="btn btn-primary" value="提交保存"/>
+			        <input type="button" id="save" class="btn btn-primary" value="提交保存"/>
 		        </form>
 			</div>
             <div class="modal-footer">
@@ -101,89 +104,55 @@
 </div>
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
-	$("#alert").hide();
-	$("#failed").hide();
-	$("#success").hide();
-	$("#alert-close").click(function(){
-		$("#alert").fadeOut();
-	})
-	
-	function audit(id){
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
-			data:{"topicId":id},
-			dataType:"json",
-			success:function(data){
-				if( data == 1 ) {
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				} else {
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}
-				
-				window.setTimeout(reload,1000);
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
-	}
-	function noaudit(id){
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/teacher/notAuditTopic.do",
-			data:{"topicId":id},
-			dataType:"json",
-			success:function(data){
-				if( data == 1 ) {
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				} else {
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
-				}
-				
-				window.setTimeout(reload,1000);
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
-	}
-	//删除
-	function deleteItem(id){
-		if(confirm("取认删除？删除该选项将会删除与该选项相关联数据！")){
-			$.ajax({
-				type:"post",
-				url:"<%=request.getContextPath()%>/topic/deleteTopic.do",
-				data:{"id":id,
-				},
-				dataType:"json",
-				success:function(data){
-					 alert("删除成功！");
-					 window.setTimeout(reload,200);
-					
-				},
-				error:function(msg){
-					alert("删除失败！");
-					console.log(msg)
-				}
-			})
-			
-		}
-	}
 	
 	function reload(){
 		location.reload()
 	}
-	
-	function getId(studentId, topicId) {
-		$("#studentId").val(studentId);
+	function getId(id, topicId) {
+		$("#studentId").val(id);
 		$("#topicId").val(topicId);
-		//alert(studentId+" "+topicId);
 	}
+	$("#save").click(function(){
+		var file = $("#file").val();
+		var subName = $("#subName").val();
+		if(file == "" ||subName == "") {
+			swal("不能为空！", "请重试！", "warning");
+			return false;
+		}
+		swal({
+			  title: "确认提交？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false,
+			  showLoaderOnConfirm: true, 
+		},
+		function(){
+			var form = new FormData(document.getElementById("form"));
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/topic/saveSubTopic.do",
+				data:form,
+				dataType:"json",
+				processData:false,
+	            contentType:false,
+				success:function(data){
+					if(data.result==1){
+						swal("提交成功!", "", "success");
+						window.setTimeout("location.reload()",700);
+					}else{
+						swal("提交失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					swal("提交失败！", "请重试！", "error");
+					window.setTimeout("location.reload()",700);
+				}
+			})	
+		});
+	})
 </script>	
 	
 </body>

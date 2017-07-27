@@ -52,22 +52,27 @@ public class SwapController {
 		if(students.size() > 0) {
 			String id = String.valueOf(students.get(0).getId());
 			if(swapService.swapInDepart(state, id)){
-				request.setAttribute("message", "修改成功");
-				request.setAttribute("path", "swap/viewDepartSwap.do");
-				
 //				修改成功后更新session里面的信息
 				students.get(0).setSwapInDepa(Integer.valueOf(state));
 				session.setAttribute("infor", students);
-				return "common/success";
-			} else {
-				request.setAttribute("message", "修改失败");
-				request.setAttribute("path", "swap/viewDepartSwap.do");
-				return "common/failed";
-			}
+				JSONObject json = new JSONObject();
+				json.put("result", 1);
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return null;
+			} 
 		}
-		request.setAttribute("message", "修改失败");
-		request.setAttribute("path", "swap/viewDepartSwap.do");
-		return "common/failed";
+		JSONObject json = new JSONObject();
+		json.put("result", 1);
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 		
 		
 	}

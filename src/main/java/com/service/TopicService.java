@@ -25,10 +25,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.ServerResponse;
+import com.dao.ISettingDao;
 import com.dao.impl.DaoImpl;
 import com.dao.impl.TopicDaoImpl;
+import com.dto.DealData;
 import com.dto.GroupAndTime;
 import com.entity.Grade;
+import com.entity.Setting;
 import com.entity.Student;
 import com.entity.SubTopic;
 import com.entity.Teacher;
@@ -40,12 +43,33 @@ import com.jsonPo.GuideStudents;
 public class TopicService {
 	@Autowired
 	private DaoImpl daoImpl;
+	
 	@Autowired
 	private TopicDaoImpl topicDaoImpl;
+	
+	@Autowired
+	private ISettingDao settingDao;
+	
+	@Autowired
+	private DealData dealData;
 	
 	public void closeSession(){
 		topicDaoImpl.closeSession();
 	}
+	
+	/**
+	 * 判断当前是否是上传题目时间
+	 * @param gradeId
+	 * @return
+	 */
+	public boolean goAddTopic(Long gradeId) {
+		Setting setting = settingDao.getSetting(gradeId);
+		String startTime = setting.getCommitTopicStartTime();
+		String endTime = setting.getCommitTopicEndTime();
+	    boolean isNow = dealData.isNow(startTime, endTime);
+		return isNow;
+	}
+	
 	/**
 	 * 查看未通过题目
 	 * @param gradeId

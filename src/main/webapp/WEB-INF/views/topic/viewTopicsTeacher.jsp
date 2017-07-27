@@ -19,6 +19,9 @@
 <script src="<%=request.getContextPath() %>/js/fileinput_locale_zh.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath() %>/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
 
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<div class="panel panel-default" style="margin:0">
@@ -123,16 +126,16 @@
 				</h4>
 			</div>
 			<div class="modal-body">
-				<form action="<%=request.getContextPath()%>/topic/addUpdateAttach.do" method="post" enctype="multipart/form-data">
+				<form id="form" action="" method="post" enctype="multipart/form-data">
 					<input type="hidden" id="id" name="id"/>
 					 <div class="input-group">
 			            <span class="input-group-addon" style="border-radius: 0;">文件　 上传</span>
-			            <input type="file" name="file" class="file" class="form-control" placeholder="文件" required>
+			            <input type="file" name="file" class="file" id="file" class="form-control" placeholder="文件" required>
 			        </div>
 			        <br>
 			        
 			        <br>
-			        <input type="submit" value="保存" class="btn btn-success" style="width:150px"/>
+			        <input type="button" value="保存" id="save" class="btn btn-success" style="width:150px"/>
 			        
 				</form>
 			</div>
@@ -158,6 +161,47 @@
 	function reload(){
 		location.reload()
 	}
+	
+	$("#save").click(function(){
+		var file = $("#file").val();
+		if(file == "") {
+			swal("请选择文件！", "请重试！", "warning");
+			return false;
+		}
+		swal({
+			  title: "确认提交？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false,
+			  showLoaderOnConfirm: true, 
+		},
+		function(){
+			var form = new FormData(document.getElementById("form"));
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/topic/addUpdateAttach.do",
+				data:form,
+				dataType:"json",
+				processData:false,
+	            contentType:false,
+				success:function(data){
+					if(data.result==1){
+						swal("提交成功!", "", "success");
+						window.setTimeout("location.reload()",700);
+					}else{
+						swal("提交失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					swal("提交失败！", "请重试！", "error");
+					window.setTimeout("location.reload()",700);
+				}
+			})	
+		});
+	})
 </script>	
 	
 </body>

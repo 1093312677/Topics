@@ -21,6 +21,7 @@ import com.dao.ITopicDao;
 import com.dao.impl.CommonDaoImpl;
 import com.dao.impl.DaoImpl;
 import com.entity.Form;
+import com.entity.Grade;
 import com.entity.Student;
 import com.entity.Teacher;
 import com.entity.TeacherAutoSelect;
@@ -185,8 +186,8 @@ public class TeachStuService {
 	 * @param gradeId
 	 * @return
 	 */
-	public HSSFWorkbook exportNotSelectedStudent(String gradeId) {
-		List<Student> students = daoImpl.viewStudents(gradeId, 0, 10000);
+	public HSSFWorkbook exportNotSelectedStudent(Long gradeId) {
+		List<Student> students = studentDao.getStudentsNotSelect(gradeId, 0, 10000);
 		
 		//创建HSSFWorkbook对象(excel的文档对象)
 	     HSSFWorkbook wb = new HSSFWorkbook();
@@ -230,7 +231,7 @@ public class TeachStuService {
 			}
 			
 		}
-		daoImpl.closeSession();
+		studentDao.closeSession();
 		return wb;
 	}
 	/**
@@ -435,6 +436,7 @@ public class TeachStuService {
 	 */
 	public boolean setTeacherAutoSelect(Long gradeId, Long teacherId) {
 		TeacherAutoSelect teacherAutoSelect =  teacherAutoSelectDao.getTeacherAutoSelect(gradeId, teacherId);
+//		教师存在记录
 		if(teacherAutoSelect != null) {
 			if(teacherAutoSelect.getAutoSelect() == 0) {
 				if(teacherAutoSelectDao.updateAutoSelect(1, teacherAutoSelect.getId()))
@@ -443,7 +445,18 @@ public class TeachStuService {
 				if(teacherAutoSelectDao.updateAutoSelect(0, teacherAutoSelect.getId()))
 					return true;
 			}
+		} else {
+//			不存在记录，保存
+			teacherAutoSelect = new TeacherAutoSelect();
+			Grade grade = new Grade();
+			Teacher teacher = new Teacher();
+			grade.setId(gradeId);
+			teacher.setId(teacherId);
+			teacherAutoSelect.setGrade(grade);
+			teacherAutoSelect.setTeacher(teacher);
+			teacherAutoSelectDao.saveTeacherAutoSelect(teacherAutoSelect);
 		}
+		
 		return false;
 		
 	}

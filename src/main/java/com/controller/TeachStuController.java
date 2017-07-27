@@ -133,7 +133,7 @@ public class TeachStuController {
 	public String exportNotSelectedStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long gradeId = (Long) session.getAttribute("gradeId");
 		HSSFWorkbook wb = null;
-		wb = teachStuService.exportNotSelectedStudent(String.valueOf(gradeId));
+		wb = teachStuService.exportNotSelectedStudent(gradeId);
 		//输出Excel文件
 	    OutputStream output;
 		try {

@@ -69,5 +69,24 @@ public class TeacherAutoSelectDaoImpl implements ITeacherAutoSelectDao{
 			}
 		}
 	}
+	@Override
+	public boolean saveTeacherAutoSelect(TeacherAutoSelect tas) {
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			session.save(tas);
+			session.getTransaction().commit();
+			
+			return true;
+		}catch(Exception e) {
+			session.getTransaction().rollback();
+			e.printStackTrace();
+			return false;
+		} finally {
+			if(session.isOpen() ) {
+				session.close();
+			}
+		}
+	}
 	
 }
