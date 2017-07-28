@@ -22,6 +22,10 @@
 <!-- select -->
 <link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap-select.min.css">
 <script src="<%=request.getContextPath() %>/js/bootstrap-select.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<div class="container">
@@ -39,11 +43,11 @@
 						服从系内调配：
 						<c:if test="${infor[0].swapInDepa == 0}">
 							是
-							<a href="<%=request.getContextPath() %>/swap/changeSwapInDepart.do?state=1">修改</a>
+							<a href="javascript:void(0)" onclick="change(1)">修改</a>
 						</c:if>
 						<c:if test="${infor[0].swapInDepa == 1}">
 							否
-							<a href="<%=request.getContextPath() %>/swap/changeSwapInDepart.do?state=0">修改</a>
+							<a href="javascript:void(0)" onclick="change(0)">修改</a>
 						
 						</c:if>
 					</div>
@@ -54,5 +58,40 @@
 			</div>
 		</div>
 	</div>
+	<script>
+	function change(state) {
+		var url = "<%=request.getContextPath() %>/swap/changeSwapInDepart.do";
+		swal({
+			  title: "确认修改？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false,
+			  showLoaderOnConfirm: true, 
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:url,
+				data:{"state":state},
+				dataType:"json",
+				success:function(data){
+					if(data.result==1){
+						swal("修改成功!", "", "success");
+						window.setTimeout("location.reload()",700);
+					}else{
+						swal("修改失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					swal("修改失败！", "请重试！", "error");
+					window.setTimeout("location.reload()",700);
+				}
+			})	
+		});
+	}
+	</script>
 </body>
 </html>

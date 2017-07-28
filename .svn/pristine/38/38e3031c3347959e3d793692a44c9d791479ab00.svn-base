@@ -1,9 +1,0 @@
-package com.common;
-
-public class TeacherTimer {
-	public void selectTopic() {
-		System.out.println("run");
-		SendEmail send = new SendEmail();
-		send.sendMail();
-	}
-}

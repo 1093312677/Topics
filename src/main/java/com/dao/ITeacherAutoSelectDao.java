@@ -18,4 +18,11 @@ public interface ITeacherAutoSelectDao {
 	 * @return
 	 */
 	public boolean updateAutoSelect(int state, Long id);
+	
+	/**
+	 * 保存教师设置自动选题记录
+	 * @param tas
+	 * @return
+	 */
+	public boolean saveTeacherAutoSelect(TeacherAutoSelect tas);
 }

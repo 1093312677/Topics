@@ -28,7 +28,6 @@ import com.dto.DealData;
 import com.entity.Direction;
 import com.entity.Grade;
 import com.entity.LimitNumber;
-import com.entity.Setting;
 import com.entity.Specialty;
 import com.entity.Student;
 import com.entity.SubTopic;
@@ -48,6 +47,7 @@ import com.service.TopicService;
 public class TopicController {
 	@Autowired
 	private CommonService commonService;
+	
 	@Autowired
 	private DealData dealData;
 	
@@ -66,46 +66,27 @@ public class TopicController {
 	 * @return
 	 */
 	@RequestMapping("/addTopic")
-	public String addTopic(String gradeId, Topics topic,long directionIds[],@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		if(gradeId == null) {
-			gradeId = (String) session.getAttribute("gradeId");
-		}
+	public String addTopic(Topics topic,long directionIds[],@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		Long gradeId = (Long) session.getAttribute("gradeId");
+		Long teacherId = (Long) session.getAttribute("teacherId");
 		
-//		获取登录人员的信息
-		User user = (User) session.getAttribute("user");
-		//查找出相应id
-		List<User> users = commonService.findBy("User", "username", user.getUsername());
-		commonService.closeSession();
-//		设置题目状态
-		if(users.get(0).getPrivilege().equals("2")){
-//			系主任上传为通过
-			topic.setState(1);
-		}else{
-//			教师上传为审核状态
-			topic.setState(2);
-		}
-		
+//		设置题目状态,待审核
+		topic.setState(2);
 //		设置题目适合的年级
 		Grade grade = new Grade();
-		grade.setId(Long.valueOf(gradeId));
-		
-		
+		grade.setId(gradeId);
 //		方向
 		Direction direction = null;
-		List<Direction> directions = new ArrayList<Direction>();
 //		题目适配的方向
 		for(int i=0;i<directionIds.length;i++){
 			direction= new Direction();
 			direction.setId(directionIds[i]);
 			
 			topic.getDirections().add(direction);
-//		    directions.add(direction);
 		}
 //		设置题目负责老师*
 		Teacher teacher = new Teacher();
-		if(users.size()>0){
-			teacher = users.get(0).getTeacher();
-		}
+		teacher.setId(teacherId);
 		String fileName = "";
 		File file2 = null;
 		if(!file.isEmpty()){
@@ -130,9 +111,6 @@ public class TopicController {
 		topic.setTime(time);
 //		设置文件的文件名
 		topic.setTaskBookName(fileName);
-//		设置方向
-//		topic.setDirections(directions);
-		
 //		设置出题人信息
 		topic.setTeacher(teacher);
 //		设置年级
@@ -142,21 +120,16 @@ public class TopicController {
 		String topicId = commonService.saveGetId(topic);
 		if (topicId != null) {
 //			上传题目成功后，相应的数量进行减少
-			List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-			if(teachers.size() > 0) {
-				List<LimitNumber> limitNumbers = commonService.findByTwo("LimitNumber", "gradeId", gradeId, "teacherId", String.valueOf(teachers.get(0).getId()) );
-				commonService.closeSession();
-				if(limitNumbers.size() > 0) {
-					int number = limitNumbers.get(0).getAlreadyNumber() + topic.getEnableSelect();
-					limitNumbers.get(0).setAlreadyNumber(number);
-					commonService.saveOrUpdate(limitNumbers.get(0));
-				}
+			List<LimitNumber> limitNumbers = commonService.findByTwo("LimitNumber", "gradeId", String.valueOf(gradeId), "teacherId", String.valueOf(teacherId));
+			commonService.closeSession();
+			if(limitNumbers.size() > 0) {
+				int number = limitNumbers.get(0).getAlreadyNumber() + topic.getEnableSelect();
+				limitNumbers.get(0).setAlreadyNumber(number);
+				commonService.saveOrUpdate(limitNumbers.get(0));
 			}
-			
 			
 			for(int i=0;i<directionIds.length;i++){
 				commonService.insertSql(topicId, String.valueOf(directionIds[i]));
-				
 			}
 			try {
 				//保存文件
@@ -168,10 +141,14 @@ public class TopicController {
 				e.printStackTrace();
 			}
 		}
-		request.setAttribute("message", "保存成功！");
-		request.setAttribute("path", "topic/goAddTopic.do?gradeId="+gradeId);
-		request.setAttribute("gradeId", gradeId);
-		return "common/success";
+		JSONObject json = new JSONObject();
+		json.put("result", 1);
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	/**
 	 * 跳转到添加毕业选题界面
@@ -181,30 +158,10 @@ public class TopicController {
 	 * @return
 	 */
 	@RequestMapping("/goAddTopic")
-	public String goAddTopic(String gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Setting> settings = commonService.findBy("Setting", "gradeId", gradeId);
-		if(settings.size() > 0 ) {
-			String startTime = settings.get(0).getCommitTopicStartTime();
-			String endTime = settings.get(0).getCommitTopicEndTime();
-		    boolean isNow = dealData.isNow(startTime, endTime);
-		    commonService.closeSession();
-////		          如果在当前时间段，进行操作
-//		    if(isNow) {
-//		    	
-//		    }
-//			List<Teacher> teacher = (List<Teacher>) session.getAttribute("infor");
-//			List<Grade> grades = null;
-//			if(teacher.size()>0){
-//				grades = commonService.findBy("Grade", "departmentId", String.valueOf(teacher.get(0).getDepartment().getId()));
-//			}
-//			request.setAttribute("grades", grades);
-			session.setAttribute("gradeId", gradeId);
-			request.setAttribute("isNow", isNow);
-			commonService.closeSession();
-		} else {
-			request.setAttribute("isNow", false);
-		}
-		
+	public String goAddTopic(Long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		boolean isNow = topicService.goAddTopic(gradeId);
+		session.setAttribute("gradeId", gradeId);
+		request.setAttribute("isNow", isNow);
 		
 		return "teacher/addTopic";
 	}
@@ -360,11 +317,8 @@ public class TopicController {
 	public String viewNotThoughtTopic(int state, HttpServletRequest request,HttpServletResponse response,String type,String gradeId, HttpSession session){
 		state -= 2;
 		List<Topics> topics = null;
-		List<Teacher> teacher = (List<Teacher>) session.getAttribute("infor");
-		if(teacher.size() > 0){
-			topics = topicService.viewNotThoughtTopic(gradeId, teacher.get(0).getId(), String.valueOf(state));
-			
-		}
+		Long teacherId = (Long) session.getAttribute("teacherId");
+		topics = topicService.viewNotThoughtTopic(gradeId, teacherId, String.valueOf(state));
 		
 		request.setAttribute("topics", topics);
 		request.setAttribute("state", 1);
@@ -382,16 +336,25 @@ public class TopicController {
 	@RequestMapping("/addUpdateAttach")
 	public String addUpdateAttach(String id, @RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		String path = request.getSession().getServletContext().getRealPath("upload");
-		String gradeId = (String) session.getAttribute("gradeId");
+		JSONObject json = new JSONObject();
+		
 		if(topicService.addUpdateAttach(path, id, file)) {
-			request.setAttribute("path", "topic/viewTopicTeacher.do?gradeId="+gradeId);
-			request.setAttribute("message", "成功!");
-			return "common/success";
+			try {
+				json.put("result", 1);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
-			request.setAttribute("path", "topic/viewTopicTeacher.do?gradeId="+gradeId);
-			request.setAttribute("message", "失败!");
-			return "common/failed";
+			try {
+				json.put("result", 0);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		
+		return null;
 	}
 	/**
 	 * 导出选题情况
@@ -421,7 +384,6 @@ public class TopicController {
 			wb.write(output);
 			output.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -442,14 +404,12 @@ public class TopicController {
 			try {
 				response.getWriter().println(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else {
 			try {
 				response.getWriter().println(0);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -458,7 +418,7 @@ public class TopicController {
 	}
 	
 	/**
-	 * 删除、未通过的题目
+	 * 删除题目
 	 * @param id
 	 * @param request
 	 * @param response
@@ -471,14 +431,12 @@ public class TopicController {
 			try {
 				response.getWriter().println(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else {
 			try {
 				response.getWriter().println(0);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -510,15 +468,24 @@ public class TopicController {
 	@RequestMapping("/saveSubTopic")
 	public String saveSubTopic(Long studentId, long topicId,SubTopic subTopic, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		String path = session.getServletContext().getRealPath("/upload");
+		JSONObject json = new JSONObject();
 		if(topicService.saveSubTopic(studentId, topicId, subTopic, path, file)) {
-			request.setAttribute("path", "topic/addSubTopic.do?id="+topicId);
-			request.setAttribute("message", "上传成功！");
-			return "common/success";
+			try {
+				json.put("result", 1);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
-			request.setAttribute("path", "topic/addSubTopic.do?id="+topicId);
-			request.setAttribute("message", "上传失败！");
-			return "common/failed";
+			try {
+				json.put("result", 0);
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		}
+		return null;
 	}
 	/**
 	 * 打包下载子题目
@@ -537,7 +504,6 @@ public class TopicController {
 			response.setHeader("Content-Disposition", "attachment;filename="  
 			        + java.net.URLEncoder.encode("SubTopics"+ new SimpleDateFormat("yyyyMMddHH").format(new Date()) + ".zip", "utf-8"));
 		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	    //  客户端不缓存  

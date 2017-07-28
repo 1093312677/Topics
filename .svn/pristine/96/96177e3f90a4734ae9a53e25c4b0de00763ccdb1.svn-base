@@ -1,8 +1,0 @@
-package com.guo.service;
-
-import com.entity.Student;
-
-public interface IStudentService {
-	public Student get(String no);
-	public int update(Student  stu);
-}

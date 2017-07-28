@@ -87,15 +87,23 @@ public class AttachController {
 	    if(isNow) {
 	    	result = attachService.addOpenReport(file, path, studentId);
 			if(result) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/viewOpenReport.do");
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/viewOpenReport.do");
-				return "common/failed";
-			}
+				JSONObject json = new JSONObject();
+				json.put("result", 1);
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return null;
+			} 
 	    }
+	    JSONObject json = new JSONObject();
+		json.put("result", 1);
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    return null;
 	}
 	
@@ -152,15 +160,24 @@ public class AttachController {
 	    if(isNow) {
 			result = attachService.addMidReport(file, path, studentId);
 			if(result) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/viewMidReport.do");
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/viewMidReport.do");
-				return "common/failed";
-			}
+				JSONObject json = new JSONObject();
+				json.put("result", 1);
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				
+				return null;
+			} 
 	    }
+	    JSONObject json = new JSONObject();
+		json.put("result", 0);
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    return null;
 	}
 	
@@ -216,15 +233,23 @@ public class AttachController {
 	    if(isNow) {
 			result = attachService.addSubmitThesis(file, path, studentId);
 			if(result) {
-				request.setAttribute("message", "成功！");
-				request.setAttribute("path", "attach/viewSubmitThesis.do");
-				return "common/success";
-			} else {
-				request.setAttribute("message", "失败！");
-				request.setAttribute("path", "attach/viewSubmitThesis.do");
-				return "common/failed";
-			}
+				JSONObject json = new JSONObject();
+				json.put("result", 1);
+				try {
+					response.getWriter().println(json.toString());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				return null;
+			} 
 	    }
+	    JSONObject json = new JSONObject();
+		json.put("result", 0);
+		try {
+			response.getWriter().println(json.toString());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	    return null;
 	}
 	

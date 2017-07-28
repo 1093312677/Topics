@@ -19,6 +19,9 @@
 <script src="<%=request.getContextPath() %>/js/fileinput.js" type="text/javascript"></script>
 <script src="<%=request.getContextPath() %>/js/fileinput_locale_zh.js" type="text/javascript"></script>
 <link href="<%=request.getContextPath() %>/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 
 </head>
 <body>
@@ -73,13 +76,13 @@
 			    	<c:if test="${isNow == true }">
 			    		 <tr>
 			    		 	<td>
-			    		 		<form action="<%=request.getContextPath() %>/attach/addSubmitThesis.do" method="post" enctype="multipart/form-data">
+			    		 		<form id="form" action="" method="post" enctype="multipart/form-data">
 									 <div class="input-group">
 							            <span class="input-group-addon" style="border-radius: 0;"> 论文</span>
-							           	<input type="file" name="file" required class="form-control file" placeholder="文件">
+							           	<input type="file" name="file" id="file" required class="form-control file" placeholder="文件">
 							          </div>
 							          <br>
-							         <input type="submit" value="提　　交" class="btn btn-primary"/>
+							         <input type="button" value="提　　交" id="save" class="btn btn-primary"/>
 						        </form>
 							</td>
 						</tr>	
@@ -93,6 +96,46 @@
    </div>
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
+	$("#save").click(function(){
+		var file = $("#file").val();
+		if(file == "" ) {
+			swal("文件不能为空！", "请重试！", "warning");
+			return false;
+		}
+		swal({
+			  title: "确认提交？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false,
+			  showLoaderOnConfirm: true, 
+		},
+		function(){
+			var form = new FormData(document.getElementById("form"));
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath() %>/attach/addSubmitThesis.do",
+				data:form,
+				dataType:"json",
+				processData:false,
+	            contentType:false,
+				success:function(data){
+					if(data.result==1){
+						swal("提交成功!", "", "success");
+						window.setTimeout("location.reload()",700);
+					}else{
+						swal("提交失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					swal("提交失败！", "请重试！", "error");
+					window.setTimeout("location.reload()",700);
+				}
+			})	
+		});
+	})
 </script>	
 	
 </body>
