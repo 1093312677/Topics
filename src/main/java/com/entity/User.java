@@ -1,5 +1,7 @@
 package com.entity;
 
+import java.io.Serializable;
+
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -21,7 +23,11 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 @Entity
 @Table(name="user")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User {
+public class User implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
