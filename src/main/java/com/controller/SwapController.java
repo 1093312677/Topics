@@ -48,23 +48,22 @@ public class SwapController {
 	 */
 	@RequestMapping("/changeSwapInDepart")
 	public String changeSwapInDepart(String state, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Student> students = (List<Student>) session.getAttribute("infor");
-		if(students.size() > 0) {
-			String id = String.valueOf(students.get(0).getId());
-			if(swapService.swapInDepart(state, id)){
+		Student student = (Student) session.getAttribute("student");
+		String id = String.valueOf(student.getId());
+		if(swapService.swapInDepart(state, id)){
 //				修改成功后更新session里面的信息
-				students.get(0).setSwapInDepa(Integer.valueOf(state));
-				session.setAttribute("infor", students);
-				JSONObject json = new JSONObject();
-				json.put("result", 1);
-				try {
-					response.getWriter().println(json.toString());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return null;
-			} 
-		}
+			student.setSwapInDepa(Integer.valueOf(state));
+			session.setAttribute("student", student);
+			JSONObject json = new JSONObject();
+			json.put("result", 1);
+			try {
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			return null;
+		} 
+			
 		JSONObject json = new JSONObject();
 		json.put("result", 1);
 		try {
@@ -163,19 +162,28 @@ public class SwapController {
 		Long gradeId = (Long) session.getAttribute("gradeId");
 		String path = null;
 		if("depart".equals(type)) {
-			path = "swap/viewSwapStudentDept.do?gradeId="+gradeId;
 		} else {
 			path = "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId;
 		}
+		JSONObject json = new JSONObject();
+		
 		if(swapService.swapTeacher(topicId, studentId)){
-			request.setAttribute("message", "调剂成功");
-			request.setAttribute("path", path);
-			return "common/success";
+			json.put("result", 1);
+			try {
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
 		} else {
-			request.setAttribute("message", "调剂失败");
-			request.setAttribute("path", path);
-			return "common/failed";
+			json.put("result", 0);
+			try {
+				response.getWriter().println(json.toString());
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+		return null;
 	}
 	/**
 	 * 系主任查看还未选题的学生

@@ -41,11 +41,11 @@
 					</div>
 					<div class="panel-body">
 						服从系内调配：
-						<c:if test="${infor[0].swapInDepa == 0}">
+						<c:if test="${student.swapInDepa == 0}">
 							是
 							<a href="javascript:void(0)" onclick="change(1)">修改</a>
 						</c:if>
-						<c:if test="${infor[0].swapInDepa == 1}">
+						<c:if test="${student.swapInDepa == 1}">
 							否
 							<a href="javascript:void(0)" onclick="change(0)">修改</a>
 						

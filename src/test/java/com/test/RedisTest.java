@@ -5,10 +5,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import com.common.RedisTool;
 import com.entity.Teacher;
 import com.entity.Template;
 import com.entity.User;
@@ -42,6 +45,7 @@ public class RedisTest {
 		tp.setTempName("tempName");
 		tp.setId(15);
 		jedis.set("tp".getBytes(), serialize(tp));
+		
         byte[] byt=jedis.get("tp".getBytes());
         Object obj=unserizlize(byt);
         if(obj instanceof Template){
@@ -61,6 +65,15 @@ public class RedisTest {
         if(oo instanceof User) {
         	System.out.println(((User)oo).getPassword()+((User)oo).getTeacher().getName());
         }
+        
+        List<User> users = new ArrayList<User>();
+        users.add(u);
+        u.setPassword("passwo2");
+        users.add(u);
+        RedisTool.setRedis("uu", 10, users);
+        Object uu = RedisTool.getReids("uu");
+        System.out.println(((List<User>)uu).get(0).getPassword()+"----------"+((List<User>)uu).get(1).getPassword());
+        
 	}
 	
 	//序列化 

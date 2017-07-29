@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.common.Pagination;
 import com.common.ServerResponse;
@@ -34,6 +35,7 @@ import com.entity.Clazz;
 import com.entity.CourseAndGrade;
 import com.entity.Grade;
 import com.entity.IntentionTopic;
+import com.entity.Score;
 import com.entity.Setting;
 import com.entity.Student;
 import com.entity.SubTopic;
@@ -287,58 +289,55 @@ public class StudentController {
 	 * 学生查看题目，选择题目
 	 * @return
 	 */
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@RequestMapping("/viewTopicsStudent")
-	public String viewTopicsStudent(Pagination pagination, String pageType, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+	public ModelAndView viewTopicsStudent(Pagination pagination, String pageType, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+		ModelAndView mv = new ModelAndView();
 //		如果是输入的页数进行减一
 		if("1".equals(pageType)) {
 			pagination.setPage(pagination.getPage() - 1);
 		}
-		
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		
-		
 		List<Topics> topics = null;
-		List<Student> students = (List<Student>) session.getAttribute("infor");
-		if(students.size() > 0) {
-			pagination.setTotleSize(studentService.getTopicCount(students.get(0).getClazz().getDirection().getId()));//获取总记录数
-			if(students.get(0).getTopics() == null) {
-				request.setAttribute("selected", "no");
-			} else {
-				request.setAttribute("selected", "yes");
-			}
+		Long directionId = (Long) session.getAttribute("studentDirectionId");
+		
+		
+		pagination.setTotleSize(studentService.getTopicCount(directionId));//获取总记录数
+		
+		Student student = (Student) session.getAttribute("student");
+		if(student.getTopics() == null) {
+			mv.addObject("selected", "no");
 		} else {
-			request.setAttribute("selected", "no");
+			mv.addObject("selected", "yes");
 		}
 		
-
-		
 		Setting setting = (Setting) session.getAttribute("setting");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		
 		if (setting != null) {
 			DealData deal = new DealData();
 //			第一轮选题开始，结束时间
 			if(deal.isNow(setting.getOneSelectStartTime(), setting.getOneSelectEndTimeOne())) {
-				List<Student> infor =  (List<Student>)session.getAttribute("infor");
-				topics = studentService.viewTopic(infor.get(0), 1, pagination.getPage(), eachPage);
-				request.setAttribute("message", "第一轮选题");
+				topics = studentService.viewTopic(directionId, 1, pagination.getPage(), eachPage, "web");
+				mv.addObject("message", "第一轮选题");
 			} else if(deal.isNow(setting.getTwoSelectStartTime(), setting.getTwoSelectEndTimeOne())) {//第二轮选题开始，结束时间
-				List<Student> infor =  (List<Student>)session.getAttribute("infor");
-				topics = studentService.viewTopic(infor.get(0), 2, pagination.getPage(), eachPage);
-				request.setAttribute("message", "第二轮选题");
+				topics = studentService.viewTopic(directionId, 2, pagination.getPage(), eachPage, "web");
+				mv.addObject("message", "第二轮选题");
 			} else {
-				request.setAttribute("message", "不是选题的时间！");
+				mv.addObject("message", "不是选题的时间！");
 			}
 			
 		} else {
-			request.setAttribute("message", "不是选题的时间！");
+			mv.addObject("message", "不是选题的时间！");
 		}
 	
 //		处理分页数据
-		pagination = dealData.getPagination(students, pagination);
-		request.setAttribute("topics", topics);
-		request.setAttribute("pagination", pagination);
-		return "student/viewTopics";
+		pagination = dealData.getPagination(null, pagination);
+		mv.addObject("topics", topics);
+		mv.addObject("pagination", pagination);
+		mv.setViewName("student/viewTopics");
+		return mv;
 	}
 	/**
 	 * 学生选择意向题目
@@ -507,7 +506,7 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewScoreApp")
 	@ResponseBody
-	public  ServerResponse<User> loginApp(String userId, HttpServletRequest request,HttpServletResponse response){
+	public  ServerResponse<Score> loginApp(String userId, HttpServletRequest request,HttpServletResponse response){
 		
 		return studentService.viewScoreApp(userId);
 	}
@@ -590,11 +589,11 @@ public class StudentController {
 						
 	//					在第一轮选题时间之间
 						if(now.getTime() > oneStart.getTime() && now.getTime() < oneEnd.getTime() ) {
-							topics =  studentService.viewTopic(students.get(0), 1, 0, 1000);
+							topics =  studentService.viewTopic(students.get(0).getClazz().getDirection().getId(), 1, 0, 1000,"app");
 							
 	//					在第二轮选题时间之间
 						} else if(now.getTime() > twoStart.getTime() && now.getTime() < twoEnd.getTime() ) {
-							topics = studentService.viewTopic(students.get(0), 2, 0, 1000);
+							topics = studentService.viewTopic(students.get(0).getClazz().getDirection().getId(), 2, 0, 1000,"app");
 	//					不是选题时间
 						} else {
 							return ServerResponse.response(203, "不是选题的时间！", null);

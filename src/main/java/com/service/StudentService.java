@@ -2,9 +2,7 @@ package com.service;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
@@ -12,13 +10,11 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.common.QueryCondition;
+import com.common.RedisTool;
 import com.common.ServerResponse;
 import com.dao.IIntentionDao;
 import com.dao.IStudentDao;
@@ -27,19 +23,17 @@ import com.dao.impl.DaoImpl;
 import com.entity.CheckViewGrade;
 import com.entity.Clazz;
 import com.entity.CourseAndGrade;
-import com.entity.Direction;
 import com.entity.IntentionTopic;
 import com.entity.Score;
-import com.entity.Setting;
 import com.entity.Student;
 import com.entity.Teacher;
 import com.entity.Topics;
 import com.entity.User;
 
 @Service
-public class StudentService<T> {
+public class StudentService {
 	@Autowired
-	private DaoImpl<T> daoImpl;
+	private DaoImpl daoImpl;
 	@Autowired
 	private CourseGradeService courseGradeService;
 	
@@ -57,37 +51,22 @@ public class StudentService<T> {
 	 * @param directions
 	 * @return
 	 */
-	public List<Topics> viewTopic(Student student, int batch, int num, int size) {
-		Long directionId = student.getClazz().getDirection().getId();
-		List<Topics> topics = topicDao.studentGetTopics(directionId, batch, num, size);
+	@SuppressWarnings("unchecked")
+	public List<Topics> viewTopic(Long directionId, int batch, int num, int size, String plateform) {
+		String key = plateform+"topics"+num;
+		List<Topics> topics = null;
+		Object obj= null;
+		obj = RedisTool.getReids(key);
+		if(obj == null) {
+			topics = topicDao.studentGetTopics(directionId, batch, num, size);
+			RedisTool.setRedis(key, 20, topics);
+			daoImpl.closeSession();
+		} else {
+			topics = (List<Topics>) RedisTool.getReids(key);
+		}
 		
-//		int count = 0;//统计有多少个意向学生
-//		for(int i=0;i<topics.size();i++) {
-//			count = 0;
-//			for(int j=0;j<topics.get(i).getIntentionTopics().size();j++){
-////				根据设定的时间来判断当前是第几轮选题
-//				if(topics.get(i).getIntentionTopics().get(j).getBatch() == batch){
-//					count++;
-//				}
-//				topics.get(i).setIntentionNumber(count);
-//			}
-//		}
 		
-//		for(int i=0;i<list.size();i++){
-//			set.add(list.get(i));
-//		}
-//		int count = 0;
-//		for(Topics t:set){
-//			count = 0;//统计有多少个意向学生
-//			for(int i=0;i<t.getIntentionTopics().size();i++){
-////				根据设定的时间来判断当前是第几轮选题
-//				if(t.getIntentionTopics().get(i).getBatch() == batch){
-//					count++;
-//				}
-//				t.setIntentionNumber(count);
-//			}
-//		}
-		daoImpl.closeSession();
+		
 		return topics;
 	}
 	
@@ -204,7 +183,7 @@ public class StudentService<T> {
 	 * @param gradeId
 	 * @return
 	 */
-	public List<T> viewStudents(String gradeId, int page, int eachPage) {
+	public List viewStudents(String gradeId, int page, int eachPage) {
 		return daoImpl.viewStudents(gradeId, page, eachPage);
 	}
 	
