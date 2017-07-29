@@ -5,6 +5,7 @@ import java.util.List;
 import org.hibernate.Session;
 
 import com.entity.Grade;
+import com.entity.SubTopic;
 import com.entity.TeacherAutoSelect;
 import com.entity.TeacherGroup;
 import com.entity.Topics;
@@ -88,4 +89,18 @@ public interface ITopicDao {
 	 * @return
 	 */
 	public List<Topics> studentGetTopics(Long directionId, int batch, int num, int size);
+	
+	/**
+	 * 学生查看自己的题目
+	 * @param studentId
+	 * @return
+	 */
+	public Topics getStudentTopic(Long studentId);
+	
+	/**
+	 * 获取学生子题目
+	 * @param studentId
+	 * @return
+	 */
+	public SubTopic getStudentSubTopic(Long studentId);
 }

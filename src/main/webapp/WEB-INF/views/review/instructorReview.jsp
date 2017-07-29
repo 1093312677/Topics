@@ -68,7 +68,14 @@
 	    			<td>
 	    				<c:if test="${isNow == true }">
 	    					<a href="#" data-toggle="modal" data-target="#import1" id="import">
-		    					<button class="btn btn-primary" onclick="getId(<c:out value="${items.id }"></c:out>)">评阅</button>
+	    						<c:choose>
+	    							<c:when test="${items.form.interimEvalForm == null }">
+	    								<button class="btn btn-primary" onclick="getId(<c:out value="${items.id }"></c:out>)">评阅</button>
+	    							</c:when>
+	    							<c:otherwise>
+	    								<button class="btn btn-primary" onclick="getId(<c:out value="${items.id }"></c:out>)">修改</button>
+	    							</c:otherwise>
+	    						</c:choose>		    					
 		    				</a>
 	    				</c:if>
 	    				<c:if test="${isNow == false }">

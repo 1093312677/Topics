@@ -3,6 +3,7 @@ package com.guo.dao;
 import java.util.List;
 
 import com.entity.Student;
+import com.entity.Topics;
 import com.entity.User;
 
 public interface IStudentDao {
@@ -12,4 +13,5 @@ public interface IStudentDao {
 	public int update(Student stu);
 	public int updateInfo(Student stu,long clazzId);
 	public void closeSession();
+	public List<Topics> findTopicBy(String pk,String findType,long directionId);
 }

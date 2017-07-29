@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Service;
 
 import com.entity.Student;
+import com.entity.Topics;
 import com.guo.dao.IStudentDao;
 
 import com.guo.service.IStudentService;
@@ -56,6 +57,15 @@ public class StudentService implements IStudentService {
 		List<Student>students=studentDao.getStudents(studentno, "no",1);
 		if(students.size()>0) n=1;
 		return n;
+	}
+
+	@Override
+	public List<Topics> findTopicBy(String pk, String findType, long directionId) {
+		List<Topics>topics=studentDao.findTopicBy(pk, findType, directionId);
+		for (Topics topics2 : topics) {
+			System.out.println(topics2.getTopicsName());
+		}
+		return topics;
 	}
 
 }

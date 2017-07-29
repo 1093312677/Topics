@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.print.attribute.standard.Fidelity;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.xmlbeans.impl.xb.xsdschema.Public;
 import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,6 +26,7 @@ import com.alibaba.fastjson.support.odps.udf.JSONArrayAdd;
 import com.dto.DealData;
 import com.entity.Clazz;
 import com.entity.Student;
+import com.entity.Topics;
 import com.entity.User;
 import com.fasterxml.jackson.annotation.JsonFormat.Value;
 import com.guo.service.IClazzService;
@@ -116,6 +119,25 @@ public class StudentController_guo {
 			studentService.closeSession();
 		}
 		return null;
+	}
+	@RequestMapping(value="find.do",method=RequestMethod.POST)
+	public String find(HttpSession session,HttpServletRequest request){
+		String message=request.getParameter("message");
+		request.setAttribute("message", message);
+		if(message.equals("不是选题的时间！")) return "student/viewTopics";
+		String pk=request.getParameter("pk");
+		String findType=request.getParameter("findType");		
+		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		List<Topics>topics=new ArrayList<>();
+		try{
+			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());
+		}finally{
+			studentService.closeSession();
+		}
+		request.setAttribute("topics", topics);
+		request.setAttribute("selected", "no");
+		if(infor.get(0).getTopics()!=null) request.setAttribute("selected", "yes");
+		return "student/viewTopics";		
 	}
 	/*@RequestMapping(value="viewStudent.do")
 	public String update(HttpServletRequest resquest,HttpServletResponse response,Model model) throws IOException{

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import com.entity.Clazz;
 import com.entity.Student;
 import com.entity.Teacher;
+import com.entity.Topics;
 import com.entity.User;
 import com.guo.dao.IStudentDao;
 @Repository(value="studentDao1")
@@ -158,5 +159,28 @@ public List<Student> getStudents(String name,String queryBy,long gradeId) {
 		e.printStackTrace();
 	} 
 	return students;
+}
+@Override
+public List<Topics> findTopicBy(String pk, String findType, long directionId) {
+	System.out.println(pk+findType+directionId);
+	List<Topics> topics=new ArrayList<>();
+	try{
+		session=getSession();
+		session.beginTransaction();
+		String sql=null;
+		if(findType.equals("teachername")){
+			sql="select * from topics where selectedStudent !=enableSelect and teacherId in (select id from teacher where name like :pk) and id in (select topics_id from t_topic_direction where directions_id=:directionId)";
+		}else if(findType.equals("topicName")){
+			sql="select * from topics where selectedStudent !=enableSelect and topicsName like :pk and id in (select topics_id from t_topic_direction where directions_id=:directionId)";
+		}
+		Query query=session.createSQLQuery(sql).addEntity(Topics.class);
+		query.setString("pk", "%"+pk+"%");
+		query.setLong("directionId", directionId);
+		topics=query.list();
+		session.getTransaction().commit();
+	}catch(Exception e){
+		e.printStackTrace();
+	} 
+	return topics;
 }
 }

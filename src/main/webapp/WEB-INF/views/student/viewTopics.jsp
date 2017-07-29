@@ -24,13 +24,18 @@
 
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
-	                            ${message }
-	            <select id="find" style="height:35px;outline:none">
-	       		<option value="teachername" selected="selected">教师</option>
-	       		<option value="topicName">毕业设计名称</option>
-		       </select>
-		       <input type="text" id="pk" value="" placeholder="请输入教师名称/题目关键字" onkeypress="entry(event)" style="height:35px;outline:none">
-		       <input class="button1" value="查询" type="button" onclick="findTopics()" style="color:white;height:35px;outline:none;border:solid 1px white;width:80px;background-color:#286090">
+	    	   <form action="<%=request.getContextPath() %>/student/find.do" method="post">
+	           ${message }
+	           <c:if test="${message!='不是选题的时间！'}">
+		           <input type="hidden" name="message" value=" ${message }">
+		           <select name="findType" style="height:35px;outline:none">
+			       		<option value="teachername" selected="selected">教师</option>
+			       		<option value="topicName">毕业设计名称</option>
+			       </select>
+			       <input type="text" name="pk" value="" placeholder="请输入教师名称/题目关键字" onkeypress="entry(event)" style="height:35px;outline:none">
+			       <input class="button1" value="查询" type="submit"style="color:white;height:35px;outline:none;border:solid 1px white;width:80px;background-color:#286090">
+		       </c:if>
+	    	   </form>
 	    </div>
     </div>
     <div class="t1">
@@ -141,11 +146,11 @@
 	   
     </div>
 <script>
-function entry(event){
+/*function entry(event){
 	if(event.keyCode==13){
 		findTopics();
 	}
-}
+}*/
 function findTopics(){
 	var findType=$("#find").val();
 	var primaryKey=$("#pk").val();

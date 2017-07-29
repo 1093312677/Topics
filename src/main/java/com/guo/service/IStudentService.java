@@ -3,6 +3,7 @@ package com.guo.service;
 import java.util.List;
 
 import com.entity.Student;
+import com.entity.Topics;
 
 public interface IStudentService {
 	public Student gets(String no);
@@ -12,4 +13,5 @@ public interface IStudentService {
 	public int updateInfo(Student stu,long clazzId);
 	public void closeSession();
 	public int inspection(String studentno);
+	public List<Topics> findTopicBy(String pk,String findType,long directionId);
 }

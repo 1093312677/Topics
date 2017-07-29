@@ -1,5 +1,7 @@
 package com.dao;
 
+import java.util.List;
+
 import com.entity.Form;
 
 public interface IFormDao {
@@ -23,4 +25,5 @@ public interface IFormDao {
 	 * @return
 	 */
 	public boolean saveForm(Form form);
+	
 }
