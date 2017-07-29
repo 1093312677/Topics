@@ -14,6 +14,26 @@ public class AttachDTO {
 	
 	private String topicsUrl;//题目路径
 	private String subTopicUrl;//子题目路径
+	
+	public AttachDTO() {
+		super();
+	}
+	public AttachDTO(String no, String name, String openingReport, String interimReport, String fileName,
+			String interimEvalForm, String reviewEvalForm, String reviewTable, String replyRecord, String topicsUrl,
+			String subTopicUrl) {
+		super();
+		this.no = no;
+		this.name = name;
+		this.openingReport = openingReport;
+		this.interimReport = interimReport;
+		this.fileName = fileName;
+		this.interimEvalForm = interimEvalForm;
+		this.reviewEvalForm = reviewEvalForm;
+		this.reviewTable = reviewTable;
+		this.replyRecord = replyRecord;
+		this.topicsUrl = topicsUrl;
+		this.subTopicUrl = subTopicUrl;
+	}
 	public String getNo() {
 		return no;
 	}

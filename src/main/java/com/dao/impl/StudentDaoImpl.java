@@ -1,5 +1,6 @@
 package com.dao.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.hibernate.Query;
@@ -24,11 +25,7 @@ public class StudentDaoImpl implements IStudentDao{
 	private String hql;
 	
 	
-	public void closeSession(){
-		if(session.isOpen()) {
-			session.close();
-		}
-	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<IntentionTopic> viewIntentions(Long id, Integer batch) {
@@ -273,6 +270,78 @@ public class StudentDaoImpl implements IStudentDao{
 			}
 		}
 		return students;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Student> getAllStudentBasicInfor(Long gradeId) {
+		hql = "SELECT id, no, name"
+				+ " FROM "
+				+ " Student as students"
+				+ " WHERE "
+				+ " students.clazz.direction.spceialty.grade.id=:gradeId";
+		List<Student> students = new ArrayList<Student>();
+		List<Object[]> ostu = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("gradeId", gradeId);
+			ostu = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			return null;
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		
+		Student student = null;
+		for(Object[] stu : ostu) {
+			student = new Student();
+			Long id = (Long) stu[0];
+			String no = (String) stu[1];
+			String name = (String) stu[2];
+			
+			student.setId(id);
+			student.setNo(no);
+			student.setName(name);
+			students.add(student);
+		}
+		
+		return students;
+	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Student> getStudentsAttach(Long gradeId) {
+		hql = "SELECT students"
+				+ " FROM "
+				+ " Student as students"
+				+ " WHERE"
+				+ " students.clazz.direction.spceialty.grade.id=:gradeId";
+		List<Student> students = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("gradeId", gradeId);
+			students = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			return null;
+		}finally{
+//			if(session.isOpen()) {
+//				session.close();
+//			}
+		}
+		return students;
+	}
+	@Override
+	public void closeSession() {
+		if(session.isOpen()) {
+			session.close();
+		}
+		
 	}
 	
 }

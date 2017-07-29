@@ -77,4 +77,18 @@ public interface IStudentDao {
 	 * @return
 	 */
 	public List<Student> getAllStudents();
+	
+	/**
+	 * 获取该年级学生的基本信息
+	 * @param gradeId
+	 * @return
+	 */
+	public List<Student> getAllStudentBasicInfor(Long gradeId);
+	
+	/**
+	 * 获取学生的所有附件
+	 * @param gradeId
+	 * @return
+	 */
+	public List<Student> getStudentsAttach(Long gradeId);
 }

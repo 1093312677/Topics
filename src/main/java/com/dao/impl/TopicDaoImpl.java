@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import com.dao.ITopicDao;
 import com.entity.Grade;
+import com.entity.SubTopic;
 import com.entity.Teacher;
 import com.entity.TeacherAutoSelect;
 import com.entity.TeacherGroup;
@@ -441,6 +442,55 @@ public class TopicDaoImpl implements ITopicDao{
 			session.close();
 		}
 	}
+	}
+	@Override
+	public Topics getStudentTopic(Long studentId) {
+		hql = "SELECT new Topics( id,  topicsName,  introduce,  taskBookName)"
+				+ " FROM "
+				+ " Topics as topic,"
+				+ " Student as student "
+				+ " WHERE "
+				+ " student.topics.id = topic.id "
+				+ " AND "
+				+ " student.id=:studentId";
+		Topics topic = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("studentId", studentId);
+			topic = (Topics) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return topic;
+	}
+	@Override
+	public SubTopic getStudentSubTopic(Long studentId) {
+		hql = "SELECT new SubTopic( id,  subName,  taskBookName)"
+				+ " FROM "
+				+ " SubTopic as sub"
+				+ " WHERE "
+				+ " sub.student.id=:studentId";
+		SubTopic topic = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("studentId", studentId);
+			topic = (SubTopic) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return topic;
 	}
 	
 	
