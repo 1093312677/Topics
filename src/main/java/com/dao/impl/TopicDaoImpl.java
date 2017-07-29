@@ -368,6 +368,7 @@ public class TopicDaoImpl implements ITopicDao{
 		}
 		return count;
 	}
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<Topics> studentGetTopics(Long directionId, int batch, int num, int size) {
 		hql = "select topics from "
@@ -404,19 +405,9 @@ public class TopicDaoImpl implements ITopicDao{
 			topic.setIntroduce(topics.get(i).getIntroduce());
 			
 			teacher = new Teacher();
-//			String hql1 = "SELECT new Teacher( id,  name) "
-//					+ " FROM "
-//						+ " Teacher as teacher "
-//						+ " WHERE teacher.topics.id="+topics.get(i).getId();
-//			Query query1 = session.createQuery(hql1);
-//			query1.setCacheable(true);
-//			teacher = (Teacher) query1.uniqueResult();
-//			System.out.println(hql1);
 			teacher.setName(topics.get(i).getTeacher().getName());
 			teacher.setId(topics.get(i).getTeacher().getId());
-			
 			topic.setTeacher(teacher);
-			
 			
 			count = 0;
 			String hql2 = "SELECT COUNT(*) "

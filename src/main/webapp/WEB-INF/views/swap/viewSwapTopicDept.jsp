@@ -14,30 +14,12 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
-	<!-- 提示框开始 -->
-	<div class="alert-container" id="alert">
-		<div class="box-container">
-			<div class="alert-title">
-				<div class="close" id="alert-close">
-					<span class="glyphicon glyphicon-remove" style="line-height:50px;"></span>
-				</div>
-			</div>
-			
-			<div class="alert-content">
-				<span id="success" class="glyphicon glyphicon-ok-circle" style="color:#dff0d8;font-size:60px;margin-left:40%;margin-top:20px"></span>
-				<span id="failed" class="glyphicon glyphicon-remove-circle" style="color:#f2dede;font-size:60px;margin-left:40%;margin-top:20px"></span>
-				
-				<!-- 文字内容开始 -->
-				<div class="content" align=center id="content">
-				
-				</div>
-				<!-- 文字内容结束 -->
-			</div>
-		</div>
-	</div>
-<!-- 提示框结束 -->
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                          教师调剂
@@ -79,7 +61,7 @@
 	    			<td><c:out value="${items.time }"></c:out></td>
 	    			<td>
 	    				<c:if test="${items.enableSelect > items.selectedStudent }">
-    						<a href="<%=request.getContextPath()%>/swap/swapTeacher.do?type=depart&topicId=${items.id }" > 调剂至此题目</a>
+    						<a href="javascript:void(0)" onclick="change(${items.id })" > 调剂至此题目</a>
 	    				</c:if>
 	    				<c:if test="${items.enableSelect <= items.selectedStudent }">
 	    				超过可选人数
@@ -92,34 +74,38 @@
     
 <script>
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
-	$("#alert").hide();
-	$("#failed").hide();
-	$("#success").hide();
-	$("#alert-close").click(function(){
-		$("#alert").fadeOut();
-	})
 	
-	function audit(id){
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
-			data:{"topicId":id},
-			dataType:"json",
-			success:function(data){
-				if( data == 1 ) {
-					$("#alert").fadeIn();
-					$("#success").fadeIn();
-				} else {
-					$("#alert").fadeIn();
-					$("#failed").fadeIn();
+	function change(id){
+		
+		swal({
+			  title: "是否更改当前志愿？",
+			  text: "注意将会覆盖之前的！",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  showLoaderOnConfirm: true, 
+			  closeOnConfirm: false
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/swap/swapTeacher.do",
+				data:{"type":"depart","topicId":id},
+				dataType:"json",
+				success:function(data){
+					if(data.result==1){
+						swal("调剂成功!", "", "success");
+						window.setTimeout(reload,200);
+					}else{
+						swal("调剂失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					console.log(msg)
 				}
-				
-				window.setTimeout(reload,1000);
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
+			})	
+		});
 	}
 	
 	function reload(){

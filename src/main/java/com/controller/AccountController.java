@@ -62,10 +62,16 @@ public class AccountController {
 					accountService.closeSession();
 //					题目设置相关
 					infor = inforStu;
-					Long gradeId = inforStu.get(0).getClazz().getDirection().getSpceialty().getGrade().getId();
-					Setting setting = settingService.getSetting(gradeId);
-					session.setAttribute("setting", setting);
-					session.setAttribute("studentId", inforStu.get(0).getId());
+					if(inforStu.size() > 0) {
+						Long gradeId = inforStu.get(0).getClazz().getDirection().getSpceialty().getGrade().getId();
+						Long studentDirectionId = inforStu.get(0).getClazz().getDirection().getId();
+						Setting setting = settingService.getSetting(gradeId);
+						session.setAttribute("setting", setting);
+						session.setAttribute("student", inforStu.get(0));
+						session.setAttribute("studentId", inforStu.get(0).getId());
+						session.setAttribute("studentDirectionId", studentDirectionId);
+					}
+					
 				}
 			session.setAttribute("user", user1);
 			session.setAttribute("id", user.getId());
@@ -76,7 +82,7 @@ public class AccountController {
 		}else{
 			try {
 				request.setAttribute("loginMessage", "error");
-				 request.getRequestDispatcher("../index.jsp").forward(request, response); 
+				request.getRequestDispatcher("../index.jsp").forward(request, response); 
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -15,10 +15,9 @@
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
 
-<!-- file -->
-<script src="<%=request.getContextPath() %>/js/fileinput.js" type="text/javascript"></script>
-<script src="<%=request.getContextPath() %>/js/fileinput_locale_zh.js" type="text/javascript"></script>
-<link href="<%=request.getContextPath() %>/css/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<div class="panel panel-default" style="margin:0">
@@ -53,25 +52,36 @@
 <script>
 	//删除
 	function deleteItem(id){
-		if(confirm("取认退选毕业选题?")){
+		swal({
+			  title: "是否退选毕业选题?",
+			  text: "不可撤回！",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  showLoaderOnConfirm: true, 
+			  closeOnConfirm: false
+		},
+		function(){
 			$.ajax({
 				type:"post",
 				url:"<%=request.getContextPath()%>/topic/withdrawalTopic.do",
-				data:{"studentId":id,
-				},
+				data:{"studentId":id},
 				dataType:"json",
 				success:function(data){
-					 alert("退选成功！");
-					 window.setTimeout(reload,200);
-					
+					if(data==1){
+						swal("退选成功!", "", "success");
+						window.setTimeout(reload,700);
+					}else{
+						swal("退选失败！", "请重试！", "error");
+					}
 				},
 				error:function(msg){
-					alert("退选失败！");
 					console.log(msg)
 				}
-			})
-			
-		}
+			})	
+		});
+		
 	}
 	
 	function reload(){
