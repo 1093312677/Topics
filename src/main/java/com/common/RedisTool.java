@@ -19,9 +19,20 @@ public class RedisTool {
 		jedis.auth("kone");
 	}
 	
+	public static void init() {
+		try{
+			jedis = new Jedis("127.0.0.1",6379);
+			jedis.auth("kone");
+		}catch(Exception e) {
+			jedis = null;
+		}
+	}
+	
 	public static boolean setRedis(String key,int seconds, Object obj) {
-		jedis = new Jedis("127.0.0.1",6379);
-		jedis.auth("kone");
+		init();
+		if(jedis == null) {
+			return false;
+		}
 		try{
 			jedis.setex(key.getBytes(),seconds, serialize(obj));
 			return true;
@@ -32,8 +43,10 @@ public class RedisTool {
 	}
 	
 	public static Object getReids(String key) {
-		jedis = new Jedis("127.0.0.1",6379);
-		jedis.auth("kone");
+		init();
+		if(jedis == null) {
+			return null;
+		}
 		if(key != null){
 			if(jedis.exists(key.getBytes())) {
 				byte[] byt=jedis.get(key.getBytes());
