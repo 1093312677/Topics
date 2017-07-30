@@ -2,6 +2,7 @@ package com.controller;
 
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -22,6 +23,7 @@ import com.entity.Department;
 import com.entity.Direction;
 import com.entity.Grade;
 import com.entity.Setting;
+import com.entity.Specialty;
 import com.entity.Student;
 import com.entity.Teacher;
 import com.entity.User;
@@ -56,9 +58,17 @@ public class AccountController {
 //					管理员或者老师
 					List<Teacher> teachers = accountService.findBy("Teacher", "no", user.getUsername());
 					accountService.closeSession();
+					List<Teacher> teachers2=new ArrayList<>();
+					Teacher teacher=new Teacher();
+					teacher.setId(teachers.get(0).getId());
+					Department department=new Department();
+					department.setId(teachers.get(0).getDepartment().getId());
+					teacher.setDepartment(department);
+					teachers2.add(teacher);
 					session.setAttribute("teacherId", teachers.get(0).getId());
 					session.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
 					session.setAttribute("name", teachers.get(0).getName());
+					session.setAttribute("infor", teachers2);									
 				} else if( "4".equals(user1.getPrivilege()) ){
 //					学生
 					Student student = accountService.getStudentInfor(user.getUsername());
@@ -66,7 +76,6 @@ public class AccountController {
 					Direction direction = accountService.getDirectionByClazzId(clazz.getId());
 					Grade grade = accountService.getGradeByDirectionId(direction.getId());
 					Department deparment = accountService.getDepartmentByGradeId(grade.getId());
-					
 					Long gradeId = grade.getId();
 					Long studentDirectionId = direction.getId();
 					Setting setting = settingService.getSetting(gradeId);
@@ -77,6 +86,26 @@ public class AccountController {
 					session.setAttribute("studentGradeId", gradeId);
 					session.setAttribute("studentDepartmentId", deparment.getId());
 					session.setAttribute("name", student.getName());
+					List<Student>students=new ArrayList<>();
+					Student student2=new Student();
+					Clazz clazz2=new Clazz();
+					Direction direction2=new Direction();
+					Specialty specialty2=new Specialty();
+					Grade grade2=new Grade();
+					Department department2=new Department();
+					student2.setId(student.getId());					
+					clazz2.setId(clazz.getId());
+					direction2.setId(direction.getId());
+					grade2.setId(grade.getId());
+					department2.setId(deparment.getId());
+					grade2.setDepartment(department2);
+					specialty2.setGrade(grade2);
+					direction2.setSpceialty(specialty2);
+					clazz2.setDirection(direction2);
+					student2.setClazz(clazz2);
+					students.add(student2);
+					session.setAttribute("infor", students);
+					
 //					}
 					
 				}

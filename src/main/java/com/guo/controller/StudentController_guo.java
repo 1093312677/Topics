@@ -92,7 +92,6 @@ public class StudentController_guo {
 	@RequestMapping(value="findStudentInfo.do")
 	public String UpdateInfo_guo(String queryBy,String primary,Long gradeId,HttpServletRequest request,HttpServletResponse response){
 		List<Student>students=new ArrayList<Student>();
-		
 		students=studentService.getStudents(primary,queryBy,gradeId);	
 		//JSONArray jsonArray = JSONArray.fromObject(students);
 		JSONObject json = new JSONObject();

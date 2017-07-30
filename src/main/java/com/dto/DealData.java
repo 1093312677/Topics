@@ -187,6 +187,7 @@ public class DealData<T> {
 			  student.setQq(students.get(i).getQq());
 			  student.setTelephone(students.get(i).getTelephone());
 			  student.setEmail(students.get(i).getEmail());
+			  student.setSex(students.get(i).getSex());
 			  Clazz clazz=new Clazz();
 			  clazz.setId(students.get(i).getClazz().getId());
 			  clazz.setClassName(students.get(i).getClazz().getClassName());

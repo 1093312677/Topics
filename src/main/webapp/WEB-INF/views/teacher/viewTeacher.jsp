@@ -231,8 +231,8 @@
             	<br>
             	<label>工号：</label><input type="text" name="no1" placeholder="教师学号（*必填）" id="no1" disabled="true" class="form-control"/>
             	<br>
-            	<label>性别：</label><select id="sex1" name="sex1" disabled="true" class="form-control">
-            		<option value="男" id="man" selected>男</option>
+            	<label>性别：</label><select id="sex1" name="sex1" class="form-control">
+            		<option value="男" id="man" >男</option>
             		<option value="女" id="woman" selected="selected">女</option>
             	</select>
             	<br>
@@ -311,7 +311,7 @@
 					var length = data.teachers.length;
 					if(length>0){
 						$('.t1').html('');
-						var content=" <table class='table table-hover table-striped' id='table'><tr class='info'><td width='100px'>工号</td><td>姓名</td><td width='50px'>性别</td><td>职称</td><td>学院</td><td>系</td><td>备注</td><td>操作</td></tr>";
+						var content=" <table class='table table-hover table-striped' id='table'><tr class='info'><td width='100px'>工号</td><td>姓名</td><td width='50px'>性别</td><td>职称</td><td>学院</td><td>系</td><td>备注</td><td>操作</td><td>重置密码</td></tr>";
 						for(var i=0;i<length;i++){
 							content+="<tr>";
 							content+="<td>"+data.teachers[i].no+"</td>";
@@ -324,6 +324,9 @@
 							content+="<td width='70px'>";
 							content+="<a href='javascript:void(0)' onclick='deleteItem("+data.teachers[i].id+")'>"+"<span class='glyphicon  glyphicon-trash' style='color:red' data-toggle='tooltip' data-placement='bottom' title='删除'></span></a>";
 							content+="<a href='javascript:void(0)' onclick='editInfo("+data.teachers[i].id+")'>"+"<span class='glyphicon glyphicon-edit' style='color:green;padding-left:20px' data-toggle='tooltip' data-placement='bottom' title='更新'></span></a>";
+							content+="</td>";
+							content+="<td width='70px'>";
+							content+="<button type='button' class='btn btn-primary' id='resetPW' onclick='resetPW("+data.teachers[i].user.id+")'>重置密码</button>";
 							content+="</td>";
 							content+="</tr>";
 						}
@@ -351,6 +354,11 @@
 			success:function(data){
 				if(data.teacher.sex=='男'){
 					document.getElementById('man').selected=true;
+					document.getElementById('woman').selected=false;
+				}
+				if(data.teacher.sex=='女'){
+					document.getElementById('woman').selected=true;
+					document.getElementById('man').selected=false;
 				}
 				$('#email1').val(data.teacher.email);
 				$('#position1').val(data.teacher.position);
