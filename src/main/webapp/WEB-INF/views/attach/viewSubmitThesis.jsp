@@ -58,8 +58,8 @@
 			        <h3 class="panel-title">  论文</h3>
 			    </div>
 			    <table class="table">
-			    	<c:if test="${isNow == false }">
-			    		 <tr><td colspan="2" align="center">现在不是提交时间！</td></tr>
+			    	<c:if test="${isNow == false || isSelect == false }">
+			    		 <tr><td colspan="2" align="center">现在不是提交时间！或者未选择题目！</td></tr>
 			    	</c:if>
 			   <!-- 判断是否提交文档 -->
 			    	<c:if test="${fileName != null }">
@@ -73,7 +73,7 @@
 		    		 	</tr>
 		    		 </c:if>
 			    <!-- /判断是否提交文档 -->
-			    	<c:if test="${isNow == true }">
+			    	<c:if test="${isNow == true && isSelect == true}">
 			    		 <tr>
 			    		 	<td>
 			    		 		<form id="form" action="" method="post" enctype="multipart/form-data">

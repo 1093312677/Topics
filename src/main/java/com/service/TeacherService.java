@@ -317,14 +317,9 @@ public class TeacherService {
 	 * @param gradeId
 	 * @return
 	 */
-	public Setting viewTime(String gradeId) {
-		List<Setting> settings = (List<Setting>) daoImpl.findBy("Setting", "gradeId", gradeId);
-		daoImpl.closeSession();
-		if(settings.size() >0 ) {
-			return settings.get(0);
-		} else {
-			return new Setting();
-		}
+	public Setting viewTime(Long gradeId) {
+		Setting setting = settingDao.getSetting(gradeId);
+		return setting;
 	}
 	
 	/**

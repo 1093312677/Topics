@@ -37,6 +37,14 @@ public class Clazz {
 	@OneToMany(mappedBy="clazz",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
 	private List<Student> students = new ArrayList<Student>();
 	
+	public Clazz() {
+	super();
+}
+	public Clazz(long id, String className) {
+		super();
+		this.id = id;
+		this.className = className;
+	}
 	public long getId() {
 		return id;
 	}

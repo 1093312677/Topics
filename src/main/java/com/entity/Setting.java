@@ -1,5 +1,7 @@
 package com.entity;
 
+import java.io.Serializable;
+
 import javax.annotation.Generated;
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -19,8 +21,13 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name="setting")
-public class Setting {
+public class Setting implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id;

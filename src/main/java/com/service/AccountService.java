@@ -6,9 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.common.Information;
+import com.common.RedisTool;
 import com.common.ServerResponse;
 import com.dao.AccountDao;
 import com.dao.impl.DaoImpl;
+import com.entity.Clazz;
+import com.entity.Department;
+import com.entity.Direction;
+import com.entity.Grade;
 import com.entity.Student;
 import com.entity.Teacher;
 import com.entity.User;
@@ -116,6 +121,85 @@ public class AccountService<T> {
 		}else{
 			return null;
 		}
+	}
+	
+	/**
+	 * 获取学生的基本信息
+	 * @param no
+	 * @return
+	 */
+	public Student getStudentInfor(String no) {
+		return accountDao.getStudentInfo(no);
+	}
+	
+	/**
+	 * 通过学生id获取该学的班级
+	 * @param studentId
+	 * @return
+	 */
+	public Clazz getClassByStudentId(Long studentId) {
+		
+		return accountDao.getClazzByStudentId(studentId);
+	}
+	
+	/**
+	 * 通过班级id获取方向信息
+	 * @param clazzId
+	 * @return
+	 */
+	public Direction getDirectionByClazzId(Long clazzId) {
+		Direction direction = null;
+		
+		String key = "direction"+clazzId;
+		Object obj= null;
+		obj = RedisTool.getReids(key);
+		if(obj == null) {
+			direction = accountDao.getDirectionByClazzId(clazzId);
+			RedisTool.setRedis(key, 60*60, direction);
+		} else {
+			direction = (Direction) RedisTool.getReids(key);
+		}
+		return direction;
+	}
+	
+	/**
+	 * 通过方向id获取年级信息
+	 * @param directionId
+	 * @return
+	 */
+	public Grade getGradeByDirectionId(Long directionId) {
+		Grade grade = null;
+		String key = "grade"+directionId;
+		Object obj= null;
+		obj = RedisTool.getReids(key);
+		if(obj == null) {
+			grade = accountDao.getGradeByDirectionId(directionId);
+			RedisTool.setRedis(key, 60*60, grade);
+		} else {
+			grade = (Grade) RedisTool.getReids(key);
+		}
+		
+		return grade;
+	}
+	
+	/**
+	 * 通过方向id获取年级信息
+	 * @param directionId
+	 * @return
+	 */
+	public Department getDepartmentByGradeId(Long gradeId) {
+		Department department = null;
+		String key = "department"+gradeId;
+		Object obj= null;
+		obj = RedisTool.getReids(key);
+		if(obj == null) {
+			department = accountDao.getDepartmentByGradeId(gradeId);
+			RedisTool.setRedis(key, 60*60, department);
+		} else {
+			department = (Department) RedisTool.getReids(key);
+		}
+		
+		return department;
 	}
 	
 	/**

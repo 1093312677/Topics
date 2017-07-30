@@ -71,6 +71,13 @@ public class AttachService {
 	
 	private Logger logger = Logger.getLogger(AttachService.class);
 	
+	public boolean isSelectTopic(Long studentId) {
+		Student student = studentDao.studentIsSelectTopic(studentId);
+		if(student != null)
+			return true;
+		return false;
+	}
+	
 	/**
 	 * 获取学生，得到文档信息
 	 * @param id

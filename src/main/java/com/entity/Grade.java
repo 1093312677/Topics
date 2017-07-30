@@ -1,5 +1,6 @@
 package com.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ import com.common.BaseEntity;
  * @author kone
  * 2017-1-7
  */
-public class Grade extends BaseEntity{
+public class Grade extends BaseEntity implements Serializable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;

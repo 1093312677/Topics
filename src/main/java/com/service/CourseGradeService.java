@@ -155,7 +155,7 @@ public class CourseGradeService {
 	 * @param eachPage
 	 * @return
 	 */
-	public List<Course> viewCourse(Teacher teacher, long gradeId, int page, int eachPage) {
+	public List<Course> viewCourse(Long teacherId, long gradeId, int page, int eachPage) {
 		session = sessionFactory.getCurrentSession();
 	    session.beginTransaction();
 //		传递session保证是同一个session进行事务处理
@@ -163,7 +163,7 @@ public class CourseGradeService {
 		List<CourseAndGrade> course = commonDaoImpl.findBy("CourseAndGrade", "gradeId", String.valueOf(gradeId), page, eachPage);
 //		查找出教师已经选择的课程
 		courseDaoImpl.setSession(session);
-		List<CheckViewGrade> checkViewGrade = courseDaoImpl.getcheckViewGrade(String.valueOf(gradeId), teacher.getId());
+		List<CheckViewGrade> checkViewGrade = courseDaoImpl.getcheckViewGrade(String.valueOf(gradeId), teacherId);
 //		创建common里面的course用来提取所有的课程名称和性质
 		List<Course> courses = new ArrayList<Course>();
 		Course cour = null;
@@ -204,7 +204,10 @@ public class CourseGradeService {
 	 * @param courseName
 	 * @return
 	 */
-	public boolean setViewCourse(Teacher teacher, String []courseName, long gradeId) {
+	public boolean setViewCourse(Long teacherId, String []courseName, long gradeId) {
+		Teacher teacher = new Teacher();
+		teacher.setId(teacherId);
+		
 		CheckViewGrade checkViewGrade = null;
 		List<CheckViewGrade> checkViewGrades = new ArrayList<CheckViewGrade>();
 		for(int i=0;i<courseName.length;i++) {
@@ -242,7 +245,9 @@ public class CourseGradeService {
 	 * @param gradeId
 	 * @return
 	 */
-	public List<CheckViewGrade> viewCourseChoice(Teacher teacher, String gradeId) {
+	public List<CheckViewGrade> viewCourseChoice(Long teacherId, String gradeId) {
+		Teacher teacher = new Teacher();
+		teacher.setId(teacherId);
 		 session = sessionFactory.getCurrentSession();
          session.beginTransaction();
 //			传递session保证是同一个session进行事务处理

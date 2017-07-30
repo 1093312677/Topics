@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.common.QueryCondition;
+import com.common.RedisTool;
 import com.dao.impl.DaoImpl;
 import com.entity.Direction;
+import com.entity.Setting;
 import com.entity.Teacher;
 import com.entity.Topics;
 
@@ -139,13 +141,13 @@ public class CommonService <T> {
 	 * @param directions
 	 * @return
 	 */
-	public List<Topics> viewTopic(String gradeId, Teacher teacher, String privilege) {
+	public List<Topics> viewTopic(String gradeId, Long teacherId, String privilege) {
 //		查找对应专业
 		List<Topics> topics = (List<Topics>) findBy("Topics", "gradeId", gradeId);
 		Set<Direction> set = null;
 		if( "3".equals(privilege) ) {
 			for(int i=topics.size() - 1;i >= 0;i--) {
-				if( topics.get(i).getTeacher().getId() != teacher.getId() ) {
+				if( topics.get(i).getTeacher().getId() != teacherId ) {
 					topics.remove(i);
 				}
 			}
@@ -207,6 +209,21 @@ public class CommonService <T> {
 	
 	public boolean saveOrUpdate(T entity){
 		return daoImpl.saveOrUpdate(entity);
+	}
+	
+	/**
+	 * 更新或者保存设置
+	 * @param setting
+	 * @return
+	 */
+	public boolean saveOrUpdate(Setting setting){
+		String key = "setting"+setting.getGrade().getId();
+		boolean result = daoImpl.saveOrUpdate((T) setting);
+//		保存成功更新缓存的数据
+		if(result) {
+			RedisTool.setRedis(key, 60*60, setting);
+		}
+		return result;
 	}
 	
 	/**

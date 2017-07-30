@@ -48,6 +48,7 @@ public class AttachController {
 		Long studentId = (Long) session.getAttribute("studentId");
 		String fileName = null;
 		Form form = attachService.getForm(studentId);
+		boolean isSelect = attachService.isSelectTopic(studentId);
 		if(form != null) {
 			fileName = form.getOpeningReport();
 		}
@@ -61,6 +62,7 @@ public class AttachController {
 		}
 		
 		request.setAttribute("isNow", isNow);
+		request.setAttribute("isSelect", isSelect);
 		request.setAttribute("fileName", fileName);
 
 		return "attach/viewOpenReport";
@@ -120,6 +122,7 @@ public class AttachController {
 	public String viewMidReport(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Long studentId = (Long) session.getAttribute("studentId");
 		String fileName = null;
+		boolean isSelect = attachService.isSelectTopic(studentId);
 		Form form = attachService.getForm(studentId);
 		if(form != null) {
 			fileName = form.getInterimReport();
@@ -134,6 +137,7 @@ public class AttachController {
 		}
 		
 		request.setAttribute("isNow", isNow);
+		request.setAttribute("isSelect", isSelect);
 		request.setAttribute("fileName", fileName);
 
 		return "attach/viewMidReport";
@@ -193,6 +197,7 @@ public class AttachController {
 	public String viewSubmitThesis(HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Long studentId = (Long) session.getAttribute("studentId");
 		String fileName = null;
+		boolean isSelect = attachService.isSelectTopic(studentId);
 		Form form = attachService.getForm(studentId);
 		if(form != null) {
 			fileName = form.getFileName();
@@ -207,6 +212,7 @@ public class AttachController {
 		}
 		
 		request.setAttribute("isNow", isNow);
+		request.setAttribute("isSelect", isSelect);
 		request.setAttribute("fileName", fileName);
 
 		return "attach/viewSubmitThesis";

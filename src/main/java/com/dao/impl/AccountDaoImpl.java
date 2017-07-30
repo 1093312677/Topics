@@ -7,6 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.dao.AccountDao;
+import com.entity.Clazz;
+import com.entity.Department;
+import com.entity.Direction;
+import com.entity.Grade;
+import com.entity.Student;
 import com.entity.User;
 @Repository
 public class AccountDaoImpl implements AccountDao{
@@ -97,6 +102,142 @@ public class AccountDaoImpl implements AccountDao{
 				session.close();
 			}
 		}
+	}
+
+	@Override
+	public Student getStudentInfo(String no) {
+		hql = "SELECT new com.entity.Student( id,  no,  name,  sex,  qq,  telephone,  email,  remark,  swapInDepa)"
+				+ " FROM Student as stu"
+				+ " WHERE "
+				+ " stu.no=:no";
+		Student stu = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setString("no", no);
+			stu = (Student) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+				session.close();
+			}
+		}
+		return stu;
+	}
+
+	@Override
+	public Clazz getClazzByStudentId(Long studentId) {
+		hql = "SELECT new com.entity.Clazz(clz.id,clz.className)"
+				+ " FROM"
+				+ " Clazz as clz, "
+				+ " Student as stu "
+				+ " WHERE"
+				+ " clz.id=stu.clazz.id"
+				+ " AND"
+				+ " stu.id=:studentId";
+		Clazz clazz = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setLong("studentId", studentId);
+			clazz = (Clazz) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+				session.close();
+			}
+		}
+		return clazz;
+	}
+
+	@Override
+	public Direction getDirectionByClazzId(Long clazzId) {
+		hql = "SELECT new com.entity.Direction(dire.id, dire.directionName)"
+				+ " FROM"
+				+ " Direction as dire, "
+				+ " Clazz as clazz "
+				+ " WHERE"
+				+ " dire.id=clazz.direction.id"
+				+ " AND"
+				+ " clazz.id=:clazzId";
+		Direction direction = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setLong("clazzId", clazzId);
+			direction = (Direction) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+				session.close();
+			}
+		}
+		return direction;
+	}
+
+	@Override
+	public Grade getGradeByDirectionId(Long directionId) {
+		hql = "SELECT new com.entity.Grade( grade.id, grade.gradeName)"
+				+ " FROM"
+				+ " Direction as dire, "
+				+ " Grade as grade "
+				+ " WHERE"
+				+ " grade.id=dire.spceialty.grade.id"
+				+ " AND"
+				+ " dire.id=:directionId";
+		Grade grade = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setLong("directionId", directionId);
+			grade = (Grade) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+				session.close();
+			}
+		}
+		return grade;
+	}
+
+	@Override
+	public Department getDepartmentByGradeId(Long gradeId) {
+		hql = "SELECT new com.entity.Department( department.id, department.departmentName)"
+				+ " FROM"
+				+ " Department as department, "
+				+ " Grade as grade "
+				+ " WHERE"
+				+ " department.id=grade.department.id"
+				+ " AND"
+				+ " grade.id=:gradeId";
+		Department department = null;
+		try{
+			session = sessionFactory.openSession();
+			session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setLong("gradeId", gradeId);
+			department = (Department) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+				session.close();
+			}
+		}
+		return department;
 	}
 	
 }

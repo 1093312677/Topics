@@ -41,10 +41,8 @@ public class ImportController {
 	@RequestMapping("/importTeacher")
 	public String importTeacher(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		List<Teacher> teachers = null;
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0) {
-			teachers = importService.importTeacher(file, infor.get(0).getDepartment().getId());
-		}
+		Long departmentId = (Long)session.getAttribute("departmentId");
+		teachers = importService.importTeacher(file, departmentId);
 		session.setAttribute("teachers", teachers);
 		return "import/viewImportErrorTeacher";
 	}

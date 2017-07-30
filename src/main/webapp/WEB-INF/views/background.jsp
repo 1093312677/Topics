@@ -66,7 +66,7 @@
                 <ul id="main-nav" class="nav nav-tabs nav-stacked" style="">
                     <li class="active">
                         <a href="javascript:void(0)" target="frame">
-                            <i class="glyphicon glyphicon-th-large"></i> 欢迎！${infor[0].name }
+                            <i class="glyphicon glyphicon-th-large"></i> 欢迎！${name }
                         </a>
                     </li>
                     

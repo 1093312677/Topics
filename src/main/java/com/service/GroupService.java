@@ -563,7 +563,7 @@ public class GroupService {
 	 * @param teacherId
 	 * @return
 	 */
-	public Group studentGroup(long id, long gradeId){
+	public Group studentGroup(long studentId, long gradeId){
 		List<StuTeachGroup> stuTeachGroups = new ArrayList<StuTeachGroup>();
 		Group group = null;
 		try{
@@ -574,7 +574,7 @@ public class GroupService {
 //			传递session保证是同一个session进行事务处理
 			dao.setSession(session); 
 //			
-			stuTeachGroups = dao.findBy("StuTeachGroup", "studentId", String.valueOf(id));
+			stuTeachGroups = dao.findBy("StuTeachGroup", "studentId", String.valueOf(studentId));
 			
 			
 			if(stuTeachGroups.size() > 0) {

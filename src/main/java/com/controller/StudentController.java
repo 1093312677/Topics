@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -78,15 +77,11 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewGrade")
 	public String viewGrade(HttpSession session,HttpServletRequest request,HttpServletResponse response){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long ) session.getAttribute("departmentId");
 		List<Grade> grades = null;
-		if(teachers.size()>0){
-			grades = gradeService.viewGrades(teachers.get(0).getDepartment().getId());
-		}
+		grades = gradeService.viewGrades(departmentId);
 		request.setAttribute("grades", grades);
 		request.setAttribute("message", "view");
-//		获取完数据后关闭session
-		commonService.closeSession();
 		return "student/viewGrade";
 	}
 	/**
@@ -101,10 +96,9 @@ public class StudentController {
 	public String viewStudent(HttpSession session,HttpServletRequest request,HttpServletResponse response, String pageType, String type,Pagination pagination, Long gradeId){
 //		将gradeId保存为session，后面返回使用
 		session.setAttribute("gradeId", gradeId);
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if(teachers.size()>0){
-			request.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
-		}
+		
+		Long departmentId = (Long ) session.getAttribute("departmentId");
+		request.setAttribute("departmentId", departmentId);
 //		如果是输入的页数进行减一
 		if("1".equals(pageType)) {
 			pagination.setPage(pagination.getPage() - 1);
@@ -281,7 +275,6 @@ public class StudentController {
 	}
 
 	private void setResponseHeader(HttpServletResponse output, String string) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -307,14 +300,14 @@ public class StudentController {
 		pagination.setTotleSize(studentService.getTopicCount(directionId));//获取总记录数
 		
 		Student student = (Student) session.getAttribute("student");
-		if(student.getTopics() == null) {
+		boolean isSelect = studentService.isStudentSelect(student.getId());
+		if(!isSelect) {
 			mv.addObject("selected", "no");
 		} else {
 			mv.addObject("selected", "yes");
 		}
 		
 		Setting setting = (Setting) session.getAttribute("setting");
-		
 		if (setting != null) {
 			DealData deal = new DealData();
 //			第一轮选题开始，结束时间
@@ -346,10 +339,9 @@ public class StudentController {
 	 * @param session
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/selectIntentionTopic")
 	public String selectIntentionTopic(int choice,Topics topic,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		Student student =  (Student)session.getAttribute("student");
 		Setting setting = (Setting) session.getAttribute("setting");
 		PrintWriter out = null;
 		try {
@@ -358,10 +350,10 @@ public class StudentController {
 			e.printStackTrace();
 		}
 		 
-		if(infor.size()>0 && setting != null) {
+		if(student !=null && setting != null) {
 //			获取当前日期是第几次选题
 			int batch = dealData.getBatch(setting);
-			int result = studentService.selectIntentionTopic(infor.get(0), choice, batch, topic);
+			int result = studentService.selectIntentionTopic(student, choice, batch, topic);
 			
 			out.print(result);
 		}
@@ -378,10 +370,9 @@ public class StudentController {
 	 * @param session
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/updateIntentionTopic")
 	public String updateIntentionTopic(int type,int choice,Long id,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		Long studentId =  (Long)session.getAttribute("studentId");
 		
 		Setting setting = (Setting) session.getAttribute("setting");
 		PrintWriter out = null;
@@ -391,10 +382,10 @@ public class StudentController {
 			e.printStackTrace();
 		}
 		
-		if(infor.size() > 0 && setting != null) {
+		if(studentId != null && setting != null) {
 //			获取当前日期是第几次选题
 			int batch = dealData.getBatch(setting);
-			boolean result = studentService.updateIntentionTopic(infor.get(0).getId(), choice, batch, id, type);
+			boolean result = studentService.updateIntentionTopic(studentId, choice, batch, id, type);
 			if(result) {
 				out.print(1);
 			}else{
@@ -429,40 +420,41 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewStudentOne")
 	public String viewStudentOne(String filter, String id, String no, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		List<Teacher> infor =  (List<Teacher>)session.getAttribute("infor");
+		Long teacherId = (Long) session.getAttribute("teacherId");
 		
-		if(infor.size() > 0) {
-			Long gradeId = (Long) session.getAttribute("gradeId");
-			List<Student> students = commonService.find("Student", id);
-			request.setAttribute("students", students);
-			List<CourseAndGrade> courseAndGrades = null;
-			List<CourseAndGrade> courseAndGrades2 = new ArrayList<CourseAndGrade>();
-			commonService.closeSession();
-			courseAndGrades = commonService.findBy("CourseAndGrade", "no", no);
-			commonService.closeSession();
-			if("yes".equals(filter)) {
-				courseAndGrades2 = studentService.getCourseAndGradesFilter(courseAndGrades, infor.get(0), String.valueOf(gradeId), no);
-			}
-			
-			if(courseAndGrades2.size() == 0) {
-//				计算平均分
-				float total = 0;
-				for(int i=0;i<courseAndGrades.size();i++) {
-					total += courseAndGrades.get(i).getScore();
-				}
-				request.setAttribute("courseAndGrades", courseAndGrades);
-				request.setAttribute("average", total/courseAndGrades.size());
-			} else {
-//				计算平均分
-				float total = 0;
-				for(int i=0;i<courseAndGrades2.size();i++) {
-					total += courseAndGrades2.get(i).getScore();
-				}
-				request.setAttribute("courseAndGrades", courseAndGrades2);
-				request.setAttribute("average", total/courseAndGrades2.size());
-			}
-
+		Teacher teacher = new Teacher();
+		teacher.setId(teacherId);
+		
+		Long gradeId = (Long) session.getAttribute("gradeId");
+		List<Student> students = commonService.find("Student", id);
+		request.setAttribute("students", students);
+		List<CourseAndGrade> courseAndGrades = null;
+		List<CourseAndGrade> courseAndGrades2 = new ArrayList<CourseAndGrade>();
+		commonService.closeSession();
+		courseAndGrades = commonService.findBy("CourseAndGrade", "no", no);
+		commonService.closeSession();
+		if("yes".equals(filter)) {
+			courseAndGrades2 = studentService.getCourseAndGradesFilter(courseAndGrades, teacher, String.valueOf(gradeId), no);
 		}
+		
+		if(courseAndGrades2.size() == 0) {
+//				计算平均分
+			float total = 0;
+			for(int i=0;i<courseAndGrades.size();i++) {
+				total += courseAndGrades.get(i).getScore();
+			}
+			request.setAttribute("courseAndGrades", courseAndGrades);
+			request.setAttribute("average", total/courseAndGrades.size());
+		} else {
+//				计算平均分
+			float total = 0;
+			for(int i=0;i<courseAndGrades2.size();i++) {
+				total += courseAndGrades2.get(i).getScore();
+			}
+			request.setAttribute("courseAndGrades", courseAndGrades2);
+			request.setAttribute("average", total/courseAndGrades2.size());
+		}
+
 		
 		return "student/viewStudentDetials";
 	}
@@ -476,10 +468,10 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewScoreStudent")
 	public String viewScoreStudent(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Student> students = (List<Student>) session.getAttribute("infor");
-		if (students.size() > 0) {
-			request.setAttribute("student", students.get(0));
-		}
+		Student student = (Student) session.getAttribute("student");
+		Score score = studentService.getScore(student.getId());
+		student.setScore(score);
+		request.setAttribute("student", student);
 		return "student/viewScore";
 	}
 	
@@ -506,7 +498,7 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewScoreApp")
 	@ResponseBody
-	public  ServerResponse<Score> loginApp(String userId, HttpServletRequest request,HttpServletResponse response){
+	public  ServerResponse<Score> loginApp(Long userId, HttpServletRequest request,HttpServletResponse response){
 		
 		return studentService.viewScoreApp(userId);
 	}
@@ -699,7 +691,6 @@ public class StudentController {
 	 * @param session
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/updateIntentionTopicAPP")
 	public String updateIntentionTopicAPP(Long gradeId, Long userId, int type,int choice,Long id,HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Setting setting = settingDao.getSetting(gradeId);

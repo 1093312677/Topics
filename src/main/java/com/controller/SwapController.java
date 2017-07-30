@@ -138,12 +138,10 @@ public class SwapController {
 	 */
 	@RequestMapping("/viewSwapTeacher")
 	public String viewSwapTeacher(long studentId, long directionId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long teacherId = (Long)session.getAttribute("teacherId");
 		session.setAttribute("studentId", studentId);
 		List<Topics> topics = null;
-		if(teachers.size()  > 0 ) {
-			topics = swapService.viewSwapTeacher(teachers.get(0).getId(), directionId);
-		}
+		topics = swapService.viewSwapTeacher(teacherId, directionId);
 		request.setAttribute("topics", topics);
 		return "swap/swapTopics";
 	}

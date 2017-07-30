@@ -1,5 +1,6 @@
 package com.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,11 @@ import javax.persistence.Table;
  * @author kone
  * 2017-1-7
  */
-public class Direction {
+public class Direction implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
@@ -41,6 +46,15 @@ public class Direction {
 	
 	@ManyToMany(mappedBy="directions",targetEntity = Topics.class,fetch = FetchType.LAZY,cascade=CascadeType.ALL)
 	private List<Topics> topics = new ArrayList<Topics>();
+	
+	public Direction() {
+		super();
+	}
+	public Direction(long id, String directionName) {
+		super();
+		this.id = id;
+		this.directionName = directionName;
+	}
 	public long getId() {
 		return id;
 	}

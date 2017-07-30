@@ -56,23 +56,20 @@ public class ClazzController {
 		List<Clazz> clazzs2 = commonService.view("Clazz",0, eachPage);
 //		获取完数据后关闭session
 		commonService.closeSession();
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		
+		Long departmentId = (Long)session.getAttribute("departmentId");		
 		List<Clazz> clazzs = new ArrayList<Clazz>();
-		if(teachers.size() > 0) {
 //			查找出当前班级属于本系的
-			for(int i=0; i<clazzs2.size();i++) {
+		for(int i=0; i<clazzs2.size();i++) {
 //				如果班级所属系的id和系主任的系id号不一样，就移除
-				if( clazzs2.get(i).getDirection().getSpceialty().getGrade().getDepartment().getId() == teachers.get(0).getDepartment().getId() ){
-					clazzs.add(clazzs2.get(i));
-				}
+			if( clazzs2.get(i).getDirection().getSpceialty().getGrade().getDepartment().getId() == departmentId ){
+				clazzs.add(clazzs2.get(i));
 			}
-			
+		}
+		
 //			查询年级，在添加年级的时候使用
-			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()) );
-			commonService.closeSession();
+		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
+		commonService.closeSession();
 			
-		} 
 		
 		
 		if(type==null){

@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.entity.Document;
-import com.entity.Student;
-import com.entity.Teacher;
 import com.service.DocumentService;
 
 @Controller
@@ -35,22 +33,17 @@ public class DocumentController {
 	 */
 	@RequestMapping("/uploadDocument")
 	public String uploadDocument(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if(teachers.size() > 0) {
-			String path = request.getSession().getServletContext().getRealPath("upload");
-			if(documentService.uploadDocument(file, teachers.get(0).getDepartment().getId(), path)) {
-				request.setAttribute("message", "上传成功");
-				request.setAttribute("path", "document/goDocument.do");
-				return "common/success";
-			} else {
-				request.setAttribute("message", "上传失败");
-				request.setAttribute("path", "document/goDocument.do");
-				return "common/failed";
-			}
+		Long departmentId = (Long) session.getAttribute("departmentId");
+		String path = request.getSession().getServletContext().getRealPath("upload");
+		if(documentService.uploadDocument(file, departmentId, path)) {
+			request.setAttribute("message", "上传成功");
+			request.setAttribute("path", "document/goDocument.do");
+			return "common/success";
+		} else {
+			request.setAttribute("message", "上传失败");
+			request.setAttribute("path", "document/goDocument.do");
+			return "common/failed";
 		}
-		request.setAttribute("message", "上传失败");
-		request.setAttribute("path", "document/goDocument.do");
-		return "common/failed";
 		
 	}
 	
@@ -68,16 +61,12 @@ public class DocumentController {
 	@RequestMapping("/viewDocument")
 	public String viewDocument(String type, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		List<Document> documents = null;
+		Long departmentId = (Long) session.getAttribute("departmentId");
 		if("teacher".equals(type)) {
-			List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-			if(teachers.size() > 0) {
-				documents = documentService.viewDocument(teachers.get(0).getDepartment().getId());
-			}
+			documents = documentService.viewDocument(departmentId);
 		} else {
-			List<Student> students = (List<Student>) session.getAttribute("infor");
-			if(students.size() > 0 ) {
-				documents = documentService.viewDocument(students.get(0).getClazz().getDirection().getSpceialty().getGrade().getDepartment().getId());
-			}
+			Long studentDepartmentId = (Long) session.getAttribute("studentDepartmentId");
+			documents = documentService.viewDocument(studentDepartmentId);
 		}
 		request.setAttribute("documents", documents);
 		return "document/viewDocument";

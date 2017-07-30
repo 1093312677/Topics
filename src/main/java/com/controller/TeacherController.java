@@ -29,6 +29,7 @@ import com.entity.Teacher;
 import com.entity.Topics;
 import com.entity.User;
 import com.service.CommonService;
+import com.service.SettingService;
 import com.service.TeacherService;
 /**
  * 老师相关操作
@@ -46,6 +47,9 @@ public class TeacherController {
 	
 	@Autowired
 	private TeacherService teacherService;
+	
+	@Autowired
+	private SettingService settingService;
 	/**
 	 * 保存老师信息
 	 * @param departmentId
@@ -56,31 +60,25 @@ public class TeacherController {
 	 */
 	@RequestMapping("/addTeacher")
 	public String addTeacher(Teacher teacher,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> deans = (List<Teacher>) session.getAttribute("infor");
-		if(deans.size()>0){
-//			设置老师的登录信息
-			User user = new User();
-			user.setPassword("123456");
-			user.setPrivilege("3");
-			user.setUsername(teacher.getNo());
-			teacher.setUser(user);
+		Long departmentId = (Long) session.getAttribute("departmentId");
+		Department department = new Department();
+		department.setId(departmentId);
+//		设置老师的登录信息
+		User user = new User();
+		user.setPassword("123456");
+		user.setPrivilege("3");
+		user.setUsername(teacher.getNo());
+		teacher.setUser(user);
 //			设置系
-			teacher.setDepartment(deans.get(0).getDepartment());
-			try {
-				if(commonService.save(teacher)){
-					response.getWriter().println("1");
-				}else{
-					response.getWriter().println("0");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}else{
-			try {
+		teacher.setDepartment(department);
+		try {
+			if(commonService.save(teacher)){
+				response.getWriter().println("1");
+			}else{
 				response.getWriter().println("0");
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -202,14 +200,11 @@ public class TeacherController {
 	 * @param session
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	@RequestMapping("/viewGradeSelectedIntent")
 	public String viewGradeSelectedIntent(String viewType, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long) session.getAttribute("departmentId");
 		List<Grade> grades = null;
-		if(teachers.size()>0){
-			grades = teacherService.viewGrade(teachers.get(0).getDepartment().getId());
-		}
+		grades = teacherService.viewGrade(departmentId);
 		request.setAttribute("grades", grades);
 		request.setAttribute("viewType", viewType);
 		return "teacher/viewGradeSelect";
@@ -365,94 +360,92 @@ public class TeacherController {
 		session.setAttribute("gradeId", gradeId);
 		return "teacher/viewStudentNotSelected";
 	}
-	/**
-	 * 题目评测
-	 * @param gradeId
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping("/topicEvaluation")
-	public String topicEvaluation(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		List<Topics> topics = null;
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if(teachers.size() > 0) {
-			topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
-		}
-		for(int i=0;i<topics.size();i++) {
-			for(int j=0;j<topics.get(i).getStudents().size();j++) {
-				Score score = topics.get(i).getStudents().get(j).getScore();
-			}
-		}
-		
-		request.setAttribute("topics",topics);
-		commonService.closeSession();
-		return "teacher/topicEvaluation";
-	}
-	
-	/**
-	 * 录入成绩
-	 * @param gradeId
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping("/entryScore")
-	public String entryScore(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		List<Topics> topics = null;
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if(teachers.size() > 0) {
-			topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
-		}
-		for(int i=0;i<topics.size();i++) {
-			for(int j=0;j<topics.get(i).getStudents().size();j++) {
-				Score score = topics.get(i).getStudents().get(j).getScore();
-			}
-		}
-		request.setAttribute("topics",topics);
-		request.setAttribute("gradeId", gradeId);
-		commonService.closeSession();
-		return "teacher/entryScore";
-	}
-	/**
-	 * 批量录入学生成绩
-	 * @param id
-	 * @param score
-	 * @param request
-	 * @param response
-	 * @param session
-	 * @return
-	 */
-	@RequestMapping("/batchEntryScore")
-	public String batchEntryScore(String gradeId, String []id, String []score, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		QueryCondition queryCondition = null;
-		boolean flag = true;
-		for(int i=0;i<id.length;i++){
-			queryCondition = new QueryCondition();
-			queryCondition.setTable("Score");
-			queryCondition.setConunt(1);
-			queryCondition.setValue4(score[i]);
-			queryCondition.setRow4("score");
-			queryCondition.setRow1("id");
-			queryCondition.setValue1(id[i]);
-			if( !commonService.updateByFree(queryCondition) ) {
-				flag = false;
-			}
-		}
-		if (flag) {
-			request.setAttribute("message", "录入成功！");
-			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
-			return "common/success";
-		} else {
-			request.setAttribute("message", "录入失败！");
-			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
-			return "common/failed";
-		}
-		
-		
-	}
+//	/**
+//	 * 题目评测
+//	 * @param gradeId
+//	 * @param request
+//	 * @param response
+//	 * @param session
+//	 * @return
+//	 */
+//	@RequestMapping("/topicEvaluation")
+//	public String topicEvaluation(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+//		List<Topics> topics = null;
+//		Long teacherId = (Long)session.getAttribute("teacherId");
+//		topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teacherId), "gradeId", gradeId);
+//		for(int i=0;i<topics.size();i++) {
+//			for(int j=0;j<topics.get(i).getStudents().size();j++) {
+//				Score score = topics.get(i).getStudents().get(j).getScore();
+//			}
+//		}
+//		
+//		request.setAttribute("topics",topics);
+//		commonService.closeSession();
+//		return "teacher/topicEvaluation";
+//	}
+//	
+//	/**
+//	 * 录入成绩
+//	 * @param gradeId
+//	 * @param request
+//	 * @param response
+//	 * @param session
+//	 * @return
+//	 */
+//	@RequestMapping("/entryScore")
+//	public String entryScore(String gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+//		List<Topics> topics = null;
+//		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+//		if(teachers.size() > 0) {
+//			topics = commonService.findByTwo("Topics", "teacherId", String.valueOf(teachers.get(0).getId()), "gradeId", gradeId);
+//		}
+//		for(int i=0;i<topics.size();i++) {
+//			for(int j=0;j<topics.get(i).getStudents().size();j++) {
+//				Score score = topics.get(i).getStudents().get(j).getScore();
+//			}
+//		}
+//		request.setAttribute("topics",topics);
+//		request.setAttribute("gradeId", gradeId);
+//		commonService.closeSession();
+//		return "teacher/entryScore";
+//	}
+//	/**
+//	 * 批量录入学生成绩
+//	 * @param id
+//	 * @param score
+//	 * @param request
+//	 * @param response
+//	 * @param session
+//	 * @return
+//	 */
+//	@RequestMapping("/batchEntryScore")
+//	public String batchEntryScore(String gradeId, String []id, String []score, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+//		QueryCondition queryCondition = null;
+//		boolean flag = true;
+//		for(int i=0;i<id.length;i++){
+//			queryCondition = new QueryCondition();
+//			queryCondition.setTable("Score");
+//			queryCondition.setConunt(1);
+//			queryCondition.setValue4(score[i]);
+//			queryCondition.setRow4("score");
+//			queryCondition.setRow1("id");
+//			queryCondition.setValue1(id[i]);
+//			if( !commonService.updateByFree(queryCondition) ) {
+//				flag = false;
+//			}
+//		}
+//		if (flag) {
+//			request.setAttribute("message", "录入成功！");
+//			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
+//			return "common/success";
+//		} else {
+//			request.setAttribute("message", "录入失败！");
+//			request.setAttribute("path", "teacher/entryScore.do?gradeId="+gradeId);
+//			return "common/failed";
+//		}
+//		
+//		
+//	}
 	/**
 	 * 查看成绩
 	 * @param gradeId
@@ -566,8 +559,8 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/viewTime")
-	public String viewTime(String gradeId, HttpSession session,HttpServletRequest request,HttpServletResponse response){
-		Setting setting = teacherService.viewTime(gradeId);
+	public String viewTime(Long gradeId, HttpSession session,HttpServletRequest request,HttpServletResponse response){
+		Setting setting = settingService.getSetting(gradeId);
 		request.setAttribute("setting", setting);
 		return "teacher/viewTime";
 	}

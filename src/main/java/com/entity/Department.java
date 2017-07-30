@@ -1,5 +1,6 @@
 package com.entity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,8 +29,12 @@ import com.common.BaseEntity;
  * @author kone
  * 2017-1-7
  */
-public class Department extends BaseEntity{
+public class Department extends BaseEntity implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;
@@ -54,6 +59,16 @@ public class Department extends BaseEntity{
 	private List<Document> documents = new ArrayList<Document>();	
 	
 	
+	public Department(long id, String departmentName) {
+		super();
+		this.id = id;
+		this.departmentName = departmentName;
+	}
+
+	public Department() {
+		super();
+	}
+
 	public long getId() {
 		return id;
 	}

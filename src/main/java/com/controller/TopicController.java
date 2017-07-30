@@ -33,7 +33,6 @@ import com.entity.Student;
 import com.entity.SubTopic;
 import com.entity.Teacher;
 import com.entity.Topics;
-import com.entity.User;
 import com.service.CommonService;
 import com.service.GradeService;
 import com.service.TopicService;
@@ -272,10 +271,10 @@ public class TopicController {
 	@RequestMapping("/viewTopicTeacher")
 	public String viewTopicTeacher(HttpServletRequest request,HttpServletResponse response,String type,String gradeId,Pagination pagination,HttpSession session){
 		List<Topics> topics = null;
-		List<Teacher> teacher = (List<Teacher>) session.getAttribute("infor");
+		Long teacherId = (Long) session.getAttribute("teacherId");
 		String privilege = (String) session.getAttribute("privilege");
 		if(gradeId != null || gradeId != ""){
-			topics = commonService.viewTopic(gradeId, teacher.get(0), privilege);
+			topics = commonService.viewTopic(gradeId, teacherId, privilege);
 		}
 		
 		request.setAttribute("topics", topics);
@@ -291,11 +290,9 @@ public class TopicController {
 	 */
 	@RequestMapping("/viewGradeTopic")
 	public String viewGradeTopic(HttpSession session,HttpServletRequest request,HttpServletResponse response,int state){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Grade> grades = null;
-		if(teachers.size()>0){
-			grades = gradeService.viewGrades(teachers.get(0).getDepartment().getId());
-		}
+		grades = gradeService.viewGrades(departmentId);
 		request.setAttribute("grades", grades);
 		request.setAttribute("message", "view");
 		request.setAttribute("state", state);

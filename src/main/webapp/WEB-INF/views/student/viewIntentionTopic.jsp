@@ -68,7 +68,6 @@
 	    				<a href="<%=request.getContextPath() %>/teacher/viewTeacherOne.do?type=no&id=<c:out value="${items.topic.teacher.id }"></c:out>"><c:out value="${items.topic.teacher.name }"></c:out></a>
 	    			</td>
 	    			
-	    			<td><c:out value="${items.topic.introduce }"></c:out></td>
 	    			<td>
 	    				<c:if test="${items.swap == 0 }">
 	    					否

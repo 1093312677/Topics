@@ -64,23 +64,20 @@ public class DirectionController {
 		List<Direction> directions2 = commonService.view("Direction", Integer.valueOf(page), eachPage);
 //		获取完数据后关闭session
 		commonService.closeSession();
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		
+		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Direction> directions = new ArrayList<Direction>();
-		if(teachers.size() > 0) {
 //			查找出当前方向属于本系的
-			for(int i=0; i<directions2.size();i++) {
+		for(int i=0; i<directions2.size();i++) {
 //				如果方向所属系的id和系主任的系id号不一样，就移除
-				if( directions2.get(i).getSpceialty().getGrade().getDepartment().getId() == teachers.get(0).getDepartment().getId() ){
-					directions.add(directions2.get(i));
-				}
+			if( directions2.get(i).getSpceialty().getGrade().getDepartment().getId() == departmentId ){
+				directions.add(directions2.get(i));
 			}
-			
+		}
+		
 //			查询年级，在添加年级的时候使用
-			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()) );
-			commonService.closeSession();
+		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
+		commonService.closeSession();
 			
-		} 
 		if(type==null){
 			type="null";
 		}
@@ -113,13 +110,6 @@ public class DirectionController {
 		Specialty specialty = new Specialty();
 		specialty.setId(specialtyId);
 		direction.setSpceialty(specialty);
-		
-//		List<Topics> topics = new ArrayList<Topics>();
-//		Topics topic = new Topics();
-//		topic.setId(3);
-//		topics.add(topic);
-//		direction.setTopics(topics);
-		
 		try {
 			if(commonService.save(direction)){
 				response.getWriter().println("1");

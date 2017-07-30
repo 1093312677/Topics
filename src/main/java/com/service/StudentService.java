@@ -17,6 +17,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.common.RedisTool;
 import com.common.ServerResponse;
 import com.dao.IIntentionDao;
+import com.dao.IScoreDao;
 import com.dao.IStudentDao;
 import com.dao.ITopicDao;
 import com.dao.impl.DaoImpl;
@@ -46,6 +47,9 @@ public class StudentService {
 	@Autowired
 	private ITopicDao topicDao;
 	
+	@Autowired
+	private IScoreDao scoreDao;
+	
 	/**
 	 * student view topics
 	 * @param directions
@@ -60,7 +64,6 @@ public class StudentService {
 		if(obj == null) {
 			topics = topicDao.studentGetTopics(directionId, batch, num, size);
 			RedisTool.setRedis(key, 20, topics);
-			daoImpl.closeSession();
 		} else {
 			topics = (List<Topics>) RedisTool.getReids(key);
 		}
@@ -80,6 +83,18 @@ public class StudentService {
 		return topicDao.getTopicCount(directionId);
 	}
 	
+	/**
+	 * 查看学生是否选择题目
+	 * @param studentId
+	 * @return
+	 */
+	public boolean isStudentSelect(Long studentId) {
+		Student student = studentDao.studentIsSelectTopic(studentId);
+		if(student != null) {
+			return true;
+		}
+		return false;
+	}
 	
 	public List<Topics> viewT(Student student, int batch) {
 		return studentDao.viewTopics(student.getClazz().getDirection().getId());
@@ -357,7 +372,7 @@ public class StudentService {
 	 */
 	public List<CourseAndGrade> getCourseAndGradesFilter(List<CourseAndGrade> courseAndGrades, Teacher teacher, String gradeId, String no ) {
 //		获取教师需要查看的课程
-		List<CheckViewGrade> checkViewGrade = courseGradeService.viewCourseChoice(teacher, gradeId);
+		List<CheckViewGrade> checkViewGrade = courseGradeService.viewCourseChoice(teacher.getId(), gradeId);
 //		用来存储符合的课程
 		List<CourseAndGrade> courseAndGrades2 = new ArrayList<CourseAndGrade>();
 		for(int i=0;i<checkViewGrade.size();i++) {
@@ -376,17 +391,23 @@ public class StudentService {
 	 * @param userId
 	 * @return
 	 */
-	public ServerResponse<Score> viewScoreApp(String userId) {
+	public ServerResponse<Score> viewScoreApp(Long userId) {
 		Score score = new Score();
-		List<Score> scores = (List<Score>) daoImpl.findBy("Score", "studentId", userId);
-		daoImpl.closeSession();
-		if(scores.size()> 0) {
-			float s = scores.get(0).getMediumScore() + scores.get(0).getHeadScore() +scores.get(0).getReplyResult();
-			score.setScore(s);
-		}
+		Score score2 = scoreDao.getScoreParam(userId);
+		float s = score2.getMediumScore() +score2.getHeadScore() + score2.getReplyResult();
+		score.setScore(s);
 		return ServerResponse.response(200, "获取成功", score);
 	}
 	
+	/**
+	 * 学生查看成绩
+	 * @param studentId
+	 * @return
+	 */
+	public Score getScore(Long studentId) {
+		
+		return scoreDao.getScoreParam(studentId);
+	}
 	
 	
 }

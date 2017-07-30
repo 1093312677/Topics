@@ -47,7 +47,7 @@ public class TeachStuController {
 	public String viewGuideStudent(Long gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long teacherId = (Long)session.getAttribute("teacherId");
 		List<Student> students = null;
-		students = teachStuService.viewGuideStudent(teacherId);
+		students = teachStuService.viewGuideStudent(teacherId, gradeId);
 		request.setAttribute("students", students);
 		session.setAttribute("gradeId", gradeId);
 		return "teacher/viewGuideStudent";
@@ -241,14 +241,12 @@ public class TeachStuController {
 			try {
 				response.getWriter().println(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
 			try {
 				response.getWriter().println(0);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -267,14 +265,12 @@ public class TeachStuController {
 			try {
 				response.getWriter().println(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
 			try {
 				response.getWriter().println(0);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

@@ -41,25 +41,6 @@ public class CourseController {
 	@Autowired
 	private CourseGradeService courseGradeService;
 	
-	public CommonService getCommonService() {
-		return commonService;
-	}
-	public void setCommonService(CommonService commonService) {
-		this.commonService = commonService;
-	}
-	public DealData getDealData() {
-		return dealData;
-	}
-	public void setDealData(DealData dealData) {
-		this.dealData = dealData;
-	}
-	
-	public CourseGradeService getCourseGradeService() {
-		return courseGradeService;
-	}
-	public void setCourseGradeService(CourseGradeService courseGradeService) {
-		this.courseGradeService = courseGradeService;
-	}
 	/**
 	 * 添加课程
 	 * @param request
@@ -186,14 +167,11 @@ public class CourseController {
 	 */
 	@RequestMapping("/viewCourse")
 	public String viewCourse(HttpServletRequest request,HttpServletResponse response,long gradeId, HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long teacherId = (Long) session.getAttribute("teacherId");
 		int page = 0;
 		int eachPage = 100000;
 		List<Course> courses = null;
-		if(teachers.size() > 0 ) {
-			courses = courseGradeService.viewCourse(teachers.get(0), gradeId, page, eachPage);
-		}
-		
+		courses = courseGradeService.viewCourse(teacherId, gradeId, page, eachPage);
 		request.setAttribute("courses", courses);
 		session.setAttribute("gradeId", gradeId);
 		commonService.closeSession();
@@ -209,11 +187,8 @@ public class CourseController {
 	@RequestMapping("/setViewCourse")
 	public String setViewCourse(String []courseName, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		long gradeId = (long) session.getAttribute("gradeId");
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if(teachers.size() > 0) {
-			Teacher teacher = teachers.get(0);
-			courseGradeService.setViewCourse(teacher, courseName, gradeId);
-		}
+		Long teacherId = (Long) session.getAttribute("teacherId");
+		courseGradeService.setViewCourse(teacherId, courseName, gradeId);
 		
 		viewCourse(request, response, gradeId, session);
 		return "course/viewCourseChoice";
@@ -227,12 +202,9 @@ public class CourseController {
 	 */
 	@RequestMapping("/viewCourseChoice")
 	public String viewCourseChoice(String gradeId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long teacherId = (Long) session.getAttribute("teacherId");
 		List<CheckViewGrade> checkViewGrade = null;
-		if(teachers.size() > 0) {
-			Teacher teacher = teachers.get(0);
-			checkViewGrade = courseGradeService.viewCourseChoice(teacher, gradeId);
-		}
+		checkViewGrade = courseGradeService.viewCourseChoice(teacherId, gradeId);
 		request.setAttribute("checkViewGrade", checkViewGrade);
 		return "course/viewChoice";
 	}
@@ -252,14 +224,12 @@ public class CourseController {
 			try {
 				response.getWriter().print(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		} else {
 			try {
 				response.getWriter().print(0);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}

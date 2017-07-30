@@ -105,6 +105,22 @@ public class Student{
 		this.no = no;
 		this.name = name;
 	}
+	
+	
+
+	public Student(Long id, String no, String name, String sex, String qq, String telephone, String email,
+			String remark, int swapInDepa) {
+		super();
+		this.id = id;
+		this.no = no;
+		this.name = name;
+		this.sex = sex;
+		this.qq = qq;
+		this.telephone = telephone;
+		this.email = email;
+		this.remark = remark;
+		this.swapInDepa = swapInDepa;
+	}
 
 	public Student(String no) {
 		super();

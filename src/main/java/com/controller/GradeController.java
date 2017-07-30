@@ -39,15 +39,11 @@ public class GradeController {
 	 */
 	@RequestMapping("/viewGrade")
 	public String viewGrade(HttpServletRequest request,HttpServletResponse response,String type, HttpSession session){
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Grade> grades = null;
-		if( teachers.size() > 0 ) {
-			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()) );
-//			获取完数据后关闭session
-			commonService.closeSession();
-//			grades = gradeService.viewGrades(teachers.get(0).getDepartment().getId());
-		}
-		
+		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
+//		获取完数据后关闭session
+		commonService.closeSession();
 		request.setAttribute("grades", grades);
 		request.setAttribute("message", "view");
 		return "admin/grade/viewGrade";
@@ -60,26 +56,18 @@ public class GradeController {
 	@RequestMapping("/addGrade")
 	public String addGrade( Grade grade, HttpSession session, HttpServletRequest request,HttpServletResponse response){
 //	查找出系主任所属系，将年级添加到所属系
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
-		if( teachers.size() > 0 ) {
-			Department department = new Department();
-			department.setId( teachers.get(0).getDepartment().getId() );
-			grade.setDepartment(department);
-			try {
-				if(commonService.save(grade)){
-					response.getWriter().println("1");
-				}else{
-					response.getWriter().println("0");
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		} else {
-			try {
+		Long departmentId = (Long)session.getAttribute("departmentId");
+		Department department = new Department();
+		department.setId( departmentId );
+		grade.setDepartment(department);
+		try {
+			if(commonService.save(grade)){
+				response.getWriter().println("1");
+			}else{
 				response.getWriter().println("0");
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		commonService.closeSession();
 		return null;

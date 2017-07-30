@@ -91,4 +91,19 @@ public interface IStudentDao {
 	 * @return
 	 */
 	public List<Student> getStudentsAttach(Long gradeId);
+	
+	/**
+	 * 查看教师指导的学生
+	 * @param teacherId
+	 * @param gradeId
+	 * @return
+	 */
+	public List<Student> getGuideStudent(Long teacherId, Long gradeId);
+	
+	/**
+	 * 查看学生是否选择题目
+	 * @param studentId
+	 * @return
+	 */
+	public Student studentIsSelectTopic(Long studentId);
 }

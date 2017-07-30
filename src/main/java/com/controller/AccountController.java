@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSONObject;
 import com.common.ServerResponse;
 import com.dto.DealData;
+import com.entity.Clazz;
+import com.entity.Department;
+import com.entity.Direction;
+import com.entity.Grade;
 import com.entity.Setting;
 import com.entity.Student;
 import com.entity.Teacher;
@@ -48,35 +52,37 @@ public class AccountController {
 		logger.info("user->"+"IP:"+request.getRemoteAddr()+"->username:"+user.getUsername());
 		User user1 = accountService.login(user);
 		if(user1 != null){
-			List infor = null;
 				if(user1.getPrivilege().equals("2")||user1.getPrivilege().equals("3")){
 //					管理员或者老师
-					infor = accountService.findBy("Teacher", "no", user.getUsername());
-					List<Teacher> teachers = infor;
+					List<Teacher> teachers = accountService.findBy("Teacher", "no", user.getUsername());
 					accountService.closeSession();
 					session.setAttribute("teacherId", teachers.get(0).getId());
 					session.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
+					session.setAttribute("name", teachers.get(0).getName());
 				} else if( "4".equals(user1.getPrivilege()) ){
 //					学生
-					List<Student> inforStu = accountService.findBy("Student", "no",user.getUsername());
-					accountService.closeSession();
-//					题目设置相关
-					infor = inforStu;
-					if(inforStu.size() > 0) {
-						Long gradeId = inforStu.get(0).getClazz().getDirection().getSpceialty().getGrade().getId();
-						Long studentDirectionId = inforStu.get(0).getClazz().getDirection().getId();
-						Setting setting = settingService.getSetting(gradeId);
-						session.setAttribute("setting", setting);
-						session.setAttribute("student", inforStu.get(0));
-						session.setAttribute("studentId", inforStu.get(0).getId());
-						session.setAttribute("studentDirectionId", studentDirectionId);
-					}
+					Student student = accountService.getStudentInfor(user.getUsername());
+					Clazz clazz = accountService.getClassByStudentId(student.getId());
+					Direction direction = accountService.getDirectionByClazzId(clazz.getId());
+					Grade grade = accountService.getGradeByDirectionId(direction.getId());
+					Department deparment = accountService.getDepartmentByGradeId(grade.getId());
+					
+					Long gradeId = grade.getId();
+					Long studentDirectionId = direction.getId();
+					Setting setting = settingService.getSetting(gradeId);
+					session.setAttribute("setting", setting);
+					session.setAttribute("student", student);
+					session.setAttribute("studentId", student.getId());
+					session.setAttribute("studentDirectionId", studentDirectionId);
+					session.setAttribute("studentGradeId", gradeId);
+					session.setAttribute("studentDepartmentId", deparment.getId());
+					session.setAttribute("name", student.getName());
+//					}
 					
 				}
 			session.setAttribute("user", user1);
 			session.setAttribute("id", user.getId());
 			session.setAttribute("privilege", user1.getPrivilege());
-			session.setAttribute("infor", infor);
 			session.setAttribute("username", user.getUsername());
 			return "background";
 		}else{

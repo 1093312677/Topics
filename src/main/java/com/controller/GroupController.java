@@ -10,11 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -75,14 +71,11 @@ public class GroupController {
 	 */
 	@RequestMapping("/viewGroup")
 	public String viewGroup(HttpServletRequest request,HttpServletResponse response,HttpSession session,String gradeId){
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0 ){
-			List<Group> groups = groupService.viewGroup(gradeId);
-			request.setAttribute("groups", groups);
-			request.setAttribute("departmentId", infor.get(0).getDepartment().getId());
-			session.setAttribute("gradeId", gradeId);
-		}
-		
+		Long departmentId = (Long) session.getAttribute("departmentId");
+		List<Group> groups = groupService.viewGroup(gradeId);
+		request.setAttribute("groups", groups);
+		request.setAttribute("departmentId", departmentId);
+		session.setAttribute("gradeId", gradeId);
 		
 		return "group/viewGroup";
 	}
@@ -252,12 +245,10 @@ public class GroupController {
 		session.setAttribute("groupId", id);
 		String gradeId = (String) session.getAttribute("gradeId");
 //		获取教师信息
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long)session.getAttribute("departmentId");
 		
 		List<Teacher> teachers = null;
-		if(infor.size() > 0 ){
-			teachers = groupService.setViewTeacherGroup(String.valueOf(infor.get(0).getDepartment().getId()),gradeId);
-		}
+		teachers = groupService.setViewTeacherGroup(String.valueOf(departmentId),gradeId);
 		
 		request.setAttribute("teachers", teachers);
 		return "group/setViewTeacherGroup";
@@ -380,18 +371,16 @@ public class GroupController {
 	 */
 	@RequestMapping("/viewGroupMember")
 	public String viewGroupMember(HttpServletRequest request,HttpServletResponse response,HttpSession session,long gradeId){
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0){
-			List<TeacherGroup> teacherGroup = groupService.viewGroupMember(gradeId, infor.get(0).getId());
-//			表示非组长
-			if(teacherGroup.size() == 0) {
-				request.setAttribute("isLeader", "0");
-			} else {
-				request.setAttribute("isLeader", "1");
-			}
-			request.setAttribute("groups", teacherGroup);
-			session.setAttribute("gradeId", gradeId);
+		Long teacherId = (Long)session.getAttribute("teacherId");
+		List<TeacherGroup> teacherGroup = groupService.viewGroupMember(gradeId, teacherId);
+//		表示非组长
+		if(teacherGroup.size() == 0) {
+			request.setAttribute("isLeader", "0");
+		} else {
+			request.setAttribute("isLeader", "1");
 		}
+		request.setAttribute("groups", teacherGroup);
+		session.setAttribute("gradeId", gradeId);
 		
 		
 		return "group/viewGroupMember";
@@ -468,14 +457,12 @@ public class GroupController {
 			try {
 				response.getWriter().println("1");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else{
 			try {
 				response.getWriter().println("0");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -483,7 +470,7 @@ public class GroupController {
 	}
 	
 	/**
-	 * 查看老师负责的学生
+	 * 查看学生的分组
 	 * @param teacherId
 	 * @param request
 	 * @param response
@@ -493,15 +480,11 @@ public class GroupController {
 	@RequestMapping("/studentGroup")
 	public String studentGroup(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 //		通过session获取id
-		List<Student> students = (List<Student>) session.getAttribute("infor");
-		
+		Long gradeId = (Long) session.getAttribute("studentGradeId");
+		Long studentId = (Long) session.getAttribute("studentId");
 		Group group = null;
-		if(students.size() > 0) {
-			long id = students.get(0).getId();
-			long gradeId = students.get(0).getClazz().getDirection().getSpceialty().getGrade().getId();
-			group = groupService.studentGroup(id,gradeId);
-			
-		}
+		group = groupService.studentGroup(studentId,gradeId);
+		groupService.colseSession();
 		request.setAttribute("group", group);
 		return "group/studentGroup";
 	}
@@ -516,14 +499,10 @@ public class GroupController {
 	 */
 	@RequestMapping("/viewTimeAndPlace")
 	public String viewTimeAndPlace(HttpServletRequest request,HttpServletResponse response,HttpSession session,long gradeId){
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0){
-			GroupTimeAndPlace groupTimeAndPlace = groupService.viewTimeAndPlace(gradeId, infor.get(0).getId());
-			request.setAttribute("groupTimeAndPlace", groupTimeAndPlace);
-			session.setAttribute("gradeId", gradeId);
-			session.setAttribute("gradeId", gradeId);
-		}
-		
+		Long teacherId = (Long) session.getAttribute("teacherId");
+		GroupTimeAndPlace groupTimeAndPlace = groupService.viewTimeAndPlace(gradeId, teacherId);
+		request.setAttribute("groupTimeAndPlace", groupTimeAndPlace);
+		session.setAttribute("gradeId", gradeId);
 		
 		return "group/viewTimeAndPlace";
 	}
@@ -549,14 +528,12 @@ public class GroupController {
 			try {
 				response.getWriter().println("1");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}else{
 			try {
 				response.getWriter().println("0");
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -573,10 +550,8 @@ public class GroupController {
 	public String exportTeacherGroup(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		String gradeId = (String) session.getAttribute("gradeId");
 		HSSFWorkbook wb = null;
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0) {
-			wb = groupService.exportTeacherGroup(gradeId, String.valueOf(infor.get(0).getDepartment().getId()));
-		}
+		Long departmentId = (Long) session.getAttribute("departmentId");
+		wb = groupService.exportTeacherGroup(gradeId, String.valueOf(departmentId));
 		//输出Excel文件
 	    OutputStream output;
 		try {
@@ -613,10 +588,7 @@ public class GroupController {
 	public String exportStudentGroup(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		String gradeId = (String) session.getAttribute("gradeId");
 		HSSFWorkbook wb = null;
-		List<Teacher> infor = (List<Teacher>) session.getAttribute("infor");
-		if(infor.size() > 0) {
-			wb = groupService.exportStudentGroup(gradeId);
-		}
+		wb = groupService.exportStudentGroup(gradeId);
 		//输出Excel文件
 	    OutputStream output;
 		try {

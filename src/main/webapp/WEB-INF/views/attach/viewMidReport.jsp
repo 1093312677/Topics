@@ -26,23 +26,6 @@
 
 </head>
 <body>
-	<c:if test="${message =='success'}">
-		<div class="alert alert-success alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert"
-					aria-hidden="true">
-				&times;
-			</button>
-			成功！
-		</div>
-	</c:if>
-	<c:if test="${message =='failed'}">
-		<div class="alert alert-danger alert-dismissable">
-			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-				&times;
-			</button>
-			失败！
-		</div>	
-	</c:if>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                            中期报告
@@ -59,8 +42,8 @@
 			        <h3 class="panel-title"> 中期报告</h3>
 			    </div>
 			    <table class="table">
-			    	<c:if test="${isNow == false }">
-			    		 <tr><td colspan="2" align="center">现在不是提交时间！</td></tr>
+			    	<c:if test="${isNow == false || isSelect == false }">
+			    		 <tr><td colspan="2" align="center">现在不是提交时间！或者未选择题目！</td></tr>
 			    	</c:if>
 			   <!-- 判断是否提交文档 -->
 			    	<c:if test="${fileName != null }">
@@ -74,7 +57,7 @@
 		    		 	</tr>
 		    		 </c:if>
 			    <!-- /判断是否提交文档 -->
-			    	<c:if test="${isNow == true }">
+			    	<c:if test="${isNow == true && isSelect == true}">
 			    		 <tr>
 			    		 	<td>
 			    		 		<form id="form" action="" method="post" enctype="multipart/form-data">

@@ -64,28 +64,10 @@ public class TeachStuService {
 	 * @param teacherId
 	 * @return
 	 */
-	public List<Student> viewGuideStudent(long teacherId) {
-		List<Topics> topics =  null;
+	public List<Student> viewGuideStudent(Long teacherId, Long gradeId) {
 		List<Student> students =  new ArrayList<Student>();
-		try{
-			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
-//			传递session保证是同一个session进行事务处理
-			commonDaoImpl.setSession(session); 
-			topics = commonDaoImpl.findBy("Topics", "teacherId", String.valueOf(teacherId));
-			for(int i=0;i<topics.size();i++) {
-				students.addAll(topics.get(i).getStudents());
-//				for(int j=0;j<topics.get(i).getStudents().size();j++) {
-//					topics.get(i).getStudents().get(j).getTopics();
-//				}
-			}
-			session.getTransaction().commit();
-			
-			return students;
-		}catch(Exception e){
-			e.printStackTrace();
-			return students;
-		} 
+		students = studentDao.getGuideStudent(teacherId, gradeId);
+		return students;
 	}
 	
 	/**

@@ -59,25 +59,20 @@ public class SpecialtyController {
 		List<Specialty> specialtys2 = commonService.view("Specialty", Integer.valueOf(page), eachPage);
 //		获取完数据后关闭session
 		commonService.closeSession();
-		List<Teacher> teachers = (List<Teacher>) session.getAttribute("infor");
+		Long departmentId = (Long)session.getAttribute("departmentId");
 		
 		List<Specialty> specialtys = new ArrayList<Specialty>();
-		if(teachers.size() > 0) {
-			long id = teachers.get(0).getDepartment().getId();
 //			查找出当前专业属于本系的
-			for(int i=0; i<specialtys2.size();i++) {
+		for(int i=0; i<specialtys2.size();i++) {
 //				如果专业所属系的id和系主任的系id号不一样，就移除
-				if( specialtys2.get(i).getGrade().getDepartment().getId() == id ){
-					specialtys.add( specialtys2.get(i) );
-				}
+			if( specialtys2.get(i).getGrade().getDepartment().getId() == departmentId ){
+				specialtys.add( specialtys2.get(i) );
 			}
+		}
 			
 //			查询年级，在添加年级的时候使用
-			grades = commonService.findBy("Grade", "departmentId", String.valueOf(teachers.get(0).getDepartment().getId()) );
+			grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
 			commonService.closeSession();
-		} else {
-			specialtys = null;
-		}
 		if(type==null){
 			type="null";
 		}

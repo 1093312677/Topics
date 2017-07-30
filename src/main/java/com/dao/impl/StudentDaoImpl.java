@@ -343,5 +343,59 @@ public class StudentDaoImpl implements IStudentDao{
 		}
 		
 	}
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<Student> getGuideStudent(Long teacherId, Long gradeId) {
+		hql = "SELECT student "
+				+ " FROM "
+				+ " Student as student,"
+				+ " Topics as topic,"
+				+ " Teacher as teacher "
+				+ " WHERE"
+				+ " student.topics.id = topic.id"
+				+ " AND "
+				+ " topic.teacher.id = teacher.id"
+				+ " AND"
+				+ " teacher.id=:teacherId"
+				+ " AND"
+				+ " topic.grade.id=:gradeId";
+		List<Student> students = null;
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("gradeId", gradeId);
+			query.setLong("teacherId", teacherId);
+			students = query.list();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			return null;
+		}
+		return students;
+	}
+	@Override
+	public Student studentIsSelectTopic(Long studentId) {
+		hql = "FROM Student as student"
+				+ " WHERE "
+				+ " student.topics != null"
+				+ " AND"
+				+ " student.id =:studentId";
+		Student student = null;
+		try{
+			session = sessionFactory.getCurrentSession();
+			session.beginTransaction();
+			Query query = session.createQuery(hql);
+			query.setLong("studentId", studentId);
+			student= (Student) query.uniqueResult();
+			session.getTransaction().commit();
+		}catch(Exception e){
+			
+		}finally{
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
+		return student;
+	}
 	
 }
