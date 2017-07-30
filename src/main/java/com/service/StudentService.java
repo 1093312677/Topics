@@ -57,7 +57,7 @@ public class StudentService {
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Topics> viewTopic(Long directionId, int batch, int num, int size, String plateform) {
-		String key = plateform+"topics"+num;
+		String key = plateform+directionId+batch+"topics"+num;
 		List<Topics> topics = null;
 		Object obj= null;
 		obj = RedisTool.getReids(key);
