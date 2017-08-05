@@ -14,4 +14,5 @@ public interface IStudentDao {
 	public int updateInfo(Student stu,long clazzId);
 	public void closeSession();
 	public List<Topics> findTopicBy(String pk,String findType,long directionId);
+	public Student isSelected(long id);
 }

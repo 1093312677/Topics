@@ -129,13 +129,13 @@ public class StudentController_guo {
 		List<Student> infor =  (List<Student>)session.getAttribute("infor");
 		List<Topics>topics=new ArrayList<>();
 		try{
-			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());
+			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());		
+			request.setAttribute("topics", topics);
+			request.setAttribute("selected", "no");
+			if(studentService.isSelected(infor.get(0).getId())) request.setAttribute("selected", "yes");
 		}finally{
 			studentService.closeSession();
 		}
-		request.setAttribute("topics", topics);
-		request.setAttribute("selected", "no");
-		if(infor.get(0).getTopics()!=null) request.setAttribute("selected", "yes");
 		return "student/viewTopics";		
 	}
 	/*@RequestMapping(value="viewStudent.do")

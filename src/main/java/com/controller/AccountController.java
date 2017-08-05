@@ -26,6 +26,7 @@ import com.entity.Setting;
 import com.entity.Specialty;
 import com.entity.Student;
 import com.entity.Teacher;
+import com.entity.Topics;
 import com.entity.User;
 import com.service.AccountService;
 import com.service.SettingService;
@@ -104,8 +105,7 @@ public class AccountController {
 					clazz2.setDirection(direction2);
 					student2.setClazz(clazz2);
 					students.add(student2);
-					session.setAttribute("infor", students);
-					
+					session.setAttribute("infor", students);					
 //					}
 					
 				}

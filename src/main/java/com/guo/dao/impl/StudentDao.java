@@ -162,7 +162,6 @@ public List<Student> getStudents(String name,String queryBy,long gradeId) {
 }
 @Override
 public List<Topics> findTopicBy(String pk, String findType, long directionId) {
-	System.out.println(pk+findType+directionId);
 	List<Topics> topics=new ArrayList<>();
 	try{
 		session=getSession();
@@ -182,5 +181,21 @@ public List<Topics> findTopicBy(String pk, String findType, long directionId) {
 		e.printStackTrace();
 	} 
 	return topics;
+}
+@Override
+public Student isSelected(long id) {
+	Student student=new Student();
+	try{
+		session=getSession();
+		session.beginTransaction();
+		String hql="from Student s where s.id=:id";
+		Query query=session.createQuery(hql);
+		query.setLong("id", id);
+		student=(Student) query.uniqueResult();
+		session.getTransaction().commit();
+	}catch(Exception e){
+		e.printStackTrace();
+	} 
+	return student;
 }
 }
