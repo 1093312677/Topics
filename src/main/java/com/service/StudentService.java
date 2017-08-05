@@ -4,6 +4,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -50,6 +51,7 @@ public class StudentService {
 	@Autowired
 	private IScoreDao scoreDao;
 	
+	private Logger logger = Logger.getLogger(StudentService.class);
 	/**
 	 * student view topics
 	 * @param directions
@@ -62,9 +64,11 @@ public class StudentService {
 		Object obj= null;
 		obj = RedisTool.getReids(key);
 		if(obj == null) {
+			logger.info("key->"+key+"---query database");
 			topics = topicDao.studentGetTopics(directionId, batch, num, size);
-			RedisTool.setRedis(key, 20, topics);
+			RedisTool.setRedis(key, 60, topics);
 		} else {
+			logger.info("key->"+key+"---query reids");
 			topics = (List<Topics>) RedisTool.getReids(key);
 		}
 		
