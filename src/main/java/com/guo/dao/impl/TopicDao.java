@@ -7,6 +7,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
 import com.entity.Clazz;
+import com.entity.LimitNumber;
 import com.entity.Topics;
 import com.guo.dao.ITopicDao;
 
@@ -36,10 +37,29 @@ public class TopicDao extends BaseDao implements ITopicDao {
 	}
 
 	@Override
-	public void updateInfo(Topics topics,long directionIds[]) {
+	public long updateInfo(Topics topics,long directionIds[]) {
+		long gradeId=0;
 		try{
 			session=getSession();
 			session.beginTransaction();
+			String hql1="from Topics t where id=:id";
+			Query query2=session.createQuery(hql1);
+			query2.setLong("id", topics.getId());
+			Topics topics2=(Topics) query2.uniqueResult();
+			gradeId=topics2.getGrade().getId();
+			hql1="from LimitNumber l where l.teacher=:teacherId";
+			query2=session.createQuery(hql1);
+			long teacherId=topics2.getTeacher().getId();
+			query2.setLong("teacherId",teacherId );
+			LimitNumber limitNumber=(LimitNumber) query2.uniqueResult();
+			int num=limitNumber.getAlreadyNumber()-topics2.getEnableSelect()+topics.getEnableSelect();
+			String sql="update LimitNumber l set l.alreadyNumber=:num where l.teacher=:teacherId and l.grade=:gradeId";
+			query2=session.createQuery(sql);
+			query2.setInteger("num", num);
+			query2.setLong("teacherId", teacherId);
+			query2.setLong("gradeId", gradeId);
+			query2.executeUpdate();
+			
 			String hql="update Topics t set t.topicsName=:topicsName ,t.introduce=:introduce,t.enableSelect=:enableSelect where t.id=:id";
 			Query query=session.createQuery(hql);
 			query.setString("topicsName", topics.getTopicsName());
@@ -56,12 +76,14 @@ public class TopicDao extends BaseDao implements ITopicDao {
 				query.setLong("directionId", directionIds[i]);
 				query.executeUpdate();
 			}
+			
 			session.getTransaction().commit();			
 		}catch(Exception e){
 			e.printStackTrace();
 		}finally {
 			if(session.isOpen()) session.close();
 		}
+		return gradeId;
 	}
 
 	@Override

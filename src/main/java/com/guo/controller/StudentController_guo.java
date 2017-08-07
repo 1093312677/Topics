@@ -127,12 +127,12 @@ public class StudentController_guo {
 		String pk=request.getParameter("pk");
 		String findType=request.getParameter("findType");		
 		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		request.setAttribute("selected", "no");
+		if(studentService.isSelected(infor.get(0).getId())) request.setAttribute("selected", "yes");
 		List<Topics>topics=new ArrayList<>();
 		try{
 			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());		
-			request.setAttribute("topics", topics);
-			request.setAttribute("selected", "no");
-			if(studentService.isSelected(infor.get(0).getId())) request.setAttribute("selected", "yes");
+			request.setAttribute("topics", topics);			
 		}finally{
 			studentService.closeSession();
 		}

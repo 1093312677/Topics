@@ -67,8 +67,12 @@ public class StudentService implements IStudentService {
 
 	@Override
 	public boolean isSelected(long id) {
-		Student student=studentDao.isSelected(id);
-		if(student.getTopics()!=null) return true;
+		try {
+			Student student=studentDao.isSelected(id);
+			if(student.getTopics()!=null) return true;
+		} finally {
+			studentDao.closeSession();
+		}		
 		return false;
 	}
 

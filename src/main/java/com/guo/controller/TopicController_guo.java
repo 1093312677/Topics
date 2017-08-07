@@ -72,12 +72,11 @@ public class TopicController_guo {
 		return "topic/updateTopic";	
 	}
 	@RequestMapping(value="updateInfo.do")
-	public String updateInfo(Topics topics,long directionIds[],HttpServletRequest request){
-		topicService.updateInfo(topics,directionIds);
+	public String updateInfo(Topics topics,Long gradeid,long directionIds[],HttpServletRequest request){
+		long gradeId=topicService.updateInfo(topics,directionIds);
 		String url;
 		try {
-			Topics topics2=topicService.geTopic(topics.getId());
-			url = "redirect:/topic/viewTopic.do?state=1&gradeId="+topics2.getGrade().getId()+"";
+			url = "redirect:/topic/viewTopic.do?state=1&gradeId="+gradeId+"";
 		} finally{
 			topicService.closeSession();
 		}
