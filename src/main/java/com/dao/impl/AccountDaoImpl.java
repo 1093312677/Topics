@@ -82,7 +82,7 @@ public class AccountDaoImpl implements AccountDao{
 
 	@Override
 	public User login(String username) {
-		User user = null;
+		User user = new User();
 		hql = "SELECT new User( id,  username,  password,  privilege)"
 				+ " FROM User "
 				+ " WHERE username =:username";

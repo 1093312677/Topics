@@ -92,7 +92,6 @@ public class StudentController_guo {
 	@RequestMapping(value="findStudentInfo.do")
 	public String UpdateInfo_guo(String queryBy,String primary,Long gradeId,HttpServletRequest request,HttpServletResponse response){
 		List<Student>students=new ArrayList<Student>();
-		
 		students=studentService.getStudents(primary,queryBy,gradeId);	
 		//JSONArray jsonArray = JSONArray.fromObject(students);
 		JSONObject json = new JSONObject();
@@ -128,15 +127,15 @@ public class StudentController_guo {
 		String pk=request.getParameter("pk");
 		String findType=request.getParameter("findType");		
 		List<Student> infor =  (List<Student>)session.getAttribute("infor");
+		request.setAttribute("selected", "no");
+		if(studentService.isSelected(infor.get(0).getId())) request.setAttribute("selected", "yes");
 		List<Topics>topics=new ArrayList<>();
 		try{
-			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());
+			topics=studentService.findTopicBy(pk, findType, infor.get(0).getClazz().getDirection().getId());		
+			request.setAttribute("topics", topics);			
 		}finally{
 			studentService.closeSession();
 		}
-		request.setAttribute("topics", topics);
-		request.setAttribute("selected", "no");
-		if(infor.get(0).getTopics()!=null) request.setAttribute("selected", "yes");
 		return "student/viewTopics";		
 	}
 	/*@RequestMapping(value="viewStudent.do")

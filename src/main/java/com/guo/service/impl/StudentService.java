@@ -62,10 +62,18 @@ public class StudentService implements IStudentService {
 	@Override
 	public List<Topics> findTopicBy(String pk, String findType, long directionId) {
 		List<Topics>topics=studentDao.findTopicBy(pk, findType, directionId);
-		for (Topics topics2 : topics) {
-			System.out.println(topics2.getTopicsName());
-		}
 		return topics;
+	}
+
+	@Override
+	public boolean isSelected(long id) {
+		try {
+			Student student=studentDao.isSelected(id);
+			if(student.getTopics()!=null) return true;
+		} finally {
+			studentDao.closeSession();
+		}		
+		return false;
 	}
 
 }

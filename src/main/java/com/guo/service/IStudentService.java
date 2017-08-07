@@ -14,4 +14,5 @@ public interface IStudentService {
 	public void closeSession();
 	public int inspection(String studentno);
 	public List<Topics> findTopicBy(String pk,String findType,long directionId);
+	public boolean isSelected(long id);
 }

@@ -258,8 +258,8 @@
 	 			   </div>
 	 			</div>
             	<label>性别：</label><select id="sex1" name="sex1" class="form-control">
-            		<option value="男" id="man" selected>男</option>
-            		<option value="女" id="woman" selected="selected">女</option>
+            		<option value="男" id="man">男</option>
+            		<option value="女" id="woman">女</option>
             	</select>
             	<br>
             	<label>电话号码：</label><input type="text" name="telephone1" placeholder="学生电话（选填）" id="telephone1" class="form-control"/>
@@ -457,6 +457,7 @@
     	$("#message01").hide();
 		$("#message02").hide();
 		$("#message03").hide();
+		var gradeId = ${gradeId};
     	var gradeID;
     	var spceialtyID;
     	var directionID;
@@ -464,11 +465,17 @@
     	$.ajax({
 			type:"post",
 			url:"<%=request.getContextPath()%>/student/findStudentInfo.do",
-			data:{"type":"json","queryBy":"id","primary":item},
+			data:{"type":"json","queryBy":"id","primary":item,"gradeId":gradeId},
 			dataType:"json",
 			success:function(data){
-				if(data.students[0].sex=='男'){
+				if(data.students[0].sex=='男'){					
+					document.getElementById('woman').selected= false;
 					document.getElementById('man').selected= true;
+				}
+				if(data.students[0].sex=='女'){
+					
+					document.getElementById('woman').selected= true;
+					document.getElementById('man').selected= false;
 				}
 				gradeID=data.students[0].clazz.direction.spceialty.grade.id;
 				spceialtyID=data.students[0].clazz.direction.spceialty.id;

@@ -42,8 +42,8 @@ public class TopicService implements ITopicService {
 	}
 
 	@Override
-	public void updateInfo(Topics topics,long directionIds[]) {
-		topicDao.updateInfo(topics,directionIds);
+	public long updateInfo(Topics topics,long directionIds[]) {
+		return topicDao.updateInfo(topics,directionIds);
 	}
 
 	@Override
