@@ -96,8 +96,15 @@ public class TeacherService {
 	
 	public int[] getBatchChoice(Long gradeId) {
 		Setting setting = settingDao.getSetting(gradeId);
+		int [] bc = new int[2];
 		int batch = 0;
 		int choice = 0;
+		
+		if(setting == null) {
+			bc[0] = batch;
+			bc[1] = choice;
+			return bc;
+		}
 //		查询时间
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 //		当前时间
@@ -175,7 +182,7 @@ public class TeacherService {
 			e.printStackTrace();
 		}
 		
-		int [] bc = new int[2];
+		
 		bc[0] = batch;
 		bc[1] = choice;
 		return bc;

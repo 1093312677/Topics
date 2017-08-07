@@ -64,6 +64,9 @@ public class TopicService {
 	 */
 	public boolean goAddTopic(Long gradeId) {
 		Setting setting = settingDao.getSetting(gradeId);
+		if(setting == null) {
+			return false;
+		}
 		String startTime = setting.getCommitTopicStartTime();
 		String endTime = setting.getCommitTopicEndTime();
 	    boolean isNow = dealData.isNow(startTime, endTime);

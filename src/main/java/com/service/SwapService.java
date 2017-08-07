@@ -61,7 +61,7 @@ public class SwapService {
 	 */
 	public boolean swapInTeacher(String state,String intentId) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
@@ -77,7 +77,11 @@ public class SwapService {
 			session.getTransaction().commit();
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 留言
