@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
+import com.common.PathTool;
 import com.dto.DealData;
 import com.entity.Form;
 import com.entity.Setting;
@@ -77,7 +78,8 @@ public class AttachController {
 	 */
 	@RequestMapping("/addOpenReport")
 	public String addOpenReport(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+//		String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		Long studentId = (Long) session.getAttribute("studentId");
 		boolean result = false;
 //		获取时间
@@ -152,7 +154,8 @@ public class AttachController {
 	 */
 	@RequestMapping("/addMidReport")
 	public String addMidReport(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+//		String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		Long studentId = (Long) session.getAttribute("studentId");
 		boolean result = false;
 //		获取时间
@@ -227,7 +230,8 @@ public class AttachController {
 	 */
 	@RequestMapping("/addSubmitThesis")
 	public String addSubmitThesis(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+//		String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		Long studentId = (Long) session.getAttribute("studentId");
 		boolean result = false;
 //		获取时间
@@ -301,7 +305,8 @@ public class AttachController {
 		boolean isNow = (boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String path = request.getSession().getServletContext().getRealPath("upload");
+//	    	String path = request.getSession().getServletContext().getRealPath("upload");
+	    	String path = PathTool.getPath();
 	    	if(attachService.submitInstructorReview(path, studentId, mediumScore, file)) {
 	    		JSONObject json = new JSONObject();
 	    		json.put("result", 1);
@@ -386,7 +391,8 @@ public class AttachController {
 		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String path = request.getSession().getServletContext().getRealPath("upload");
+//	    	String path = request.getSession().getServletContext().getRealPath("upload");
+	    	String path = PathTool.getPath();
 	    	if(attachService.submitMidReview(path, studentId, score, file)) {
 	    		try {
 	    			json.put("result", 1);
@@ -457,8 +463,9 @@ public class AttachController {
 		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
-	    	String path = request.getSession().getServletContext().getRealPath("upload");
-			if(attachService.submitReplyResults(path, studentId, score, file, level)) {
+	    	//String path = request.getSession().getServletContext().getRealPath("upload");
+	    	String path = PathTool.getPath();
+	    	if(attachService.submitReplyResults(path, studentId, score, file, level)) {
 				json.put("result", 1);
 	    		try {
 					response.getWriter().println(json.toString());
@@ -488,7 +495,8 @@ public class AttachController {
 	 */
 	@RequestMapping("/downAttach")
 	public String downAttach(Long gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); 
 	    response.setContentType("application/octet-stream;charset=utf-8");
 	    try {

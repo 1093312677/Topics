@@ -74,7 +74,7 @@ public class SwapService {
 			
 			return true;
 		}catch(Exception e){
-			session.getTransaction().commit();
+			session.getTransaction().rollback();
 			e.printStackTrace();
 			return false;
 		} finally {

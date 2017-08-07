@@ -75,7 +75,7 @@
 	    				</c:if>
 	    				<c:if test="${items.swap == 1 }">
 	    					是
-	    					<a href="javascript:void(0)" onclick="change(1,${items.id })">修改</a>
+	    					<a href="javascript:void(0)" onclick="change(0,${items.id })">修改</a>
 	    				</c:if>
 	    			
 	    			</td>

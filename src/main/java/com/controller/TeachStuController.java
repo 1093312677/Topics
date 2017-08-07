@@ -50,6 +50,7 @@ public class TeachStuController {
 		students = teachStuService.viewGuideStudent(teacherId, gradeId);
 		request.setAttribute("students", students);
 		session.setAttribute("gradeId", gradeId);
+		teachStuService.closeSession();
 		return "teacher/viewGuideStudent";
 	}
 	

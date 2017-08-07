@@ -45,7 +45,11 @@
 	    			<td><c:out value="${items.clazz.direction.directionName }"></c:out></td>
 	    			<td><c:out value="${items.clazz.direction.spceialty.specialtyName }"></c:out></td>
 	    			<td><c:out value="${items.clazz.direction.spceialty.grade.gradeName }"></c:out></td>
-	    			<td>${items.topics.topicsName }</td>
+	    			<td>
+		    			<c:if test="${items.topics != null }">
+		    				${items.topics.topicsName }
+		    			</c:if>
+	    			</td>
 	    			<td>${items.subTopic.subName }</td>
 	    			<td>${items.score.mediumScore+items.score.headScore+items.score.replyResult }</td>
 	    			<td>${items.score.level }</td>

@@ -106,6 +106,10 @@ public class AttachService {
 //			文件随机名称
 			fileName = String.valueOf(name)+suffix;
 			file2 = new File(path,fileName);
+			File file4 = new File(path);
+			if(!file4.exists()) {
+				file4.mkdir();
+			}
 //			获取学生的提交信息
 			Form form = formDao.getStudentForm(studentId);
 			try{

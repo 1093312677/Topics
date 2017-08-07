@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.common.PathTool;
 import com.entity.Document;
 import com.service.DocumentService;
 
@@ -34,7 +35,8 @@ public class DocumentController {
 	@RequestMapping("/uploadDocument")
 	public String uploadDocument(@RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		Long departmentId = (Long) session.getAttribute("departmentId");
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		if(documentService.uploadDocument(file, departmentId, path)) {
 			request.setAttribute("message", "上传成功");
 			request.setAttribute("path", "document/goDocument.do");
@@ -74,7 +76,8 @@ public class DocumentController {
 	
 	@RequestMapping("/download")
 	public String download(String randName, String documentName, HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		File file = new File(path,randName);
 		try {
 			

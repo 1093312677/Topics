@@ -361,7 +361,7 @@ public class StudentDaoImpl implements IStudentDao{
 				+ " topic.grade.id=:gradeId";
 		List<Student> students = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);

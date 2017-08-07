@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSONObject;
 import com.common.Pagination;
+import com.common.PathTool;
 import com.common.ServerResponse;
 import com.dto.DealData;
 import com.entity.Direction;
@@ -89,7 +90,8 @@ public class TopicController {
 		String fileName = "";
 		File file2 = null;
 		if(!file.isEmpty()){
-			String path = request.getSession().getServletContext().getRealPath("upload");
+			//String path = request.getSession().getServletContext().getRealPath("upload");
+			String path = PathTool.getPath();
 			String origName = file.getOriginalFilename();
 			int newNameIndex = origName.lastIndexOf('.');
 			String suffix = origName.substring(newNameIndex);
@@ -332,7 +334,8 @@ public class TopicController {
 	 */
 	@RequestMapping("/addUpdateAttach")
 	public String addUpdateAttach(String id, @RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		JSONObject json = new JSONObject();
 		
 		if(topicService.addUpdateAttach(path, id, file)) {
@@ -464,7 +467,8 @@ public class TopicController {
 	 */
 	@RequestMapping("/saveSubTopic")
 	public String saveSubTopic(Long studentId, long topicId,SubTopic subTopic, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String path = session.getServletContext().getRealPath("/upload");
+		//String path = session.getServletContext().getRealPath("/upload");
+		String path = PathTool.getPath();
 		JSONObject json = new JSONObject();
 		if(topicService.saveSubTopic(studentId, topicId, subTopic, path, file)) {
 			try {
@@ -494,7 +498,8 @@ public class TopicController {
 	@RequestMapping("/exportSubTopic")
 	public String downAttach( HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		String gradeId = (String) session.getAttribute("gradeId");
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); 
 	    response.setContentType("application/octet-stream;charset=utf-8");
 	    try {

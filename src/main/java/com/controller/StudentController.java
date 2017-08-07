@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.common.Pagination;
+import com.common.PathTool;
 import com.common.ServerResponse;
 import com.dao.ISettingDao;
 import com.dto.DealData;
@@ -169,7 +170,8 @@ public class StudentController {
 	public String batchImportStudent(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long gradeId = (Long) session.getAttribute("gradeId");
 //		获取登录人员的信息
-		String path = request.getSession().getServletContext().getRealPath("upload");
+		//String path = request.getSession().getServletContext().getRealPath("upload");
+		String path = PathTool.getPath();
 		List<Student> students = null;
 		if (!file.isEmpty()) {
 			students = studentService.batchImportStudent(file, path);

@@ -57,6 +57,7 @@ public class TeachStuService {
 		if(session.isOpen()) {
 			session.close();
 		}
+		studentDao.closeSession();
 	}
 	
 	/**
@@ -67,6 +68,9 @@ public class TeachStuService {
 	public List<Student> viewGuideStudent(Long teacherId, Long gradeId) {
 		List<Student> students =  new ArrayList<Student>();
 		students = studentDao.getGuideStudent(teacherId, gradeId);
+		for(int i=0;i<students.size();i++) {
+			System.out.println(students.get(i).getTopics().getTopicsName());
+		}
 		return students;
 	}
 	

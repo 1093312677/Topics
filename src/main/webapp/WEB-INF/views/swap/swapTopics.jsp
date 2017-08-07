@@ -14,6 +14,9 @@
 
 <script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
 <script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+<!-- alert -->
+<link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
+<script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
 	<!-- 提示框开始 -->
@@ -78,7 +81,7 @@
 	    			<td><c:out value="${items.introduce }"></c:out></td>
 	    			<td>
 	    				<c:if test="${items.enableSelect > items.selectedStudent }">
-    						<a href="<%=request.getContextPath()%>/swap/swapTeacher.do?type=teacher&topicId=${items.id }" > 调剂至此题目</a>
+    						<a href="javascript:void(0)" id="swap(${items.id })" > 调剂至此题目</a>
 	    				</c:if>
 	    			</td>
 	    		</tr>
@@ -116,6 +119,45 @@
 				console.log(msg)
 			}
 		})	
+	}
+	
+	function swap(id) {
+		
+		var url = "<%=request.getContextPath()%>/swap/swapTeacher.do?type=teacher";
+		
+		swal({
+			  title: "确认调剂 ？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false,
+			  showLoaderOnConfirm: true, 
+		},
+		function(){
+			var form = new FormData(document.getElementById("form"));
+			$.ajax({
+				type:"post",
+				url:url,
+				data:{"topicId":id},
+				dataType:"json",
+				processData:false,
+	            contentType:false,
+				success:function(data){
+					if(data.result==1){
+						swal("调剂 成功!", "", "success");
+						window.setTimeout("location.reload()",700);
+					}else{
+						swal("调剂 失败！", "请重试！", "error");
+					}
+				},
+				error:function(msg){
+					swal("调剂 失败！", "请重试！", "error");
+					window.setTimeout("location.reload()",700);
+				}
+			})	
+		});
 	}
 	
 	function reload(){
