@@ -57,6 +57,9 @@ public class TeachStuService {
 		if(session.isOpen()) {
 			session.close();
 		}
+	}
+	
+	public void closeStudentSession() {
 		studentDao.closeSession();
 	}
 	
@@ -69,7 +72,7 @@ public class TeachStuService {
 		List<Student> students =  new ArrayList<Student>();
 		students = studentDao.getGuideStudent(teacherId, gradeId);
 		for(int i=0;i<students.size();i++) {
-			System.out.println(students.get(i).getTopics().getTopicsName());
+//			System.out.println(students.get(i).getTopics().getTopicsName());
 		}
 		return students;
 	}
@@ -260,10 +263,20 @@ public class TeachStuService {
 				
 //					学生未选择意向题目,随机分配题目
 				if(students.get(i).getIntentionTopics() == null || students.get(i).getIntentionTopics().size() == 0) {
-					System.out.println(students.get(i).getName());
+//					System.out.println(students.get(i).getName());
 					for(int cc=0;cc<topics.size();cc++) {
-						if((topics.get(cc).getEnableSelect() > topics.get(cc).getSelectedStudent() )) {
-							topicIdMax = topics.get(cc).getId();
+						int flag = 0;
+						if(topics.get(cc).getEnableSelect() > topics.get(cc).getSelectedStudent()) {
+//							判断题目是否符合学生的方向
+							for(int dd = 0;dd < topics.get(cc).getDirections().size();dd++) {
+								if(topics.get(cc).getDirections().get(dd).getId() == students.get(i).getClazz().getDirection().getId()) {
+									topicIdMax = topics.get(cc).getId();
+									flag = 1;
+									break;
+								}
+							}
+						}
+						if(flag == 1) {
 							break;
 						}
 					}

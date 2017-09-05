@@ -86,11 +86,11 @@
 	    			
 	    			<td><c:out value="${items.time }"></c:out></td>
 	    			<td>
-	    				<c:if test="${items.taskBookName == ''}">
+	    				<c:if test="${items.taskBookName == '' || items.taskBookName == null}">
 	    					未上传
 	    				</c:if>
-	    				<c:if test="${items.taskBookName !='' }">
-	    					<a href="<%=request.getContextPath() %>/upload/<c:out value="${items.taskBookName }"></c:out>"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
+	    				<c:if test="${items.taskBookName !='' && items.taskBookName != null }">
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.taskBookName }&documentName=${items.topicsName }_${items.teacher.name }_任务书_${items.taskBookName }"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
 	    				</c:if>
 	    				
 	    			</td>

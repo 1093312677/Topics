@@ -92,11 +92,11 @@
 	    			</td>
 	    			
 	    			<td>
-	    				<c:if test="${items.topic.taskBookName==''}">
+	    				<c:if test="${items.topic.taskBookName=='' || items.topic.taskBookName == ''}">
 	    					未上传
 	    				</c:if>
-	    				<c:if test="${items.topic.taskBookName!='' }">
-	    					<a href="<%=request.getContextPath() %>/upload/<c:out value="${items.topic.taskBookName }"></c:out>"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
+	    				<c:if test="${items.topic.taskBookName!='' && items.topic.taskBookName != '' }">
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.topic.taskBookName }&documentName=${items.topic.topicsName }_${items.topic.teacher.name }_任务书_${items.topic.taskBookName }"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
 	    				</c:if>
 	    			</td>
 	    		</tr>
@@ -159,12 +159,12 @@
 							</button>
 		    			</td>
 		    			<td>
-		    				<c:if test="${items.topic.taskBookName == null}">
+		    				<c:if test="${items.topic.taskBookName == null || items.topic.taskBookName == ''}">
 		    					未上传
 		    				</c:if>
-		    				<c:if test="${items.topic.taskBookName !=null }">
-		    					<a href="<%=request.getContextPath() %>/upload/<c:out value="${items.topic.taskBookName }"></c:out>"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
-		    				</c:if>
+		    				<c:if test="${items.topic.taskBookName !=null && items.topic.taskBookName != ''}">
+		    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.topic.taskBookName }&documentName=${items.topic.topicsName }_${items.topic.teacher.name }_任务书_${items.topic.taskBookName }"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
+	    					</c:if>
 		    			</td>
 		    		</tr>
 		    	</c:if>

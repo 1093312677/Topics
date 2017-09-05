@@ -64,7 +64,7 @@
 			   <!-- 判断是否提交文档 -->
 			    	<c:if test="${fileName != null }">
 		    		 	<tr>
-		    		 		<td><a href="<%=request.getContextPath() %>/upload/${fileName }">下载</a></td>
+		    		 		<td><a href="<%=request.getContextPath() %>/document/download.do?randName=${fileName }&documentName=${name }_毕业论文_${fileName }">下载</a></td>
 		    		 	</tr>
 		    		 </c:if>
 		    		 <c:if test="${fileName == null }">

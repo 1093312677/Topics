@@ -53,7 +53,7 @@
 	    			
 	    			<td>
 	    				<c:if test="${items.form.fileName != null }">
-	    					<a href="<%=request.getContextPath() %>/upload/${items.form.fileName}">下载</a>
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.form.fileName}&documentName=${items.no }_${items.name }_答辩记录表_${items.form.fileName}">下载</a>
 	    				</c:if>
 	    			</td>
 	    			
@@ -80,7 +80,7 @@
 	    			
 	    			<td>
 	    				<c:if test="${items.form.reviewEvalForm != null }">
-	    					<a href="<%=request.getContextPath() %>/upload/${items.form.reviewEvalForm}">下载</a>
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.form.reviewEvalForm}&documentName=${items.no }_${items.name }_小组评阅表表_${items.form.reviewEvalForm}">下载</a>
 	    				</c:if>
 	    			</td>
 	    		</tr>

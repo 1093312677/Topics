@@ -51,7 +51,7 @@
 			    			</c:if>
 			    			<c:if test="${student.topics!= null}">
 				    			<c:if test="${student.topics.taskBookName != ''}">
-				    				<a href="<%=request.getContextPath() %>/upload/<c:out value="${student.topics.taskBookName }"></c:out>">下载</a>
+				    				<a href="<%=request.getContextPath() %>/document/download.do?randName=${student.topics.taskBookName }&documentName=${student.topics.topicsName }_${student.topics.teacher.name }_任务书_${student.topics.taskBookName }">下载</a>
 				    			</c:if>
 				    		</c:if>
 			    		</td>
@@ -65,7 +65,7 @@
 			    			</c:if>
 			    			<c:if test="${student.subTopic!= null}">
 				    			<c:if test="${student.subTopic.taskBookName != ''}">
-				    				<a href="<%=request.getContextPath() %>/upload/<c:out value="${student.subTopic.taskBookName }"></c:out>">下载</a>
+				    				<a href="<%=request.getContextPath() %>/document/download.do?randName=${student.subTopic.taskBookName }&documentName=${student.subTopic.subName }_${student.topics.teacher.name }_子题目任务书_${student.subTopic.taskBookName }">下载</a>
 				    			</c:if>
 				    		</c:if>
 			    		</td>

@@ -80,7 +80,7 @@
 		    			
 		    			<td>
 		    				<c:if test="${items.form.replyRecord != null }">
-		    					<a href="<%=request.getContextPath() %>/upload/${items.form.replyRecord}">下载</a>
+		    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.form.replyRecord}&documentName=${items.no }_${items.name }_答辩记录表_${items.form.replyRecord }">下载</a>
 		    				</c:if>
 		    			</td>
 		    		</tr>

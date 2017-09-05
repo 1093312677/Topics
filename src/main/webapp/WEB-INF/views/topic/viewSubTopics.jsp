@@ -58,9 +58,8 @@
 	    					未上传
 	    				</c:if>
 	    				<c:if test="${items.subTopic !=  null }">
-	    					<a href="<%=request.getContextPath() %>/upload/<c:out value="${items.subTopic.taskBookName }"></c:out>"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.subTopic.taskBookName }&documentName=${items.no }_${items.name }_${items.subTopic.subName }_子题目_${items.subTopic.taskBookName }"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
 	    				</c:if>
-	    				
 	    			</td>
 	    			<td>
 	    				<a href="javascript:void(0)"  data-toggle="modal" data-target="#myModal"  onclick="getId(${items.id },${items.topics.id })"> 上传子题目</a>
