@@ -149,6 +149,7 @@ public class AccountController {
 		session.removeAttribute("infor");
 		session.removeAttribute("privilege");
 		session.removeAttribute("setting");
+		session.removeAttribute("username");
 		try {
 			response.sendRedirect("../index.jsp");
 		} catch (IOException e1) {
