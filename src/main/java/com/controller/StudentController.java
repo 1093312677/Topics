@@ -427,7 +427,7 @@ public class StudentController {
 		Teacher teacher = new Teacher();
 		teacher.setId(teacherId);
 		
-		Long gradeId = (Long) session.getAttribute("gradeId");
+		String gradeId = (String) session.getAttribute("gradeId");
 		List<Student> students = commonService.find("Student", id);
 		request.setAttribute("students", students);
 		List<CourseAndGrade> courseAndGrades = null;
@@ -436,7 +436,7 @@ public class StudentController {
 		courseAndGrades = commonService.findBy("CourseAndGrade", "no", no);
 		commonService.closeSession();
 		if("yes".equals(filter)) {
-			courseAndGrades2 = studentService.getCourseAndGradesFilter(courseAndGrades, teacher, String.valueOf(gradeId), no);
+			courseAndGrades2 = studentService.getCourseAndGradesFilter(courseAndGrades, teacher, gradeId, no);
 		}
 		
 		if(courseAndGrades2.size() == 0) {

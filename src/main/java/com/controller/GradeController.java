@@ -15,7 +15,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.dto.DealData;
 import com.entity.Department;
 import com.entity.Grade;
-import com.entity.Teacher;
 import com.service.CommonService;
 import com.service.GradeService;
 
@@ -41,9 +40,7 @@ public class GradeController {
 	public String viewGrade(HttpServletRequest request,HttpServletResponse response,String type, HttpSession session){
 		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Grade> grades = null;
-		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
-//		获取完数据后关闭session
-		commonService.closeSession();
+		grades = gradeService.deanViewGrades(departmentId);
 		request.setAttribute("grades", grades);
 		request.setAttribute("message", "view");
 		return "admin/grade/viewGrade";

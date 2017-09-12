@@ -103,6 +103,7 @@ public class StudentDaoImpl implements IStudentDao{
 			
 			Teacher t = new Teacher();
 			t.setName(student2.getTopics().getTeacher().getName());
+			t.setId(student2.getTopics().getTeacher().getId());
 			
 			topics.setTeacher(t);
 			

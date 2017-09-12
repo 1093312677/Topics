@@ -110,20 +110,22 @@ public class LimitService {
 			teacherDaoImpl.setSession(session); 
 			teachers = teacherDaoImpl.view(departmentId, page, eachPage);
 			for(int i=0;i<teachers.size();i++) {
-				for(int j=0;j<teachers.get(i).getLimitNumbers().size();j++) {
-					teachers.get(i).getLimitNumbers().get(j).getId();
-					teachers.get(i).getLimitNumbers().get(j).getNumber();
-//					判断是否是当前年级
-					
-					if(teachers.get(i).getLimitNumbers().get(j).getGrade().getId() == Long.valueOf(gradeId)) {
-						limitNumbers = new ArrayList<LimitNumber>();
-						limitNumbers.add(teachers.get(i).getLimitNumbers().get(j));
-						teachers.get(i).setLimitNumbers(limitNumbers);
-					} else {
-						limitNumbers = new ArrayList<LimitNumber>();
-						teachers.get(i).setLimitNumbers(limitNumbers);
+//				if("3".equals(teachers.get(i).getPrivilege())) {
+					for(int j=0;j<teachers.get(i).getLimitNumbers().size();j++) {
+						teachers.get(i).getLimitNumbers().get(j).getId();
+						teachers.get(i).getLimitNumbers().get(j).getNumber();
+//						判断是否是当前年级
+						if(teachers.get(i).getLimitNumbers().get(j).getGrade().getId() == Long.valueOf(gradeId)) {
+							limitNumbers = new ArrayList<LimitNumber>();
+							limitNumbers.add(teachers.get(i).getLimitNumbers().get(j));
+							teachers.get(i).setLimitNumbers(limitNumbers);
+						} else {
+							limitNumbers = new ArrayList<LimitNumber>();
+							teachers.get(i).setLimitNumbers(limitNumbers);
+						}
 					}
-				}
+//				}
+				
 			}
 			session.getTransaction().commit();
 			

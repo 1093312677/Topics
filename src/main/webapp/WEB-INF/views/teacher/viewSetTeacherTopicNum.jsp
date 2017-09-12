@@ -71,6 +71,9 @@
     			</td>
     			<td >
     				<c:choose>
+    					 <c:when test="${items.user.privilege == 2 }">
+    					 	不可设置
+    					 </c:when>
     					 <c:when test="${empty items.limitNumbers}">   
 						    <button type="button" class="btn btn-primary" onclick="get(${items.id }, 'set')" data-toggle="modal" data-target="#myModal">设置人数</button>
 						  </c:when> 

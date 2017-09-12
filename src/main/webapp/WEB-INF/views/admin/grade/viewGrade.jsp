@@ -80,7 +80,6 @@
     		<td width="70px">编号</td>
     		<td>年级</td>
     		<td>系</td>
-    		<td>学院</td>
     		<td>操作</td>
     	</tr>
     	<c:forEach items="${grades }" var="items">
@@ -89,7 +88,6 @@
     			<td><c:out value="${items.gradeName }"></c:out></td>
     			<td><c:out value="${items.department.departmentName }"></c:out></td>
     			
-    			<td><c:out value="${items.department.college.collegeName }"></c:out></td>
     			<td width="70px">
     				<!----> <a href="javascript:void(0)" onclick="deleteItem(${items.id })"> <span class="glyphicon  glyphicon-trash" style="color:red" data-toggle="tooltip" data-placement="bottom" title="删除"></span></a> 
     				<a href="javascript:void(0)" 	onclick="editInfo(${items.id})"> <span class="glyphicon glyphicon-edit" style="color:green;padding-left:20px" data-toggle="tooltip" data-placement="bottom" title="更新"></span></a>
@@ -396,28 +394,28 @@
 		$("[data-toggle='popover']").popover();
 	});
 	//进入时 显示要查找的学院
-	window.onload = function(){ 
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/college/viewCollege.do",
-			data:{"type":"json"},
-			dataType:"json",
-			success:function(data){
-				var length = data.colleges.length;
-				var content = "<select name='collegeId' class='form-control' id='selectCollege'>";
-				content += "<option value='null'>--请选择学院--</option>";
-				for(var i=0;i<length;i++){
-					content += "<option value='"+data.colleges[i].id+"'>"+data.colleges[i].collegeName+"</option>";
-				}
-				content += "</select>";
-				$("#collegeHeadContent").html(content);
-				
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		});	
-	}
+	// window.onload = function(){ 
+//     $.ajax({
+//       type:"post",
+//       url:"<%=request.getContextPath()%>/college/viewCollege.do",
+//       data:{"type":"json"},
+//       dataType:"json",
+//       success:function(data){
+//         var length = data.colleges.length;
+//         var content = "<select name='collegeId' class='form-control' id='selectCollege'>";
+//         content += "<option value='null'>--请选择学院--</option>";
+//         for(var i=0;i<length;i++){
+//           content += "<option value='"+data.colleges[i].id+"'>"+data.colleges[i].collegeName+"</option>";
+//         }
+//         content += "</select>";
+//         $("#collegeHeadContent").html(content);
+        
+//       },
+//       error:function(msg){
+//         console.log(msg)
+//       }
+//     });
+//	}
 	
 </script>	
 	
