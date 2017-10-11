@@ -227,9 +227,9 @@ public class TopicController {
 	 * @return
 	 */
 	@RequestMapping("/viewTopic")
-	public String viewTopic(String pageType, int state,HttpServletRequest request,HttpServletResponse response,String type,String gradeId,Pagination pagination,HttpSession session){
-		if(gradeId == null || gradeId == ""){
-			gradeId = (String) session.getAttribute("gradeId");
+	public String viewTopic(String pageType, int state,HttpServletRequest request,HttpServletResponse response,String type,Long gradeId,Pagination pagination,HttpSession session){
+		if(gradeId == null ){
+			gradeId = (Long) session.getAttribute("gradeId");
 		}
 //		如果是输入的页数进行减一
 		if("1".equals(pageType)) {
@@ -238,11 +238,11 @@ public class TopicController {
 		
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
-		pagination.setTotleSize(topicService.getTopicsNum(gradeId, String.valueOf(state)));//获取总记录数,1表示通过题目
+		pagination.setTotleSize(topicService.getTopicsNum(String.valueOf(gradeId), String.valueOf(state)));//获取总记录数,1表示通过题目
 		
 		List<Topics> topics = null;
-		if(gradeId != null || gradeId != ""){
-			topics = topicService.getTopics(gradeId, String.valueOf(state), pagination.getPage()*eachPage, eachPage);
+		if(gradeId != null){
+			topics = topicService.getTopics(String.valueOf(gradeId), String.valueOf(state), pagination.getPage()*eachPage, eachPage);
 			for(int i=0;i<topics.size();i++) {
 				for(int j=0;j<topics.get(i).getDirections().size();j++) {
 					topics.get(i).getDirections().get(j).getDirectionName();
@@ -298,8 +298,6 @@ public class TopicController {
 		request.setAttribute("grades", grades);
 		request.setAttribute("message", "view");
 		request.setAttribute("state", state);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		return "topic/viewGradeTopic";
 	}
 	

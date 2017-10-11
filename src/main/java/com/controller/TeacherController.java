@@ -346,8 +346,6 @@ public class TeacherController {
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		pagination.setTotleSize(teacherService.getStudentsNotSelectCount(gradeId));//获取总记录数
-//		获取完数据后关闭session
-		commonService.closeSession();
 		
 		List<Student> students = teacherService.getStudentsNotSelect(gradeId,pagination.getPage() ,eachPage);
 		
@@ -503,8 +501,6 @@ public class TeacherController {
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		pagination.setTotleSize(teacherService.getStudentsNum(gradeId));//获取总记录数
-//		获取完数据后关闭session
-		commonService.closeSession();
 		
 		List<Student> students = teacherService.getStudents(gradeId, pagination.getPage(), eachPage);
 		

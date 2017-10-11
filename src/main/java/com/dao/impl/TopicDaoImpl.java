@@ -44,18 +44,18 @@ public class TopicDaoImpl implements ITopicDao{
 		List<Topics> topics = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 //			query.setString(0, gradeId);
 //			query.setLong(1, teacherId);
 //			query.setString(2, state);
 			topics = query.list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			
 		}finally{
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return topics;
@@ -65,10 +65,10 @@ public class TopicDaoImpl implements ITopicDao{
 		hql = "from "+table+" where "+col+"='"+value+"' AND "+col2+" ='"+value2+"'";
 		List<Topics> entitys = new ArrayList<Topics>();
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			return entitys;
@@ -85,14 +85,14 @@ public class TopicDaoImpl implements ITopicDao{
 		hql = "SELECT topics FROM Topics as topics join topics.grade as grade  WHERE grade.id = "+gradeId+"  AND topics.state = "+state;
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setFirstResult(page);
 			query.setMaxResults(eachPage);
 			topics = query.list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			
 		}
@@ -107,16 +107,16 @@ public class TopicDaoImpl implements ITopicDao{
 	public int viewTopicNum(String gradeId, String state) {
 		hql = "SELECT COUNT(*) FROM Topics as topics join topics.grade as grade  WHERE grade.id = "+gradeId+"  AND topics.state = "+state;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
 			return 0;
 		}finally{
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		
@@ -160,11 +160,11 @@ public class TopicDaoImpl implements ITopicDao{
 		hql = "FROM Topics where id="+topicId;
 		Topics topic = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);//.setResultTransformer(Transformers.aliasToBean(Topics.class));
 			topic = (Topics) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			
 		}
@@ -184,10 +184,10 @@ public class TopicDaoImpl implements ITopicDao{
 		String hql = "SELECT tp FROM Topics as tp JOIN tp.teacher as te JOIN tp.grade as grade WHERE tp.state ="+ status +" AND te.id ="+teacherId +" AND grade.id = "+gradeId;
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			topics = session.createQuery(hql).list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e){
 			
 		} 
@@ -198,10 +198,10 @@ public class TopicDaoImpl implements ITopicDao{
 		String hql = "SELECT new com.entity.Grade(grade.id, grade.gradeName) FROM Grade grade , Department as depart WHERE grade.department.id = depart.id and depart.id = "+departmentId;
 		List<Grade> grades = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			grades = session.createQuery(hql).list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e){
 			
 		} 
@@ -216,10 +216,10 @@ public class TopicDaoImpl implements ITopicDao{
 				+ "teacherGroup.teacher.id = "+teacherId;
 		TeacherGroup groupAndTime = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			groupAndTime = (TeacherGroup) session.createQuery(hql).uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e){
 			
 		} finally {
@@ -238,10 +238,10 @@ public class TopicDaoImpl implements ITopicDao{
 				+ " topics.grade.id = "+gradeId;
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			topics = session.createQuery(hql).list();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e){
 			
 		} finally {
@@ -260,15 +260,15 @@ public class TopicDaoImpl implements ITopicDao{
 				+ " teacherAutoSelect.grade.id = "+gradeId;
 		TeacherAutoSelect teacherAutoSelect = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			teacherAutoSelect = (TeacherAutoSelect) session.createQuery(hql).uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e){
 			
 		} finally {
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return teacherAutoSelect;
@@ -353,17 +353,17 @@ public class TopicDaoImpl implements ITopicDao{
 			+ " dire.id=:directionId";
 		Integer count = 0;
 		try{
-			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+			session = sessionFactory.openSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("directionId", directionId);
 			query.setCacheable(true);
 			count = ((Number)query.uniqueResult()).intValue();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 		} finally {
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return count;
@@ -387,7 +387,7 @@ public class TopicDaoImpl implements ITopicDao{
 	Teacher teacher = null;
 	try{
 		session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
+//		session.beginTransaction();
 		Query query = session.createQuery(hql);
 		query.setFirstResult(num*size);
 		query.setMaxResults(size);
@@ -424,13 +424,13 @@ public class TopicDaoImpl implements ITopicDao{
 			
 			topics2.add(topic);
 		}
-		session.getTransaction().commit();
+//		session.getTransaction().commit();
 		return topics2;
 	}catch(Exception e){
 		return topics2;
 	} finally{
 		if(session.isOpen()) {
-			session.close();
+//			session.close();
 		}
 	}
 	}
@@ -446,16 +446,16 @@ public class TopicDaoImpl implements ITopicDao{
 				+ " student.id=:studentId";
 		Topics topic = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			topic = (Topics) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 		} finally {
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return topic;
@@ -469,16 +469,16 @@ public class TopicDaoImpl implements ITopicDao{
 				+ " sub.student.id=:studentId";
 		SubTopic topic = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			topic = (SubTopic) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 		} finally {
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return topic;

@@ -484,7 +484,6 @@ public class GroupController {
 		Long studentId = (Long) session.getAttribute("studentId");
 		Group group = null;
 		group = groupService.studentGroup(studentId,gradeId);
-		groupService.colseSession();
 		request.setAttribute("group", group);
 		return "group/studentGroup";
 	}

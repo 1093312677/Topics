@@ -28,17 +28,17 @@ public class FormDaoImpl implements IFormDao{
 		Form form = null;
 		try{
 			session = sessionFactory.openSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			query.setCacheable(true);
 			form = (Form) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		} catch(Exception e) {
 			
 		} finally {
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return form;

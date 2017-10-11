@@ -3,11 +3,12 @@
   <session-config>
     <session-timeout>60</session-timeout>
   </session-config>
-  
+  <!-- 
   <error-page>
     <exception-type>java.lang.Exception</exception-type>
     <location>/WEB-INF/views/error/error.jsp</location>
   </error-page>
+  
   
   <filter>
 	<filter-name>LoginFilter</filter-name>
@@ -17,7 +18,7 @@
 	  <filter-name>LoginFilter</filter-name>
 	  <url-pattern>*.do</url-pattern>
   </filter-mapping>
-  
+   -->
   
   <filter>
     <filter-name>openSession</filter-name>

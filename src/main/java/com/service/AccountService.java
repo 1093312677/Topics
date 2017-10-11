@@ -2,8 +2,10 @@ package com.service;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.common.Information;
 import com.common.RedisTool;
@@ -33,6 +35,8 @@ public class AccountService<T> {
 		
 		return "yes";
 	}
+	
+	private Logger logger = Logger.getLogger(AccountService.class);
 	/**
 	 * close session
 	 */
@@ -110,14 +114,24 @@ public class AccountService<T> {
 	 * @param user
 	 * @return
 	 */
+	@Transactional
 	public User login(User user) {
+		if(user == null || user.getUsername() == null) {
+			return null;
+		}
+		
 		User user1 = accountDao.login(user.getUsername());
 		if(user1 != null){
-			if(user1.getPassword().equals(user.getPassword())){
-				return user1;
-			}else{
+			if(user1.getPassword() != null && user.getPassword() != null) {
+				if(user1.getPassword().equals(user.getPassword())){
+					return user1;
+				}else{
+					return null;
+				}
+			} else {
 				return null;
 			}
+			
 		}else{
 			return null;
 		}
@@ -193,9 +207,11 @@ public class AccountService<T> {
 		Object obj= null;
 		obj = RedisTool.getReids(key);
 		if(obj == null) {
+			logger.info("query department from database "+gradeId);
 			department = accountDao.getDepartmentByGradeId(gradeId);
 			RedisTool.setRedis(key, 60*60, department);
 		} else {
+			logger.info("query department from redis "+gradeId);
 			department = (Department) RedisTool.getReids(key);
 		}
 		

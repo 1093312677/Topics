@@ -27,18 +27,18 @@ public class TeacherAutoSelectDaoImpl implements ITeacherAutoSelectDao{
 				+ " tas.grade.id=:gradeId";
 		TeacherAutoSelect tas = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("teacherId", teacherId);
 			query.setLong("gradeId", gradeId);
 			tas = (TeacherAutoSelect) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			if(session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return tas;

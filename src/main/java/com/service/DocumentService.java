@@ -55,7 +55,7 @@ public class DocumentService {
 				file.transferTo(file2);
 			}
 			
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 			commonDaoImpl.save(document);
@@ -64,6 +64,10 @@ public class DocumentService {
 		} catch(Exception e) {
 			session.getTransaction().rollback();;
 			return false;
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
 		}
 	}
 	/**
@@ -76,14 +80,14 @@ public class DocumentService {
 		List<Document> documents = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 			documents = commonDaoImpl.findBy("Document", "departmentId", String.valueOf(departmentId));
 			return documents;
 		} catch(Exception e) {
 			return documents;
 		}  finally{
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}
 	}
 	/**
@@ -93,7 +97,7 @@ public class DocumentService {
 	 */
 	public boolean deleteDocument(Document document) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 			commonDaoImpl.delete(document);

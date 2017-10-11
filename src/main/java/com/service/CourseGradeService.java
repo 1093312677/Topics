@@ -87,7 +87,7 @@ public class CourseGradeService {
                 	
                 	grades.add(grade);
 		        }
-		        session = sessionFactory.getCurrentSession();
+		        session = sessionFactory.openSession();
 		        session.beginTransaction();
 //    			传递session保证是同一个session进行事务处理
     			commonDaoImpl.setSession(session); 
@@ -108,7 +108,12 @@ public class CourseGradeService {
 		        return grades2;
 			} catch (Exception e) {
 				e.printStackTrace();
-			} //文件流  
+			} finally {
+				//文件流
+				if(session.isOpen()) {
+					session.close();
+				}
+			}
 		}
 		return grades2;
 	}
@@ -137,7 +142,7 @@ public class CourseGradeService {
 	 * @return
 	 */
 	public List<CourseAndGrade> viewGrades(long gradeId, int page, int eachPage) {
-		session = sessionFactory.getCurrentSession();
+		session = sessionFactory.openSession();
 	    session.beginTransaction();
 //		传递session保证是同一个session进行事务处理
 		commonDaoImpl.setSession(session); 

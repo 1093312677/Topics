@@ -26,7 +26,7 @@ public class IntentionDaoImpl implements IIntentionDao{
 	@Override
 	public boolean saveIntention(IntentionTopic intentionTopic) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			session.save(intentionTopic);
 			session.getTransaction().commit();
@@ -51,7 +51,7 @@ public class IntentionDaoImpl implements IIntentionDao{
 				+ " AND intent.student.id=:studentId1 "
 				+ " AND intent.topic.id=:topicId";
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			先删除同批次志愿
 			Query query = session.createQuery(hql);

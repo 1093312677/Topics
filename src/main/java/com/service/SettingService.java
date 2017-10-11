@@ -24,15 +24,19 @@ public class SettingService {
 	 * @return
 	 */
 	public Setting getSetting(Long gradeId) {
+		if(gradeId == null) {
+			return null;
+		}
 		String key = "setting"+gradeId;
 		
 		Object obj= null;
 		obj = RedisTool.getReids(key);
 		
-		Setting setting = null;
+		Setting setting = new Setting();
 		if(obj == null) {
 			setting = settingDao.getSetting(gradeId);
-			setting.setGrade(null);
+			if(setting != null)
+				setting.setGrade(null);
 			RedisTool.setRedis(key, 60*60, setting);
 		} else {
 			setting = (Setting) RedisTool.getReids(key);

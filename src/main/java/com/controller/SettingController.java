@@ -62,10 +62,7 @@ public class SettingController {
 		Setting setting = new Setting();
 		setting = settingService.getSettingDean(gradeId);
 		request.setAttribute("settings", setting);
-		request.setAttribute("gradeId", gradeId);
-		request.setAttribute("message", "view");
-//		获取完数据后关闭session
-		commonService.closeSession();
+		session.setAttribute("gradeId", gradeId);
 		return "setting/viewSetting";
 	}
 	/**
@@ -77,7 +74,8 @@ public class SettingController {
 	 * @return
 	 */
 	@RequestMapping("/saveOrUpdateSetting")
-	public String saveOrUpdateSetting(long gradeId,Setting setting,HttpSession session,HttpServletRequest request,HttpServletResponse response){
+	public String saveOrUpdateSetting(Setting setting,HttpSession session,HttpServletRequest request,HttpServletResponse response){
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		Grade grade = new Grade();
 		grade.setId(gradeId);
 		setting.setGrade(grade);

@@ -11,6 +11,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -26,12 +27,12 @@ import com.entity.Setting;
 import com.entity.Specialty;
 import com.entity.Student;
 import com.entity.Teacher;
-import com.entity.Topics;
 import com.entity.User;
 import com.service.AccountService;
 import com.service.SettingService;
 
 @Controller
+@Scope("singleton")
 @RequestMapping("/account")
 public class AccountController {
 	@Autowired
@@ -72,11 +73,36 @@ public class AccountController {
 					session.setAttribute("infor", teachers2);									
 				} else if( "4".equals(user1.getPrivilege()) ){
 //					学生
-					Student student = accountService.getStudentInfor(user.getUsername());
-					Clazz clazz = accountService.getClassByStudentId(student.getId());
-					Direction direction = accountService.getDirectionByClazzId(clazz.getId());
-					Grade grade = accountService.getGradeByDirectionId(direction.getId());
-					Department deparment = accountService.getDepartmentByGradeId(grade.getId());
+					Student student = new Student();
+					student = accountService.getStudentInfor(user.getUsername());
+					
+					if(student == null)
+						return null;
+					
+					Clazz clazz = new Clazz();
+					clazz = accountService.getClassByStudentId(student.getId());
+					
+					if(clazz == null)
+						return null;
+					
+					Direction direction = new Direction();
+					direction = accountService.getDirectionByClazzId(clazz.getId());
+					
+					if(direction == null)
+						return null;
+					
+					Grade grade = new Grade();
+					grade = accountService.getGradeByDirectionId(direction.getId());
+					
+					if(grade == null)
+						return null;
+					
+					Department deparment = new Department();
+					deparment = accountService.getDepartmentByGradeId(grade.getId());
+					
+					if(deparment == null)
+						return null;
+					
 					Long gradeId = grade.getId();
 					Long studentDirectionId = direction.getId();
 					Setting setting = settingService.getSetting(gradeId);

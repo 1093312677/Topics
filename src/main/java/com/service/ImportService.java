@@ -83,7 +83,7 @@ public class ImportService {
 		}
 		
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 //			查找所有系
@@ -306,7 +306,7 @@ public class ImportService {
 		}
 		
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 //			查找所有系

@@ -92,7 +92,6 @@ public class TopicService {
 				topics.get(i).getDirections().get(j).getDirectionName();
 			}
 		}
-		topicDaoImpl.closeSession();
 		return topics;
 	}
 	/**

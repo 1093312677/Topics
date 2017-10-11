@@ -25,20 +25,21 @@ public class DepartmentDaoImpl implements IDepartmentDao{
 				+ " FROM Department as d "
 				+ " WHERE d.id=:departmentId";
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+//			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
+//			session.getTransaction().begin();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setLong("departmentId", departmentId);
 			department = (Department) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			
 			return department;
 		}catch(Exception e){
 			return department;
 		} finally{
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 	}

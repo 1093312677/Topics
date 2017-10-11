@@ -38,6 +38,7 @@
 	    	   </form>
 	    </div>
     </div>
+    <c:if test="${message != '不是选题的时间！'}">
     <div class="t1">
     <table class="table table-hover table-striped" align=left valign=middle>
     	<tr class="info">
@@ -107,6 +108,7 @@
 		</c:forEach>
     </table>
     
+    
     <!-- 分页开始 -->
 	    <div class="col-sm-2">
 	    	<ul class="pagination" style="margin-top:1px">
@@ -143,7 +145,7 @@
 			<p class="text-left">共 ${pagination.totleSize }条记录，每页显示${pagination.eachPage }条，当前( ${pagination.page }/${pagination.totlePage } )页</p>
 	    </div>
 	   <!-- /分页--> 
-	   
+	   </c:if>
     </div>
 <script>
 /*function entry(event){

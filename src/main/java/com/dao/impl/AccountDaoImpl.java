@@ -18,7 +18,7 @@ public class AccountDaoImpl implements AccountDao{
 	@Autowired
 	private SessionFactory sessionFactory;
 	
-	private Session session;
+	private Session session = null;
 	
 	private String hql;
 	
@@ -75,59 +75,64 @@ public class AccountDaoImpl implements AccountDao{
 			return false;
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 	}
 
-	@Override
-	public User login(String username) {
-		User user = new User();
-		hql = "SELECT new User( id,  username,  password,  privilege)"
-				+ " FROM User "
-				+ " WHERE username =:username";
-		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
-			Query query=session.createQuery(hql);
-			query.setString("username", username);
-			user = (User) query.uniqueResult();
-			session.getTransaction().commit();
-			return user;
-		}catch(Exception e){
-			e.printStackTrace();
-			return user;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
-		}
-	}
+
 
 	@Override
 	public Student getStudentInfo(String no) {
 		hql = "SELECT new com.entity.Student( id,  no,  name,  sex,  qq,  telephone,  email,  remark,  swapInDepa)"
 				+ " FROM Student as stu"
 				+ " WHERE "
-				+ " stu.no=:no";
+				+ " stu.no=:no1";
 		Student stu = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query=session.createQuery(hql);
-			query.setString("no", no);
+			query.setString("no1", no);
 			stu = (Student) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return stu;
 	}
 
+	
+	@Override
+	public User login(String username) {
+		User user = new User();
+		hql = "SELECT new User( id,  username,  password,  privilege)"
+				+ " FROM User "
+				+ " WHERE username =:username";
+		
+		try{
+			session = sessionFactory.getCurrentSession();
+//			Transaction tran = session.beginTransaction();
+			Query query=session.createQuery(hql);
+			query.setString("username", username);
+			user = (User) query.uniqueResult();
+//			tran.commit();
+			
+		}catch(Exception e){
+			e.printStackTrace();
+		} finally {
+			if( session.isOpen() ) {
+//				session.close();
+			}
+		}
+		
+		return user;
+	}
+	
 	@Override
 	public Clazz getClazzByStudentId(Long studentId) {
 		hql = "SELECT new com.entity.Clazz(clz.id,clz.className)"
@@ -140,17 +145,17 @@ public class AccountDaoImpl implements AccountDao{
 				+ " stu.id=:studentId";
 		Clazz clazz = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			clazz = (Clazz) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return clazz;
@@ -168,17 +173,17 @@ public class AccountDaoImpl implements AccountDao{
 				+ " clazz.id=:clazzId";
 		Direction direction = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("clazzId", clazzId);
 			direction = (Direction) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return direction;
@@ -196,17 +201,17 @@ public class AccountDaoImpl implements AccountDao{
 				+ " dire.id=:directionId";
 		Grade grade = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("directionId", directionId);
 			grade = (Grade) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return grade;
@@ -224,17 +229,17 @@ public class AccountDaoImpl implements AccountDao{
 				+ " grade.id=:gradeId";
 		Department department = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			department = (Department) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
 		} finally {
 			if( session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return department;

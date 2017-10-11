@@ -105,7 +105,7 @@ public class LimitService {
 		List<LimitNumber> limitNumbers = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			teacherDaoImpl.setSession(session); 
 			teachers = teacherDaoImpl.view(departmentId, page, eachPage);
@@ -127,11 +127,11 @@ public class LimitService {
 //				}
 				
 			}
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			
 			return teachers;
 		}catch(Exception e){
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			e.printStackTrace();
 			return teachers;
 		} 
@@ -145,15 +145,15 @@ public class LimitService {
 		int count = 0;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			teacherDaoImpl.setSession(session); 
 			count = teacherDaoImpl.getTeacherNum(departmentId);
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			
 			return count;
 		}catch(Exception e){
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			e.printStackTrace();
 			return count;
 		} 
@@ -169,7 +169,7 @@ public class LimitService {
 		int count = 0;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+//			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			teacherDaoImpl.setSession(session); 
 			limitNumber = teacherDaoImpl.getTeacherStuNum(gradeId, teacherId);
@@ -179,10 +179,10 @@ public class LimitService {
 			if(count < 0) {
 				count  = 0;
 			}
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			return count;
 		}catch(Exception e){
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 			e.printStackTrace();
 			return count;
 		} 

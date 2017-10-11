@@ -26,17 +26,17 @@ public class ScoreDaoImpl implements IScoreDao{
 				+ " score1.student.id=:studentId";
 		Score score = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			score = (Score) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			if(session.isOpen() ) {
-				session.close();
+//				session.close();
 			}
 		}
 		return score;

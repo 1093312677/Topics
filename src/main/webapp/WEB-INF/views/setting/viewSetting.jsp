@@ -48,7 +48,7 @@
 			</div>
 			<div class="col-md-6">
 				<!--  enctype="multipart/form-data" -->
-				<form action="<%=request.getContextPath()%>/setting/saveOrUpdateSetting.do" method="post" enctype="multipart/form-data" onsubmit="return check()">
+				<form action="<%=request.getContextPath()%>/setting/saveOrUpdateSetting.do" method="post" onsubmit="return check()">
 					<br>
 					<input type="hidden" name="gradeId" value="${gradeId }"/>
 					<input type="hidden" name="id" value="${settings.id }"/>

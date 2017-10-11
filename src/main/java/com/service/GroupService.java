@@ -56,7 +56,7 @@ public class GroupService {
 	 */
 	public boolean save(Group group){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -83,7 +83,7 @@ public class GroupService {
 	public List<Group> viewGroup(String gradeId){
 		List<Group> groups = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -97,7 +97,11 @@ public class GroupService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return groups;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 删除group
@@ -106,7 +110,7 @@ public class GroupService {
 	 */
 	public boolean deleteGroup(Group group){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -120,7 +124,11 @@ public class GroupService {
 			e.printStackTrace();
 			session.getTransaction().rollback();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 删除group
@@ -129,7 +137,7 @@ public class GroupService {
 	 */
 	public boolean cancelGroup(String id){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -142,7 +150,11 @@ public class GroupService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 通过 id 查找group
@@ -152,7 +164,7 @@ public class GroupService {
 	public List<Group> findById(String id){
 		List<Group> groups = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -171,7 +183,11 @@ public class GroupService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return groups;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -181,7 +197,7 @@ public class GroupService {
 	 */
 	public boolean updateGroup(Group group){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -192,10 +208,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return true;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -206,7 +226,7 @@ public class GroupService {
 	public List<Group> setViewGroup(String gradeId){
 		List<Group> groups = null;
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -228,10 +248,14 @@ public class GroupService {
 			}
 			
 			return groups;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return groups;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -243,7 +267,7 @@ public class GroupService {
 		List<Teacher> teachers = null;
 		List<Teacher> teachers2 = new ArrayList<Teacher>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			TeacherDaoImpl dao =  (TeacherDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("teacher");
@@ -275,10 +299,14 @@ public class GroupService {
 			}
 			session.getTransaction().commit();
 			return teachers2;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return teachers2;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 给组添加老师
@@ -337,7 +365,7 @@ public class GroupService {
 	 */
 	public boolean changeTeacherLeader(int state,int id) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -352,7 +380,11 @@ public class GroupService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 删除teacher group
@@ -361,7 +393,7 @@ public class GroupService {
 	 */
 	public boolean deleteTeacherGroup(TeacherGroup teacherGroup){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -375,7 +407,11 @@ public class GroupService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -386,7 +422,7 @@ public class GroupService {
 	public List<TeacherGroup> viewGroupMember(long gradeId, long teacherId){
 		List<TeacherGroup> teacherGroup2= new ArrayList<TeacherGroup>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -408,10 +444,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return teacherGroup2;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return teacherGroup2;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -422,7 +462,7 @@ public class GroupService {
 	public List<Student> setStudentGroup(String groupId, long gradeId){
 		List<Student> students = new ArrayList<Student>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -455,10 +495,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return students;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return students;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 保存学生分组
@@ -469,7 +513,7 @@ public class GroupService {
 	 */
 	public boolean setStuTeachGroup(long gradeId, long teacherId, Long[] studentId){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -514,7 +558,7 @@ public class GroupService {
 	public List<StuTeachGroup> viewStudentGroup(long gradeId, long teacherId){
 		List<StuTeachGroup> stuTeachGroups= new ArrayList<StuTeachGroup>();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -526,10 +570,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return stuTeachGroups;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return stuTeachGroups;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 将学生从老师处移除
@@ -540,7 +588,7 @@ public class GroupService {
 		StuTeachGroup stuTeachGroup = new StuTeachGroup();
 		stuTeachGroup.setId(id);
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -551,10 +599,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return true;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -567,8 +619,7 @@ public class GroupService {
 		List<StuTeachGroup> stuTeachGroups = new ArrayList<StuTeachGroup>();
 		Group group = null;
 		try{
-			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+			session = sessionFactory.openSession();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
 //			传递session保证是同一个session进行事务处理
@@ -589,15 +640,15 @@ public class GroupService {
 					}
 				}
 			}
-			
-			
-			session.getTransaction().commit();
-			
 			return group;
 		}catch(Exception e){
 			e.printStackTrace();
 			return group;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -609,7 +660,7 @@ public class GroupService {
 		Group group = null;
 		GroupTimeAndPlace groupTimeAndPlace = new GroupTimeAndPlace();
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
@@ -634,10 +685,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return groupTimeAndPlace;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return groupTimeAndPlace;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 增加或者修改答辩时间和地点
@@ -648,7 +703,7 @@ public class GroupService {
 	 */
 	public boolean updateTimeAndPlace(TimeAndPlace timeAndPlace, int groupId, int check){
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -667,10 +722,14 @@ public class GroupService {
 			session.getTransaction().commit();
 			
 			return true;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -709,7 +768,7 @@ public class GroupService {
 		HSSFRow row = null;
 		 
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -736,10 +795,14 @@ public class GroupService {
 			}
 			session.getTransaction().commit();
 			return wb;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return wb;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -782,7 +845,7 @@ public class GroupService {
 		HSSFRow row = null;
 		 
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			CommonDaoImpl dao =  (CommonDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("CommonDao");
@@ -814,10 +877,14 @@ public class GroupService {
 			}
 			session.getTransaction().commit();
 			return wb;
-		}catch(Exception e){
+		} catch(Exception e){
 			e.printStackTrace();
 			return wb;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 		
 	}
 	

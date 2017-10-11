@@ -28,17 +28,17 @@ public class SettingDaoImpl implements ISettingDao{
 		hql = "SELECT setting FROM Setting as setting "
 				+ " WHERE setting.grade.id=:gradeId";
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
+//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			setting = (Setting) query.uniqueResult();
-			session.getTransaction().commit();
+//			session.getTransaction().commit();
 		}catch(Exception e){
 			
 		}finally{
 			if(session.isOpen()) {
-				session.close();
+//				session.close();
 			}
 		}
 		return setting;

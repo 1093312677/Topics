@@ -36,7 +36,7 @@ public class SwapService {
 	 */
 	public boolean swapInDepart(String state,String id) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
@@ -52,7 +52,11 @@ public class SwapService {
 			session.getTransaction().commit();
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 修改老师调配
@@ -91,7 +95,7 @@ public class SwapService {
 	 */
 	public boolean leavMessage(String id,String message) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
@@ -107,7 +111,11 @@ public class SwapService {
 			session.getTransaction().commit();
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 教师调剂前查看题目
@@ -119,7 +127,6 @@ public class SwapService {
 		List<Topics> topics = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			topics = commonDaoImpl.findBy("Topics", "teacherId", String.valueOf(teacherId));
@@ -135,14 +142,15 @@ public class SwapService {
 					topics.remove(i);
 				}
 			}
-			session.getTransaction().commit();
-			
 			return topics;
 		}catch(Exception e){
-			session.getTransaction().commit();
 			e.printStackTrace();
 			return topics;
-		} 
+		} finally {
+			if(session.isOpen()) {
+//				session.close();
+			}
+		}
 	}
 	
 	/**
@@ -153,7 +161,7 @@ public class SwapService {
 	 */
 	public boolean swapTeacher(long topicId, long studentId) {
 		try{
-			session = sessionFactory.getCurrentSession();
+			session = sessionFactory.openSession();
 			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
@@ -176,7 +184,11 @@ public class SwapService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return false;
-		} 
+		} finally {
+			if(session.isOpen()) {
+				session.close();
+			}
+		}
 	}
 	/**
 	 * 系主任查看还未选题的学生
@@ -189,26 +201,18 @@ public class SwapService {
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			students = commonDaoImpl.viewStudents(String.valueOf(gradeId), page, eachPage);
-//			if(students.size() > 0) {
-//				for(int i=students.size()-1;i>=0;i--) {
-//					System.out.println(students.get(i).getName());
-//					if(students.get(i).getTopics().getTopicsName() != null) {
-//						students.remove(i);
-//					}
-//				}
-//			}
-			session.getTransaction().commit();
-			
 			return students;
 		}catch(Exception e){
-			session.getTransaction().commit();
 			e.printStackTrace();
 			return students;
-		} 
+		} finally {
+			if(session.isOpen()) {
+//				session.close();
+			}
+		}
 	}
 	/**
 	 * 获取该方向对应的题目
@@ -221,7 +225,6 @@ public class SwapService {
 		List<Topics> topics =  null;
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			swapDaoImpl.setSession(session); 
 			topics = swapDaoImpl.getTopicDirection(directionId, page, eachPage);
@@ -230,14 +233,15 @@ public class SwapService {
 					topics.get(i).getDirections().get(j).getDirectionName();
 				}
 			}
-			session.getTransaction().commit();
-			
 			return topics;
 		}catch(Exception e){
-			session.getTransaction().commit();
 			e.printStackTrace();
 			return topics;
-		} 
+		} finally {
+			if(session.isOpen()) {
+//				session.close();
+			}
+		}
 	}
 	
 	
