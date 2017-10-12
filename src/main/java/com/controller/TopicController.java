@@ -221,7 +221,7 @@ public class TopicController {
 	 */
 	@RequestMapping("/viewTopic")
 	public String viewTopic(String pageType, int state,HttpServletRequest request,HttpServletResponse response,String type,Long gradeId,Pagination pagination,HttpSession session){
-		if(gradeId == null ){
+		if(gradeId == null || gradeId == 0){
 			gradeId = (Long) session.getAttribute("gradeId");
 		}
 //		如果是输入的页数进行减一
@@ -235,6 +235,10 @@ public class TopicController {
 		
 		List<Topics> topics = null;
 		if(gradeId != null){
+			topics = topicService.getTopics(String.valueOf(gradeId), String.valueOf(state), pagination.getPage()*eachPage, eachPage);
+			pagination.setTotleSize(topicService.getTopicsNum(String.valueOf(gradeId), String.valueOf(state)));//获取总记录数,1表示通过题目
+		}
+		if(gradeId != null || gradeId != 0){
 			topics = topicService.getTopics(String.valueOf(gradeId), String.valueOf(state), pagination.getPage()*eachPage, eachPage);
 			for(int i=0;i<topics.size();i++) {
 				for(int j=0;j<topics.get(i).getDirections().size();j++) {

@@ -9,12 +9,10 @@
     <param-value>classpath:config/spring/spring.xml,classpath:config/hibernate/spring-hibernate.xml,classpath:config/spring/applicationContext.xml</param-value>
   </context-param>
   
-  <!-- 
   <error-page>
     <exception-type>java.lang.Exception</exception-type>
     <location>/WEB-INF/views/error/error.jsp</location>
   </error-page>
-  
   
   <filter>
 	<filter-name>LoginFilter</filter-name>
@@ -24,7 +22,6 @@
 	  <filter-name>LoginFilter</filter-name>
 	  <url-pattern>*.do</url-pattern>
   </filter-mapping>
-   -->
   
   <filter>
     <filter-name>openSession</filter-name>
@@ -71,8 +68,7 @@
     <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
   </listener>
   
-  
-  
+
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>

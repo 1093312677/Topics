@@ -1,9 +1,9 @@
 package com.controller;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,15 +15,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.alibaba.fastjson.JSONObject;
 import com.common.Course;
 import com.common.Pagination;
 import com.dto.DealData;
 import com.entity.CheckViewGrade;
 import com.entity.CourseAndGrade;
 import com.entity.Grade;
-import com.entity.Student;
-import com.entity.Teacher;
 import com.service.CommonService;
 import com.service.CourseGradeService;
 /**
@@ -111,10 +108,18 @@ public class CourseController {
 	 */
 	@RequestMapping("/addCourse")
 	public String addCourse(CourseAndGrade courseAndGrade, HttpServletRequest request,HttpServletResponse response, HttpSession session){
-		long gradeId = (long) session.getAttribute("gradeId"); 
+//		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = 4L;
 		Grade grade = new Grade();
 		grade.setId(gradeId);
 		
+		courseAndGrade.setCourseName("d");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
+		courseAndGrade.setCourseNature(sdf.format(new Date()));
+		courseAndGrade.setCredit(3);
+		courseAndGrade.setName("kone");
+		courseAndGrade.setNo("110");
+		courseAndGrade.setScore(88);;
 		courseAndGrade.setGrade(grade);
 		if(courseGradeService.addCourse(courseAndGrade)) {
 			try {

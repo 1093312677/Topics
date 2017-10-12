@@ -116,20 +116,13 @@ public class AccountDaoImpl implements AccountDao{
 		
 		try{
 			session = sessionFactory.getCurrentSession();
-//			Transaction tran = session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setString("username", username);
 			user = (User) query.uniqueResult();
-//			tran.commit();
 			
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
-		}
-		
+		} 
 		return user;
 	}
 	

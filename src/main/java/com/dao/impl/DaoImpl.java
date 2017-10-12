@@ -17,7 +17,7 @@ import com.dao.IDao;
 import com.entity.Direction;
 import com.entity.Teacher;
 import com.entity.User;
-@Repository(value="daoimpl22")
+@Repository
 public class DaoImpl<T> implements IDao<T>{
 	@Autowired
 	private SessionFactory sessionFactory;
