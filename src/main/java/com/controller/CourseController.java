@@ -174,7 +174,6 @@ public class CourseController {
 		courses = courseGradeService.viewCourse(teacherId, gradeId, page, eachPage);
 		request.setAttribute("courses", courses);
 		session.setAttribute("gradeId", gradeId);
-		commonService.closeSession();
 		return "course/viewCourseChoice";
 	}
 	/**

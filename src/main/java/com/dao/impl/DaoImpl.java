@@ -7,13 +7,17 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.common.QueryCondition;
 import com.dao.IDao;
 import com.entity.Direction;
+import com.entity.Teacher;
 import com.entity.User;
-
+@Repository(value="daoimpl22")
 public class DaoImpl<T> implements IDao<T>{
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -26,8 +30,8 @@ public class DaoImpl<T> implements IDao<T>{
 	 * close session
 	 */
 	public void closeSession(){
-		if(session.isOpen())
-			session.close();
+//		if(session.isOpen())
+//			session.close();
 	}
 	
 	/**
@@ -38,19 +42,11 @@ public class DaoImpl<T> implements IDao<T>{
 	@Override
 	public boolean save(T entity) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.save(entity);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -65,18 +61,15 @@ public class DaoImpl<T> implements IDao<T>{
 		List<T> entitys = new ArrayList<T>();
 		try{
 			hql = "From "+table;
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			分页查询
 			Query query = session.createQuery(hql);
 			query.setFirstResult(page);  //设置当前记录条数
 			query.setMaxResults(eachPage); //设置每页的记录条数
 			entitys = query.list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
-			e.printStackTrace();
-			return entitys;
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -84,39 +77,24 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param entity
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public boolean delete(T entity) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.delete(entity);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
-		}
+			throw new ServiceException("error");
+		} 
 	}
 	public boolean delete2(T entity) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.delete(entity);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -131,11 +109,8 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "from "+table+" where id='"+id+"'";
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
-//			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			return entitys;
@@ -146,19 +121,11 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "from "+table+" where id="+id;
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
-//			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
-			session.getTransaction().rollback();
 			return entitys;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
 		}
 	}
 	/**
@@ -166,21 +133,15 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param entity
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public boolean update(T entity) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.update(entity);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -195,7 +156,7 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "from "+table+" where "+col+"='"+value+"'";
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 //			分页查询
 			Query query = session.createQuery(hql);
 			query.setFirstResult(page);  //设置当前记录条数
@@ -219,7 +180,7 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "from "+table+" where "+col+"='"+value+"'";
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
 			return entitys;
 		}catch(Exception e){
@@ -237,10 +198,8 @@ public class DaoImpl<T> implements IDao<T>{
 		List<T> entitys = new ArrayList<T>();
 		try{
 			hql = "From User WHERE username='"+user.getUsername()+"'";
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			e.printStackTrace();
@@ -257,19 +216,13 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "SELECT COUNT(*) FROM "+table;
 		int count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query =  session.createQuery(hql);
-			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
 			e.printStackTrace();
 			return count;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
-		}
+		} 
 	}
 	
 	/**
@@ -282,18 +235,11 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "SELECT COUNT(*) FROM "+table+" WHERE "+col+" = '"+value+"'";
 		int count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query =  session.createQuery(hql);
-			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
-			e.printStackTrace();
-			return count;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			return 0;
 		}
 	}
 	
@@ -311,10 +257,8 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "from "+table+" where "+col+"='"+value+"' AND "+col2+" ='"+value2+"'";
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			return entitys;
@@ -348,20 +292,14 @@ public class DaoImpl<T> implements IDao<T>{
 		List<T> entitys = new ArrayList<T>();
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setFirstResult(num*size);
 			query.setMaxResults(size);
 			entitys = query.list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			return entitys;
-		} finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
-		}
+		} 
 	}
 	/**
 	 * find use 1 to 4 condition
@@ -379,10 +317,8 @@ public class DaoImpl<T> implements IDao<T>{
 		}
 		List<T> entitys = new ArrayList<T>();
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			entitys = session.createQuery(hql).list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 			return entitys;
@@ -393,6 +329,7 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param queryCondition
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public boolean updateByFree(QueryCondition queryCondition) {
 		if( queryCondition.getConunt() == 1 ) {
@@ -407,17 +344,11 @@ public class DaoImpl<T> implements IDao<T>{
 			+"' AND "+queryCondition.getRow3()+" ='"+queryCondition.getValue3()+"'";
 		}
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.createQuery(hql).executeUpdate();
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -430,14 +361,12 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "select students from Student as students join students.clazz.direction.spceialty.grade as grade where grade.id="+gradeId;
 		List<T> entitys = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setFirstResult(page);
 			query.setMaxResults(eachPage);
 			query.setCacheable(true);
 			entitys = query.list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 		}
@@ -456,19 +385,13 @@ public class DaoImpl<T> implements IDao<T>{
 					+ "students.clazz.direction.spceialty.grade.id="+gradeId;
 		int count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query =  session.createQuery(hql);
-			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
 			e.printStackTrace();
 			return count;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
-		}
+		} 
 	}
 	/**
 	 * 获取系主任数量
@@ -478,19 +401,13 @@ public class DaoImpl<T> implements IDao<T>{
 		hql = "SELECT COUNT(*) FROM Teacher as t join t.user as user where user.privilege=2";
 		int count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query =  session.createQuery(hql);
-			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
 			e.printStackTrace();
 			return count;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
-		}
+		} 
 	}
 	/**
 	 * 获取系主任
@@ -498,11 +415,11 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param eachPage
 	 * @return
 	 */
-	public List<T> getDean(int page, int eachPage ) {
+	public List<Teacher> getDean(int page, int eachPage ) {
 		hql = "select t from Teacher as t join t.user as user where user.privilege=2";
-		List<T> entitys = new ArrayList<T>();
+		List<Teacher> entitys = new ArrayList<Teacher>();
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 //			分页查询
 			Query query = session.createQuery(hql);
 			query.setFirstResult(page);  //设置当前记录条数
@@ -527,13 +444,11 @@ public class DaoImpl<T> implements IDao<T>{
 				+ "as grade where grade.id="+gradeId+" AND students.topicsId = null";
 		List<T> entitys = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setFirstResult(page);
 			query.setMaxResults(eachPage);
 			entitys = query.list();
-			session.getTransaction().commit();
 			return entitys;
 		}catch(Exception e){
 		}
@@ -551,18 +466,12 @@ public class DaoImpl<T> implements IDao<T>{
 				+ "as grade where grade.id="+gradeId;
 		int count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query =  session.createQuery(hql);
-			session.getTransaction().commit();
 			return ((Number)query.uniqueResult()).intValue();
 		}catch(Exception e){
 			e.printStackTrace();
 			return count;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
 		}
 	}
 	/**
@@ -570,11 +479,11 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param entitys
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public boolean batchImport(List<T> entitys) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			for (int i=0;i<entitys.size();i++) {
 				session.save(entitys.get(i));
 				if (i % 50 ==0 ) {
@@ -585,33 +494,21 @@ public class DaoImpl<T> implements IDao<T>{
 			
 			session.flush();
 			session.clear();
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 
+	@Transactional
 	@Override
 	public boolean saveOrUpdate(T entity) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.saveOrUpdate(entity);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -619,20 +516,16 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param entity
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public String saveGetId(T entity) {
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			Serializable id = session.save(entity);
 			
 			return id.toString();
 		}catch(Exception e){
-			e.printStackTrace();
-			return null;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -641,55 +534,43 @@ public class DaoImpl<T> implements IDao<T>{
 	 * @param value2
 	 * @return
 	 */
+	@Transactional
 	@Override
 	public boolean insertSql(String value1, String value2) {
 		String sql = "insert into t_topic_direction values('"+value1+"','"+value2+"')";
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			session.createSQLQuery(sql).executeUpdate();
 			
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	
+	@Transactional
 	public boolean deleteSql(String id) {
 		String sql = "delete from t_topic_direction where topics_id="+id;
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			session.createSQLQuery(sql).executeUpdate();
 			
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 
+	@Transactional
 	public boolean updateSql(String id) {
 		String sql = "update Student set topicsId = null where topicsId="+id;
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			session.createSQLQuery(sql).executeUpdate();
 			
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 }

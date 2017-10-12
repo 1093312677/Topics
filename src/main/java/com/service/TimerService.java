@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ import org.springframework.stereotype.Service;
  * @author kone
  *
  */
+import org.springframework.transaction.annotation.Transactional;
 
-import com.common.GradeComparator;
 import com.common.StudentAndScore;
 import com.dao.impl.TimerDaoImpl;
 import com.dto.DealData;
@@ -31,16 +32,16 @@ import com.entity.Teacher;
 public class TimerService {
 	@Autowired
 	private TimerDaoImpl timerDao;
-	@Autowired
-	private DealData dealData;
+	
+	private DealData dealData = new DealData();
 	@Autowired
 	private SessionFactory sessionFactory;
 	private Session session;
 	private static Logger logger =LoggerFactory.getLogger(TimerService.class);
+	@Transactional
 	public void test() {
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 			timerDao.setSession(session);
 			List<Grade> grades = timerDao.getGrade();
 //			for(int i=0;i<grades.size();i++) {
@@ -93,15 +94,9 @@ public class TimerService {
 					autoSelect(grades, i, select, "isSelect23", 2, 3);
 				}
 					
-//				System.out.println(grades.get(i).getGradeName());
 			}
-			session.getTransaction().commit();
 		}catch(Exception e) {
-//			session.getTransaction().commit();
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 		
 	}

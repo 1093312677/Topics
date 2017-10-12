@@ -13,7 +13,7 @@ import com.entity.Direction;
 import com.entity.Grade;
 import com.entity.Student;
 import com.entity.User;
-@Repository
+@Repository(value="accountDao22")
 public class AccountDaoImpl implements AccountDao{
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -26,8 +26,8 @@ public class AccountDaoImpl implements AccountDao{
 	 * close session
 	 */
 	public void closeSession(){
-		if(session.isOpen())
-			session.close();
+//		if(session.isOpen())
+//			session.close();
 	}
 	
 	@Override

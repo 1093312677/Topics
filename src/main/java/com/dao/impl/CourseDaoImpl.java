@@ -4,10 +4,11 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.stereotype.Component;
 
 import com.dao.daoAdapter.DaoAdapter;
 import com.entity.CheckViewGrade;
-
+@Component
 public class CourseDaoImpl extends DaoAdapter{
 	private Session session;
 	private String hql = "";

@@ -29,20 +29,14 @@ public class GradeDaoImpl implements IGradeDao{
 				+ " WHERE g.department.id=:departmentId";
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.getTransaction().begin();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setLong("departmentId", departmentId);
 			grades = query.list();
-//			session.getTransaction().commit();
 			
 			return grades;
 		}catch(Exception e){
 			return grades;
-		} finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 	}
 }

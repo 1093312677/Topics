@@ -10,16 +10,18 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddress;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.common.SimilarAlgorithm;
 import com.common.Similarity;
+import com.dao.IDao;
 import com.dao.IStudentDao;
 import com.dao.ITeacherAutoSelectDao;
 import com.dao.ITopicDao;
 import com.dao.impl.CommonDaoImpl;
-import com.dao.impl.DaoImpl;
 import com.entity.Form;
 import com.entity.Grade;
 import com.entity.Student;
@@ -39,7 +41,7 @@ public class TeachStuService {
 	private Session session;
 	
 	@Autowired
-	private DaoImpl daoImpl;
+	private IDao daoImpl;
 	
 	@Autowired
 	private CommonDaoImpl commonDaoImpl;
@@ -71,9 +73,6 @@ public class TeachStuService {
 	public List<Student> viewGuideStudent(Long teacherId, Long gradeId) {
 		List<Student> students =  new ArrayList<Student>();
 		students = studentDao.getGuideStudent(teacherId, gradeId);
-		for(int i=0;i<students.size();i++) {
-//			System.out.println(students.get(i).getTopics().getTopicsName());
-		}
 		return students;
 	}
 	
@@ -228,12 +227,12 @@ public class TeachStuService {
 	 * @param departmentId
 	 * @return
 	 */
+	@Transactional
 	public boolean automaticSelection(String gradeId) {
 		List<Student> students = null;
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			students = commonDaoImpl.viewStudents(gradeId, 0, 100000);
@@ -400,17 +399,10 @@ public class TeachStuService {
 				}
 					
 			}
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -433,6 +425,7 @@ public class TeachStuService {
 	 * @param teacherId
 	 * @return
 	 */
+	@Transactional
 	public boolean setTeacherAutoSelect(Long gradeId, Long teacherId) {
 		TeacherAutoSelect teacherAutoSelect =  teacherAutoSelectDao.getTeacherAutoSelect(gradeId, teacherId);
 //		教师存在记录
@@ -465,10 +458,10 @@ public class TeachStuService {
 	 * @param studentId
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteStudent(String studentId) {
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			List<Student> students  = commonDaoImpl.findBy("Student", "id", studentId);
@@ -478,15 +471,11 @@ public class TeachStuService {
 					commonDaoImpl.delete(forms.get(0));
 				}
 				commonDaoImpl.delete(students.get(0));
-				session.getTransaction().commit();
 				return true;
 			} 
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
+			throw new ServiceException("error");
 		} 
 	}
 	
@@ -496,10 +485,10 @@ public class TeachStuService {
 	 * @param studentId
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteTeacher(String teacherId) {
 		try{
 			session = sessionFactory.getCurrentSession();
-			session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			List<Teacher> teachers  = commonDaoImpl.findBy("Teacher", "id", teacherId);
@@ -514,15 +503,11 @@ public class TeachStuService {
 			}
 			if(teachers.size() > 0 ) {
 				commonDaoImpl.delete(teachers.get(0));
-				session.getTransaction().commit();
 				return true;
 			} 
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
+			throw new ServiceException("error");
 		} 
 		
 	}

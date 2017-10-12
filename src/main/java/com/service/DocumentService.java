@@ -6,8 +6,10 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.impl.CommonDaoImpl;
@@ -34,6 +36,7 @@ public class DocumentService {
 	 * @param path
 	 * @return
 	 */
+	@Transactional
 	public boolean uploadDocument(MultipartFile file, long departmentId, String path){
 		try{
 			Document document  = new Document();
@@ -55,19 +58,12 @@ public class DocumentService {
 				file.transferTo(file2);
 			}
 			
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			commonDaoImpl.setSession(session);
 			commonDaoImpl.save(document);
-			session.getTransaction().commit();
 			return true;
 		} catch(Exception e) {
-			session.getTransaction().rollback();;
-			return false;
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -80,35 +76,27 @@ public class DocumentService {
 		List<Document> documents = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			commonDaoImpl.setSession(session);
 			documents = commonDaoImpl.findBy("Document", "departmentId", String.valueOf(departmentId));
 			return documents;
 		} catch(Exception e) {
 			return documents;
-		}  finally{
-//			session.getTransaction().commit();
-		}
+		} 
 	}
 	/**
 	 * 删除模板文档
 	 * @param document
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteDocument(Document document) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			commonDaoImpl.setSession(session);
 			commonDaoImpl.delete(document);
-			session.getTransaction().commit();
 			return true;
 		} catch(Exception e) {
-			return false;
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	

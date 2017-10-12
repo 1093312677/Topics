@@ -12,8 +12,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.WorkbookTool;
@@ -46,6 +48,7 @@ public class ImportService {
 	 * @param departmentId
 	 * @return
 	 */
+	@Transactional
 	public List<Teacher> importTeacher(MultipartFile file, long departmentId) {
 		List<Teacher> teachers = new ArrayList<Teacher>();
 		List<Teacher> teachersError = new ArrayList<Teacher>();
@@ -83,8 +86,7 @@ public class ImportService {
 		}
 		
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			commonDaoImpl.setSession(session);
 //			查找所有系
 			List<Department> departments = commonDaoImpl.findAll("Department");
@@ -136,16 +138,9 @@ public class ImportService {
 					}
 				}
 			}
-			if(session.isOpen()) {
-				session.getTransaction().commit();
-			}
 		} catch(Exception e) {
-			
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
-		}
+			throw new ServiceException("error");
+		} 
 		return teachersError;
 	}
 	
@@ -266,6 +261,7 @@ public class ImportService {
 	 * @param departmentId
 	 * @return
 	 */
+	@Transactional
 	public List<Student> importStudent(MultipartFile file, long gradeId) {
 		List<Student> students = new ArrayList<Student>();
 		List<Student> studentsError = new ArrayList<Student>();
@@ -306,8 +302,7 @@ public class ImportService {
 		}
 		
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			commonDaoImpl.setSession(session);
 //			查找所有系
 			List<Clazz> clazzs = commonDaoImpl.findAll("Clazz");
@@ -358,15 +353,8 @@ public class ImportService {
 					}
 				}
 			}
-			if(session.isOpen()) {
-				session.getTransaction().commit();
-			}
 		} catch(Exception e) {
-			
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 		return studentsError;
 	}

@@ -57,8 +57,6 @@ public class SpecialtyController {
 		int page = 0;
 		int eachPage = 1000000;
 		List<Specialty> specialtys2 = commonService.view("Specialty", Integer.valueOf(page), eachPage);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		Long departmentId = (Long)session.getAttribute("departmentId");
 		
 		List<Specialty> specialtys = new ArrayList<Specialty>();
@@ -72,7 +70,6 @@ public class SpecialtyController {
 			
 //			查询年级，在添加年级的时候使用
 			grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
-			commonService.closeSession();
 		if(type==null){
 			type="null";
 		}
@@ -108,7 +105,6 @@ public class SpecialtyController {
 		specialty.setGrade(grade);
 		try {
 			if(commonService.save(specialty)){
-				commonService.closeSession();
 				response.getWriter().println("1");
 			}else{
 				response.getWriter().println("0");
@@ -139,13 +135,9 @@ public class SpecialtyController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("specialtys", specialtys);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}
 	}
@@ -160,8 +152,6 @@ public class SpecialtyController {
 	public String deleteSpecialty(Specialty specialty,HttpSession session, HttpServletRequest request,HttpServletResponse response){
 //		查找方向
 		List<Specialty> specialtys = commonService.findBy("Specialty", "id", String.valueOf(specialty.getId()));
-//		关闭session
-		commonService.closeSession();
 		boolean result = false;
 		if(specialtys.size()>0){
 			result = commonService.delete(specialtys.get(0));

@@ -17,8 +17,10 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.Region;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.dao.IFormDao;
@@ -95,6 +97,7 @@ public class AttachService {
 	 * @param id
 	 * @return
 	 */
+	@Transactional
 	public boolean addOpenReport(MultipartFile file, String path, Long studentId) {
 		String fileName =null;
 		File file2 = null;
@@ -115,8 +118,7 @@ public class AttachService {
 			try{
 				Student stu = new Student();
 				stu.setId(studentId);
-				session = sessionFactory.openSession();
-				session.beginTransaction();
+				session = sessionFactory.getCurrentSession();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
 				if(form == null) {
@@ -136,14 +138,9 @@ public class AttachService {
 					form.setStudent(stu);
 					session.update(form);
 				}
-				session.getTransaction().commit();
 			} catch(Exception e) {
-				return false;
-			}  finally{
-				if(session.isOpen()) {
-					session.close();
-				}
-			}
+				throw new ServiceException("error");
+			}  
 			
 			try {
 				file.transferTo(file2);
@@ -165,6 +162,7 @@ public class AttachService {
 	 * @param id
 	 * @return
 	 */
+	@Transactional
 	public boolean addMidReport(MultipartFile file, String path, Long studentId) {
 		String fileName =null;
 		File file2 = null;
@@ -182,8 +180,7 @@ public class AttachService {
 			try{
 				Student stu = new Student();
 				stu.setId(studentId);
-				session = sessionFactory.openSession();
-				session.beginTransaction();
+				session = sessionFactory.getCurrentSession();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
 				if(form == null) {
@@ -203,13 +200,9 @@ public class AttachService {
 					form.setStudent(stu);
 					session.update(form);
 				}
-				session.getTransaction().commit();
 			} catch(Exception e) {
-			}  finally{
-				if(session.isOpen()) {
-					session.close();
-				}
-			}
+				throw new ServiceException("error");
+			}  
 			
 			try {
 				file.transferTo(file2);
@@ -233,6 +226,7 @@ public class AttachService {
 	 * @param id
 	 * @return
 	 */
+	@Transactional
 	public boolean addSubmitThesis(MultipartFile file, String path, Long studentId) {
 		String fileName =null;
 		File file2 = null;
@@ -250,8 +244,7 @@ public class AttachService {
 			Student stu = new Student();
 			stu.setId(studentId);
 			try{
-				session = sessionFactory.openSession();
-				session.beginTransaction();
+				session = sessionFactory.getCurrentSession();
 				commonDaoImpl.setSession(session);
 //					不存在开题报告保存
 				if(form == null) {
@@ -274,13 +267,9 @@ public class AttachService {
 					form.setFileName(fileName);
 					session.update(form);
 				}
-				session.getTransaction().commit();
 			} catch(Exception e) {
-			}  finally{
-				if(session.isOpen()) {
-					session.close();
-				}
-			}
+				throw new ServiceException("error");
+			} 
 			
 			try {
 				file.transferTo(file2);
@@ -298,12 +287,12 @@ public class AttachService {
 	 * @param teacherId
 	 * @return
 	 */
+	@Transactional
 	public List<Student> instructorReview(String gradeId, long teacherId) {
 		List<Student> students  = new ArrayList<Student>();
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			commonDaoImpl.setSession(session);
 //			查找出教师对应的题目
 			topics = commonDaoImpl.findBy("Topics", "teacherId", String.valueOf(teacherId));
@@ -313,13 +302,9 @@ public class AttachService {
 					students.addAll(topics.get(i).getStudents());
 				}
 			}
-			session.getTransaction().commit();
 		} catch(Exception e) {
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
-		}
+			throw new ServiceException("error");
+		} 
 		return students;
 	}
 	/**
@@ -340,6 +325,7 @@ public class AttachService {
 	 * @param file
 	 * @return
 	 */
+	@Transactional
 	public boolean submitInstructorReview(String path, long studentId, float mediumScore, MultipartFile file) {
 		String fileName =null;
 		File file2 = null;
@@ -423,7 +409,7 @@ public class AttachService {
 				
 				return true;
 			} catch(Exception e) {
-				return false;
+				throw new ServiceException("error");
 			}  
 		}
 		return false;
@@ -439,20 +425,15 @@ public class AttachService {
 		List<Student> students  = new ArrayList<Student>();
 		List<Topics> topics = null;
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			attachDaoImpl.setSession(session);
 //			查找出教师对应的题目
 			List<StuTeachGroup> stuTeachGroups = attachDaoImpl.findByTwo("StuTeachGroup", "teacherId", String.valueOf(teacherId), "gradeId", gradeId);
 			for(int i=0;i<stuTeachGroups.size();i++) {
 				students.add(stuTeachGroups.get(i).getStudent());
 			}
-			session.getTransaction().commit();
 		} catch(Exception e) {
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 		return students;
 	}
@@ -465,6 +446,7 @@ public class AttachService {
 	 * @param file
 	 * @return
 	 */
+	@Transactional
 	public boolean submitMidReview(String path, long studentId, float score1, MultipartFile file) {
 		String fileName =null;
 		File file2 = null;
@@ -548,7 +530,7 @@ public class AttachService {
 				
 				return true;
 			} catch(Exception e) {
-				return false;
+				throw new ServiceException("error");
 			}  
 		}
 		return false;
@@ -560,11 +542,11 @@ public class AttachService {
 	 * @param teacherId
 	 * @return
 	 */
+	@Transactional
 	public List<Student> replyResults(String gradeId, long teacherId) {
 		List<Student> students  = new ArrayList<Student>();
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			attachDaoImpl.setSession(session);
 //			查找出教师对应的题目
 			List<TeacherGroup> teacherGroups = attachDaoImpl.findBy("TeacherGroup", "teacherId", String.valueOf(teacherId));
@@ -589,12 +571,8 @@ public class AttachService {
 					break;
 				}
 			}
-			session.getTransaction().commit();
 		} catch(Exception e) {
-		}  finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 		return students;
 	}
@@ -607,6 +585,7 @@ public class AttachService {
 	 * @param level
 	 * @return
 	 */
+	@Transactional
 	public boolean submitReplyResults(String path, long studentId, float score1, MultipartFile file, String level) {
 		String fileName =null;
 		File file2 = null;
@@ -695,7 +674,7 @@ public class AttachService {
 				
 				return true;
 			} catch(Exception e) {
-				return false;
+				throw new ServiceException("error");
 			} 
 		}
 		return false;
@@ -706,6 +685,7 @@ public class AttachService {
 	 * @param path
 	 * @param gradeId
 	 */
+	
 	public void downAttach(HttpServletResponse response, String path, Long gradeId){
 		List<Student> students = null;
 		List<AttachDTO> attachs = new ArrayList<AttachDTO>();

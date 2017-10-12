@@ -3,6 +3,7 @@ package com.dao.impl;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,56 +28,34 @@ public class FormDaoImpl implements IFormDao{
 				+ " form.student.id=:studentId";
 		Form form = null;
 		try{
-			session = sessionFactory.openSession();
-//			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			query.setCacheable(true);
 			form = (Form) query.uniqueResult();
-//			session.getTransaction().commit();
 		} catch(Exception e) {
 			
-		} finally {
-			if(session.isOpen()) {
-//				session.close();
-			}
-		}
+		} 
 		return form;
 	}
 	@Override
 	public boolean updateForm(Form form) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.update(form);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
-		}
+			throw new ServiceException("error");
+		} 
 	}
 	@Override
 	public boolean saveForm(Form form) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.save(form);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	

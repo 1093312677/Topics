@@ -55,7 +55,6 @@ public class DepartmentController {
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		pagination.setTotleSize(commonService.getCount("Department"));//获取总记录数
-		commonService.closeSession();
 		List<Department> departments = commonService.view("Department", pagination.getPage()*eachPage, eachPage);
 //		获取处理后的页数类
 		pagination = dealData.getPagination(departments, pagination);
@@ -70,15 +69,11 @@ public class DepartmentController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("departments", departments);
 			request.setAttribute("message", "view");
 			request.setAttribute("pagination", pagination);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return "admin/department/viewDepartment";
 		}
 	}
@@ -121,7 +116,6 @@ public class DepartmentController {
 	public String deleteDepartment(Department department,HttpServletRequest request,HttpServletResponse response,Pagination pagination){
 //		查找年级
 		List<Department> departments = commonService.findBy("Department", "id", String.valueOf(department.getId()));
-		commonService.closeSession();
 //		判断查找是否有数据
 		boolean result = false;
 		if(departments.size()>0){
@@ -158,13 +152,9 @@ public class DepartmentController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("departments", departments);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}
 		

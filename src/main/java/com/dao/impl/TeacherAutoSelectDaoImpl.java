@@ -3,8 +3,10 @@ package com.dao.impl;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.ITeacherAutoSelectDao;
 import com.entity.TeacherAutoSelect;
@@ -28,21 +30,17 @@ public class TeacherAutoSelectDaoImpl implements ITeacherAutoSelectDao{
 		TeacherAutoSelect tas = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("teacherId", teacherId);
 			query.setLong("gradeId", gradeId);
 			tas = (TeacherAutoSelect) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e) {
 			e.printStackTrace();
-		} finally {
-			if(session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return tas;
 	}
+	
+	@Transactional
 	@Override
 	public boolean updateAutoSelect(int state, Long id) {
 		hql = "UPDATE TeacherAutoSelect "
@@ -51,41 +49,27 @@ public class TeacherAutoSelectDaoImpl implements ITeacherAutoSelectDao{
 				+ " WHERE "
 				+ " id=:id";
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setInteger("state", state);
 			query.setLong("id", id);
 			query.executeUpdate();
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
+	@Transactional
 	@Override
 	public boolean saveTeacherAutoSelect(TeacherAutoSelect tas) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.save(tas);
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e) {
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	

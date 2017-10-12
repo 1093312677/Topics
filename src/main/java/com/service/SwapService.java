@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.baseDaoFactory.BaseDAOFactory;
 import com.dao.impl.CommonDaoImpl;
@@ -34,10 +36,10 @@ public class SwapService {
 	 * @param id
 	 * @return
 	 */
+	@Transactional
 	public boolean swapInDepart(String state,String id) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
 			
@@ -45,17 +47,10 @@ public class SwapService {
 			dao.setSession(session); 
 //			
 			dao.swapInDepart(state, id);
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			session.getTransaction().commit();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -63,10 +58,10 @@ public class SwapService {
 	 * @param id
 	 * @return
 	 */
+	@Transactional
 	public boolean swapInTeacher(String state,String intentId) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
 			
@@ -74,17 +69,10 @@ public class SwapService {
 			dao.setSession(session); 
 //			
 			dao.swapInTeacher(state, intentId);
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			session.getTransaction().rollback();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -95,8 +83,7 @@ public class SwapService {
 	 */
 	public boolean leavMessage(String id,String message) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			获取groupDao
 			SwapDaoImpl dao =  (SwapDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("SwapDao");
 			
@@ -104,17 +91,10 @@ public class SwapService {
 			dao.setSession(session); 
 //			
 			dao.leavMessage(id, message);
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			session.getTransaction().commit();
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -146,10 +126,6 @@ public class SwapService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return topics;
-		} finally {
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 	}
 	
@@ -159,10 +135,10 @@ public class SwapService {
 	 * @param studentId
 	 * @return
 	 */
+	@Transactional
 	public boolean swapTeacher(long topicId, long studentId) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			传递session保证是同一个session进行事务处理
 			commonDaoImpl.setSession(session); 
 			List<Student> students = commonDaoImpl.findBy("Student", "id", String.valueOf(studentId));
@@ -178,16 +154,10 @@ public class SwapService {
 				topics.get(0).setSelectedStudent(topics.get(0).getSelectedStudent() + 1);
 				commonDaoImpl.update(topics.get(0));
 			}
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	/**
@@ -208,11 +178,7 @@ public class SwapService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return students;
-		} finally {
-			if(session.isOpen()) {
-//				session.close();
-			}
-		}
+		} 
 	}
 	/**
 	 * 获取该方向对应的题目
@@ -237,10 +203,6 @@ public class SwapService {
 		}catch(Exception e){
 			e.printStackTrace();
 			return topics;
-		} finally {
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 	}
 	

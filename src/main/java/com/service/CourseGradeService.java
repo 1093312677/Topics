@@ -9,8 +9,10 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.Course;
@@ -37,6 +39,7 @@ public class CourseGradeService {
 	@Autowired
 	private CourseDaoImpl courseDaoImpl;
 	
+	@Transactional
 	public List<CourseAndGrade> saveGrade(MultipartFile file, long gradeId){
 		
 		Grade gradee = new Grade();
@@ -87,8 +90,7 @@ public class CourseGradeService {
                 	
                 	grades.add(grade);
 		        }
-		        session = sessionFactory.openSession();
-		        session.beginTransaction();
+		        session = sessionFactory.getCurrentSession();
 //    			传递session保证是同一个session进行事务处理
     			commonDaoImpl.setSession(session); 
     			for(int i=0;i<grades.size();i++) {
@@ -104,16 +106,10 @@ public class CourseGradeService {
 	        			e.printStackTrace();
 	        		}
     			}
-    			session.getTransaction().commit();
 		        return grades2;
 			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				//文件流
-				if(session.isOpen()) {
-					session.close();
-				}
-			}
+				throw new ServiceException("error");
+			} 
 		}
 		return grades2;
 	}
@@ -123,15 +119,10 @@ public class CourseGradeService {
 	 * @return
 	 */
 	public int getGradeNum(long gradeId){
-		session = sessionFactory.openSession();
-	    session.beginTransaction();
+		session = sessionFactory.getCurrentSession();
 //		传递session保证是同一个session进行事务处理
 		commonDaoImpl.setSession(session); 
 		int num = commonDaoImpl.getNum("CourseAndGrade", "gradeId", String.valueOf(gradeId));
-		session.getTransaction().commit();
-		if(session.isOpen()) {
-			session.close();
-		}
 		return num;
 	}
 	/**
@@ -142,15 +133,10 @@ public class CourseGradeService {
 	 * @return
 	 */
 	public List<CourseAndGrade> viewGrades(long gradeId, int page, int eachPage) {
-		session = sessionFactory.openSession();
-	    session.beginTransaction();
+		session = sessionFactory.getCurrentSession();
 //		传递session保证是同一个session进行事务处理
 		commonDaoImpl.setSession(session); 
 		List<CourseAndGrade> course = commonDaoImpl.findBy("CourseAndGrade", "gradeId", String.valueOf(gradeId), page, eachPage);
-		session.getTransaction().commit();
-		if(session.isOpen()) {
-			session.close();
-		}
 		return course;
 	}
 	/**
@@ -162,7 +148,6 @@ public class CourseGradeService {
 	 */
 	public List<Course> viewCourse(Long teacherId, long gradeId, int page, int eachPage) {
 		session = sessionFactory.getCurrentSession();
-	    session.beginTransaction();
 //		传递session保证是同一个session进行事务处理
 		commonDaoImpl.setSession(session); 
 		List<CourseAndGrade> course = commonDaoImpl.findBy("CourseAndGrade", "gradeId", String.valueOf(gradeId), page, eachPage);
@@ -197,9 +182,6 @@ public class CourseGradeService {
 			}
 		}
 		
-//		Set<Course> set = new HashSet<Course>();
-//		set.addAll(courses);
-		session.getTransaction().commit();
 		return courses;
 	}
 	
@@ -209,6 +191,7 @@ public class CourseGradeService {
 	 * @param courseName
 	 * @return
 	 */
+	@Transactional
 	public boolean setViewCourse(Long teacherId, String []courseName, long gradeId) {
 		Teacher teacher = new Teacher();
 		teacher.setId(teacherId);
@@ -225,7 +208,6 @@ public class CourseGradeService {
 		}
 		
 		 session = sessionFactory.getCurrentSession();
-         session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
 		 commonDaoImpl.setSession(session); 
 		 for(int i=0;i<checkViewGrades.size();i++) {
@@ -241,7 +223,6 @@ public class CourseGradeService {
      		}
 		 }
 		 
-		session.getTransaction().commit();
 		return true;
 	}
 	/**
@@ -254,13 +235,11 @@ public class CourseGradeService {
 		Teacher teacher = new Teacher();
 		teacher.setId(teacherId);
 		 session = sessionFactory.getCurrentSession();
-         session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
          courseDaoImpl.setSession(session); 
 		
          List<CheckViewGrade> checkViewGrade = courseDaoImpl.getcheckViewGrade(gradeId, teacher.getId());
          
-         session.getTransaction().commit();
 		return checkViewGrade;
 		
 	}
@@ -271,18 +250,16 @@ public class CourseGradeService {
 	 * @param gradeId
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteCourseChoice(CheckViewGrade checkViewGrade) {
 		 session = sessionFactory.getCurrentSession();
-         session.beginTransaction();
 //			传递session保证是同一个session进行事务处理
          commonDaoImpl.setSession(session); 
          try{
         	 commonDaoImpl.delete(checkViewGrade);
-             session.getTransaction().commit();
              return true;
          }catch(Exception e) {
-        	 session.getTransaction().rollback();
-        	 return false;
+        	 throw new ServiceException("error");
          }
 		
 	}
@@ -293,18 +270,17 @@ public class CourseGradeService {
 	 * @param gradeId
 	 * @return
 	 */
+	@Transactional
 	public boolean addCourse(CourseAndGrade courseAndGrade) {
-		 session = sessionFactory.getCurrentSession();
-         session.beginTransaction();
-//			传递session保证是同一个session进行事务处理
-         commonDaoImpl.setSession(session); 
+		
          try{
-        	 commonDaoImpl.save(courseAndGrade);
-             session.getTransaction().commit();
-             return true;
+          session = sessionFactory.getCurrentSession();
+// 			传递session保证是同一个session进行事务处理
+          commonDaoImpl.setSession(session); 
+          commonDaoImpl.save(courseAndGrade);
+          return true;
          }catch(Exception e) {
-        	 session.getTransaction().rollback();
-        	 return false;
+        	 throw new ServiceException("error");
          }
 		
 	}

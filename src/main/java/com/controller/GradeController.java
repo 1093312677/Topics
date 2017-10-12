@@ -66,7 +66,6 @@ public class GradeController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		commonService.closeSession();
 		return null;
 	}
 	/**
@@ -80,8 +79,6 @@ public class GradeController {
 	public String deleteGrade(HttpServletRequest request,HttpServletResponse response,long id, HttpSession session){
 //		查找
 		List<Grade> grades = commonService.findBy("Grade", "id", String.valueOf(id));
-//		关闭session
-		commonService.closeSession();
 		boolean result = false;
 		if(grades.size()>0){
 			result = commonService.delete(grades.get(0));
@@ -119,14 +116,10 @@ public class GradeController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("grades", grades);
 			request.setAttribute("message", "view");
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return "admin/grade/viewGrade";
 		}
 		
@@ -151,14 +144,10 @@ public class GradeController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("grades", grades);
 			request.setAttribute("message", "view");
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return "admin/grade/viewGrade";
 		}
 		

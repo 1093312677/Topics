@@ -70,14 +70,10 @@ public class CollegeController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("colleges", colleges);
 			request.setAttribute("message", "view");
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return "admin/college/viewCollege";
 		}
 	}
@@ -90,8 +86,6 @@ public class CollegeController {
 		college.setId(id);
 		
 		List<College> colleges = commonService.findBy("College", "id", String.valueOf(id));
-//		关闭session
-		commonService.closeSession();
 //		判断查找是否有数据
 		boolean result = false;
 		
@@ -119,8 +113,6 @@ public class CollegeController {
 		List<College> colleges = commonService.find("College",id);
 		response.setCharacterEncoding("utf-8");
 		request.setAttribute("college", colleges);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		return "admin/college/updateCollege";
 	}
 	/**

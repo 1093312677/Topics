@@ -35,18 +35,12 @@ public class StudentDaoImpl implements IStudentDao{
 				+ " AND intentionTopic.batch=:batch";
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("id", id);
 			query.setInteger("batch", batch);
 			intentionTopics = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return intentionTopics;
 	}
@@ -60,17 +54,10 @@ public class StudentDaoImpl implements IStudentDao{
 		List<TopicDirection> topId = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createSQLQuery(sql).addEntity(TopicDirection.class);
 			query.setLong("directionId", directionId);
 			topId = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
-			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		for(TopicDirection t:topId) {
 			System.out.println(t.getTopics_id());
@@ -82,7 +69,6 @@ public class StudentDaoImpl implements IStudentDao{
 		Student student = new Student();
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			String hql1 = "SELECT "
 						+ " new com.entity.Student( student.id,  student.no,  student.name,student.topics) "
 					+ " FROM "
@@ -121,13 +107,8 @@ public class StudentDaoImpl implements IStudentDao{
 			student.setSubTopic(subTopic);
 			student.setTopics(topics);
 			
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return student;
 	}
@@ -142,20 +123,14 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			query.setCacheable(true);
 			query.setFirstResult(num*size);
 			query.setMaxResults(size);
 			students = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return students;
 	}
@@ -170,18 +145,12 @@ public class StudentDaoImpl implements IStudentDao{
 		Integer count = 0;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			query.setCacheable(true);
 			count = ((Number)query.uniqueResult()).intValue();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return count;
 	}
@@ -196,7 +165,6 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			query.setFirstResult(num*size);
@@ -209,13 +177,8 @@ public class StudentDaoImpl implements IStudentDao{
 					s.getTopics().getTopicsName();
 				}
 			}
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		
 		return students;
@@ -230,18 +193,12 @@ public class StudentDaoImpl implements IStudentDao{
 		Integer count = 0;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			query.setCacheable(true);
 			count = ((Number)query.uniqueResult()).intValue();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return count;
 	}
@@ -258,17 +215,11 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			students = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return students;
 	}
@@ -284,17 +235,11 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Object[]> ostu = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			ostu = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			return null;
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		
 		Student student = null;
@@ -323,17 +268,11 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			students = query.list();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			return null;
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return students;
 	}
@@ -363,7 +302,6 @@ public class StudentDaoImpl implements IStudentDao{
 		List<Student> students = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			query.setLong("teacherId", teacherId);
@@ -371,7 +309,6 @@ public class StudentDaoImpl implements IStudentDao{
 			for(Student stu:students) {
 				stu.getTopics().getTopicsName();
 			}
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			return null;
 		}
@@ -387,17 +324,11 @@ public class StudentDaoImpl implements IStudentDao{
 		Student student = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			student= (Student) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			
-		}finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 		return student;
 	}

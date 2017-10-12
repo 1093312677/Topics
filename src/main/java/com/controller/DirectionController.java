@@ -62,8 +62,6 @@ public class DirectionController {
 		int page = 0;
 		int eachPage = 1000000;
 		List<Direction> directions2 = commonService.view("Direction", Integer.valueOf(page), eachPage);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Direction> directions = new ArrayList<Direction>();
 //			查找出当前方向属于本系的
@@ -76,7 +74,6 @@ public class DirectionController {
 		
 //			查询年级，在添加年级的时候使用
 		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
-		commonService.closeSession();
 			
 		if(type==null){
 			type="null";
@@ -132,8 +129,6 @@ public class DirectionController {
 	public String deleteDirection(Direction direction, HttpSession session, HttpServletRequest request,HttpServletResponse response){
 //		查找班级
 		List<Direction> directions = commonService.findBy("Direction", "id", String.valueOf(direction.getId()));
-//		关闭session
-		commonService.closeSession();
 		boolean result = false;
 		if(directions.size()>0){
 			result = commonService.delete(directions.get(0));
@@ -170,13 +165,9 @@ public class DirectionController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("directions", directions);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}
 		

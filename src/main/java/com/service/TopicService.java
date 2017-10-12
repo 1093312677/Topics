@@ -17,6 +17,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 /**
  * 题目的相关逻辑处理
  * @author kone
@@ -25,9 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.ServerResponse;
+import com.dao.IDao;
 import com.dao.ISettingDao;
-import com.dao.impl.DaoImpl;
-import com.dao.impl.TopicDaoImpl;
+import com.dao.ITopicDao;
 import com.dto.DealData;
 import com.dto.GroupAndTime;
 import com.entity.Grade;
@@ -42,20 +43,16 @@ import com.jsonPo.GuideStudents;
 @Service
 public class TopicService {
 	@Autowired
-	private DaoImpl daoImpl;
+	private IDao daoImpl;
 	
 	@Autowired
-	private TopicDaoImpl topicDaoImpl;
+	private ITopicDao topicDaoImpl;
 	
 	@Autowired
 	private ISettingDao settingDao;
 	
 	@Autowired
 	private DealData dealData;
-	
-	public void closeSession(){
-		topicDaoImpl.closeSession();
-	}
 	
 	/**
 	 * 判断当前是否是上传题目时间
@@ -103,7 +100,6 @@ public class TopicService {
 	 */
 	public boolean addUpdateAttach(String path, String id, MultipartFile file) {
 		List<Topics> topics = daoImpl.findBy("Topics", "id", id);
-		daoImpl.closeSession();
 		if(topics.size() > 0) {
 			
 			if(!file.isEmpty()) {
@@ -200,7 +196,6 @@ public class TopicService {
 				row.createCell(9).setCellValue("已上传任务书");
 			}
 		}
-		daoImpl.closeSession();
 		return wb;
 	}
 	
@@ -227,6 +222,7 @@ public class TopicService {
 	 * @param topic
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteTopicNotThrought(Topics topic)	{
 		
 		return daoImpl.delete(topic);
@@ -237,9 +233,9 @@ public class TopicService {
 	 * @param topic
 	 * @return
 	 */
+	@Transactional
 	public boolean deleteTopic(String topicId)	{
 		List<Topics> topics = daoImpl.find("Topics", topicId);
-		daoImpl.closeSession();
 		if(topics.size() > 0) {
 			daoImpl.deleteSql(topicId);
 			daoImpl.updateSql(topicId);
@@ -261,7 +257,6 @@ public class TopicService {
 		for(int i=0;i<students.size();i++) {
 			students.get(i).getTopics().getTopicsName();
 		}
-		daoImpl.closeSession();
 		return students;
 	}
 	
@@ -270,6 +265,7 @@ public class TopicService {
 	 * @param topic
 	 * @return
 	 */
+	@Transactional
 	public boolean saveSubTopic(Long studentId, long topicId, SubTopic subTopic, String path, MultipartFile file) {
 		Student student = new Student();
 		student.setId(studentId);
@@ -289,7 +285,6 @@ public class TopicService {
 			
 //			查找是否存在
 			List<SubTopic> subTopics = daoImpl.findByTwo("SubTopic", "topicId", String.valueOf(topicId), "studentId", String.valueOf(studentId));
-			daoImpl.closeSession();
 			if(subTopics.size() > 0) {
 				subTopics.get(0).setSubName(subTopic.getSubName());
 				subTopics.get(0).setTaskBookName(fileName);
@@ -418,7 +413,6 @@ public class TopicService {
 			zos.flush();
 			zos.close();
 			
-			topicDaoImpl.closeSession();
 		} catch(Exception e) {
 		}  
 	}
@@ -430,7 +424,6 @@ public class TopicService {
 	 */
 	public List<Student> viewStudentSelected(String topicId) {
 		List<Student> students = daoImpl.findBy("Student", "topicsId", topicId);
-		daoImpl.closeSession();
 		return students;
 	}
 	/**
@@ -463,7 +456,6 @@ public class TopicService {
 		
 		topic.setTeacher(t);
 		
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", topic);
 	}
 	
@@ -491,7 +483,6 @@ public class TopicService {
 			topics.get(i).setTeacher(null);
 		}
 		
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", topics);
 	}
 	
@@ -522,7 +513,6 @@ public class TopicService {
 		
 		topic.setTeacher(t);
 		
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", topic);
 	}
 	
@@ -533,7 +523,6 @@ public class TopicService {
 	 */
 	public ServerResponse<List<Grade>> teacherViewGradesApp(String departmentId) {
 		List<Grade> grades = topicDaoImpl.teacherViewGradesApp(departmentId);
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", grades);
 	}
 	
@@ -550,7 +539,6 @@ public class TopicService {
 			groupAndTime.setTime(teacherGroup.getGroup().getTimeAndPlace().getTime());
 			groupAndTime.setPlace(teacherGroup.getGroup().getTimeAndPlace().getPlace());
 		}
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", groupAndTime);
 	}
 	
@@ -591,7 +579,6 @@ public class TopicService {
 			}
 			
 		}
-		topicDaoImpl.closeSession();
 		return ServerResponse.response(200, "获取信息成功", guideStudents);
 	}
 	

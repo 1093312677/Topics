@@ -13,15 +13,16 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.common.RedisTool;
 import com.common.ServerResponse;
+import com.dao.IDao;
 import com.dao.IIntentionDao;
 import com.dao.IScoreDao;
 import com.dao.IStudentDao;
 import com.dao.ITopicDao;
-import com.dao.impl.DaoImpl;
 import com.entity.CheckViewGrade;
 import com.entity.Clazz;
 import com.entity.CourseAndGrade;
@@ -35,7 +36,7 @@ import com.entity.User;
 @Service
 public class StudentService {
 	@Autowired
-	private DaoImpl daoImpl;
+	private IDao daoImpl;
 	@Autowired
 	private CourseGradeService courseGradeService;
 	
@@ -112,6 +113,7 @@ public class StudentService {
 	 * @param topic
 	 * @return
 	 */
+	@Transactional
 	public int selectIntentionTopic(Student student,int choice,int batch,Topics topic){
 		List<IntentionTopic> intentionTopics = null;
 		intentionTopics = studentDao.viewIntentions(student.getId(), batch);

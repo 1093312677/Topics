@@ -59,7 +59,6 @@ public class AccountController {
 				if(user1.getPrivilege().equals("2")||user1.getPrivilege().equals("3")){
 //					管理员或者老师
 					List<Teacher> teachers = accountService.findBy("Teacher", "no", user.getUsername());
-					accountService.closeSession();
 					List<Teacher> teachers2=new ArrayList<>();
 					Teacher teacher=new Teacher();
 					teacher.setId(teachers.get(0).getId());

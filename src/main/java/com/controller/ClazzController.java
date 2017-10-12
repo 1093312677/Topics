@@ -54,8 +54,6 @@ public class ClazzController {
 		
 		int eachPage = 1000000;
 		List<Clazz> clazzs2 = commonService.view("Clazz",0, eachPage);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		Long departmentId = (Long)session.getAttribute("departmentId");		
 		List<Clazz> clazzs = new ArrayList<Clazz>();
 //			查找出当前班级属于本系的
@@ -68,7 +66,6 @@ public class ClazzController {
 		
 //			查询年级，在添加年级的时候使用
 		grades = commonService.findBy("Grade", "departmentId", String.valueOf(departmentId) );
-		commonService.closeSession();
 			
 		
 		
@@ -137,13 +134,9 @@ public class ClazzController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("clazzs", clazzs);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}
 	}
@@ -159,8 +152,6 @@ public class ClazzController {
 	public String deleteDirection(String id, HttpSession session, HttpServletRequest request,HttpServletResponse response){
 //		查找班级
 		List<Clazz> clazzs = commonService.findBy("Clazz", "id", id);
-//		关闭session
-		commonService.closeSession();
 		boolean result = false;
 		if(clazzs.size()>0){
 			result = commonService.delete(clazzs.get(0));

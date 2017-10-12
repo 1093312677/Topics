@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.springframework.stereotype.Component;
 
 import com.dao.daoAdapter.DaoAdapter;
 import com.entity.Student;
@@ -13,6 +14,7 @@ import com.entity.Student;
  *
  * @param <T>
  */
+@Component
 public class CommonDaoImpl<T> extends DaoAdapter<T>{
 	private Session session;
 	String hql = "";

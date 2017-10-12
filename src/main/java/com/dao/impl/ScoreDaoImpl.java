@@ -3,6 +3,7 @@ package com.dao.impl;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -27,52 +28,32 @@ public class ScoreDaoImpl implements IScoreDao{
 		Score score = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query = session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			score = (Score) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e) {
 			e.printStackTrace();
-		} finally {
-			if(session.isOpen() ) {
-//				session.close();
-			}
-		}
+		} 
 		return score;
 	}
 	@Override
 	public boolean updateScore(Score score) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.update(score);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	@Override
 	public boolean saveScore(Score score) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.save(score);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e) {
-			e.printStackTrace();
-			return false;
-		} finally {
-			if(session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	

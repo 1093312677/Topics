@@ -108,12 +108,8 @@ public class StudentController {
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		pagination.setTotleSize(studentService.getStudentsNum(gradeId));//获取总记录数
-//		获取完数据后关闭session
-		commonService.closeSession();
 		
 		List<Student> students = studentService.viewStudents(String.valueOf(gradeId), pagination.getPage()*eachPage, eachPage);
-//		获取完数据后关闭session
-		commonService.closeSession();
 		
 //		处理分页数据
 		pagination = dealData.getPagination(students, pagination);
@@ -272,7 +268,6 @@ public class StudentController {
 			e.printStackTrace();
 		}
 		
-	    commonService.closeSession();
 		return null;
 	}
 
@@ -407,7 +402,6 @@ public class StudentController {
 	public String viewIntentionTopic(HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long studentId = (Long) session.getAttribute("studentId");
 		List<IntentionTopic> intentionTopics = commonService.findBy("IntentionTopic", "studentId", String.valueOf(studentId));
-		commonService.closeSession();
 		
 		request.setAttribute("intentionTopics", intentionTopics);
 		return "student/viewIntentionTopic";
@@ -432,9 +426,7 @@ public class StudentController {
 		request.setAttribute("students", students);
 		List<CourseAndGrade> courseAndGrades = null;
 		List<CourseAndGrade> courseAndGrades2 = new ArrayList<CourseAndGrade>();
-		commonService.closeSession();
 		courseAndGrades = commonService.findBy("CourseAndGrade", "no", no);
-		commonService.closeSession();
 		if("yes".equals(filter)) {
 			courseAndGrades2 = studentService.getCourseAndGradesFilter(courseAndGrades, teacher, String.valueOf(gradeId), no);
 		}
@@ -544,10 +536,8 @@ public class StudentController {
 			stu.setId(new Long(0));
 			stu.setTopics(topic);
 			stu.setSubTopic(sub);
-			commonService.closeSession();
 			return ServerResponse.response(200, "获取成功", stu);
 		} 
-		commonService.closeSession();
 			
 		return ServerResponse.response(201, "获取失败", new Student());
 	}
@@ -562,7 +552,6 @@ public class StudentController {
 	public ServerResponse<List<Topics>> viewTopicsStudentApp(String userId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		List<Topics> topics = null;
 		List<Student> students = (List<Student>) commonService.find("Student", userId);
-		commonService.closeSession();
 		if(students.size() > 0) {
 			Setting setting = students.get(0).getClazz().getDirection().getSpceialty().getGrade().getSetting();
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -651,7 +640,6 @@ public class StudentController {
 			t.setName(intentionTopics.get(i).getTopic().getTeacher().getName());
 			intentionTopics.get(i).getTopic().setTeacher(t);
 		}
-		commonService.closeSession();
 		return ServerResponse.response(200, "获取成功", intentionTopics);
 	}
 	

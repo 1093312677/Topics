@@ -1,10 +1,13 @@
 package com.common;
 
+import org.springframework.stereotype.Component;
+
 /**
  * 分页
  * @author kone
  * 2017-1-7
  */
+@Component
 public class Pagination {
 	private int eachPage;//每页多少条
 	private int totlePage;//总共多少页

@@ -142,8 +142,6 @@ public class TeacherController {
 		request.setAttribute("teachers", teachers);
 		request.setAttribute("message", "view");
 		request.setAttribute("pagination", pagination);
-//			获取完数据后关闭session
-		commonService.closeSession();
 		return "teacher/viewTeacher";
 	}
 	/**
@@ -163,10 +161,8 @@ public class TeacherController {
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
 		pagination.setTotleSize(teacherService.getDeanNum());//获取总记录数
-		teacherService.closeSession();
 		
 		List<Teacher> teachers = teacherService.getDean( pagination.getPage()*eachPage, eachPage);
-		teacherService.closeSession();
 //		处理分页数据
 		pagination = dealData.getPagination(teachers, pagination);
 		request.setAttribute("teachers", teachers);
@@ -185,7 +181,6 @@ public class TeacherController {
 	@RequestMapping("/viewTeacherOne")
 	public String viewTeacherOne(String view, String id,HttpServletRequest request,HttpServletResponse response,String type){
 		List<Teacher> teacher = commonService.find("Teacher", id);
-		commonService.closeSession();
 		if(teacher.size()>0){
 			request.setAttribute("teacher", teacher.get(0));
 			request.setAttribute("view", view);
@@ -474,7 +469,6 @@ public class TeacherController {
 		session.setAttribute("gradeId", gradeId);
 		request.setAttribute("students",students);
 		request.setAttribute("pagination", pagination);
-		teacherService.closeSession();
 		return "teacher/viewResults";
 	}
 	/**

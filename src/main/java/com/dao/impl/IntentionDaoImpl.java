@@ -4,8 +4,10 @@ package com.dao.impl;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.IIntentionDao;
 import com.entity.IntentionTopic;
@@ -23,22 +25,19 @@ public class IntentionDaoImpl implements IIntentionDao{
 			session.close();
 		}
 	}
+	@Transactional
 	@Override
 	public boolean saveIntention(IntentionTopic intentionTopic) {
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			session.save(intentionTopic);
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			return false;
-		}finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
+	
+	@Transactional
 	@Override
 	public boolean choiceDeleteIntention(IntentionTopic intentionTopic) {
 		hql = "DELETE FROM IntentionTopic as intent"
@@ -51,8 +50,7 @@ public class IntentionDaoImpl implements IIntentionDao{
 				+ " AND intent.student.id=:studentId1 "
 				+ " AND intent.topic.id=:topicId";
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 //			先删除同批次志愿
 			Query query = session.createQuery(hql);
 			query.setInteger("batch", intentionTopic.getBatch());
@@ -68,14 +66,9 @@ public class IntentionDaoImpl implements IIntentionDao{
 //			最后增加志愿
 			session.save(intentionTopic);
 			
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			return false;
-		}finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 	

@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.stereotype.Component;
+
 import com.common.Pagination;
 import com.entity.Clazz;
 import com.entity.College;
@@ -22,6 +24,7 @@ import com.entity.User;
  * @author kone
  * 2017-1-12
  */
+@Component(value="dealData2")
 public class DealData<T> {
 //	@Autowired
 //	private Pagination pagination;

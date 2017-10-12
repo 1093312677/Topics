@@ -2,6 +2,8 @@ package com.service;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,6 +13,7 @@ import com.common.Information;
 import com.common.RedisTool;
 import com.common.ServerResponse;
 import com.dao.AccountDao;
+import com.dao.IDao;
 import com.dao.impl.DaoImpl;
 import com.entity.Clazz;
 import com.entity.Department;
@@ -21,13 +24,10 @@ import com.entity.Teacher;
 import com.entity.User;
 @Service
 public class AccountService<T> {
-	@Autowired
-	private DaoImpl<T> daoImpl;
+	@Resource
+	private IDao daoImpl;
 	@Autowired
 	private AccountDao accountDao;
-	public DaoImpl<T> getDaoImpl() {
-		return daoImpl;
-	}
 	public void setDaoImpl(DaoImpl<T> daoImpl) {
 		this.daoImpl = daoImpl;
 	}
@@ -37,12 +37,6 @@ public class AccountService<T> {
 	}
 	
 	private Logger logger = Logger.getLogger(AccountService.class);
-	/**
-	 * close session
-	 */
-	public void closeSession(){
-		daoImpl.closeSession();
-	}
 	/**
 	 * save Entity
 	 * @param T entitys
@@ -226,7 +220,6 @@ public class AccountService<T> {
 	public ServerResponse<Information> loginApp(User user) {
 		List<User> users = (List<User>) daoImpl.login(user);
 		
-		daoImpl.closeSession();
 		if(users.size()>0){
 			if(users.get(0).getPassword().equals(user.getPassword())){
 				List<Student> students = null;

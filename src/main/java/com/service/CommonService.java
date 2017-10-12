@@ -10,26 +10,19 @@ import org.springframework.stereotype.Service;
 
 import com.common.QueryCondition;
 import com.common.RedisTool;
-import com.dao.impl.DaoImpl;
+import com.dao.IDao;
 import com.entity.Direction;
 import com.entity.Setting;
-import com.entity.Teacher;
 import com.entity.Topics;
 
 @Service
 public class CommonService <T> {
 	@Autowired
-	private DaoImpl<T> daoImpl;
+	private IDao daoImpl;
 	
 	public String login(){
 		
 		return "yes";
-	}
-	/**
-	 * close session
-	 */
-	public void closeSession(){
-		daoImpl.closeSession();
 	}
 	/**
 	 * save Entity
@@ -164,7 +157,6 @@ public class CommonService <T> {
 			}
 			topics.get(i).setDirections(directions);
 		}
-		daoImpl.closeSession();
 		return topics;
 	}
 	

@@ -6,11 +6,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import com.dao.ITeacherDao;
 import com.dao.daoAdapter.DaoAdapter;
-import com.entity.Grade;
-
+@Component
 public class TeacherDaoImpl<Teacher> extends DaoAdapter<Teacher> {
 	@Autowired
 	private SessionFactory sessionFactory;

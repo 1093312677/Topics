@@ -3,6 +3,12 @@
   <session-config>
     <session-timeout>60</session-timeout>
   </session-config>
+  
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:config/spring/spring.xml,classpath:config/hibernate/spring-hibernate.xml,classpath:config/spring/applicationContext.xml</param-value>
+  </context-param>
+  
   <!-- 
   <error-page>
     <exception-type>java.lang.Exception</exception-type>
@@ -66,10 +72,7 @@
   </listener>
   
   
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:config/spring/spring.xml,classpath:config/hibernate/spring-hibernate.xml,classpath:config/spring/applicationContext.xml</param-value>
-  </context-param>
+  
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.common.QueryCondition;
 import com.entity.Direction;
+import com.entity.Teacher;
 import com.entity.User;
 
 public interface IDao<T> {
@@ -162,4 +163,8 @@ public interface IDao<T> {
 	 * @return
 	 */
 	public boolean insertSql(String value1, String value2);
+	public int getDeanNum();
+	public List<Teacher> getDean(int page, int eachPage);
+	public boolean deleteSql(String topicId);
+	public boolean updateSql(String topicId);
 }

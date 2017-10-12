@@ -122,7 +122,6 @@ public class TopicController {
 		if (topicId != null) {
 //			上传题目成功后，相应的数量进行减少
 			List<LimitNumber> limitNumbers = commonService.findByTwo("LimitNumber", "gradeId", String.valueOf(gradeId), "teacherId", String.valueOf(teacherId));
-			commonService.closeSession();
 			if(limitNumbers.size() > 0) {
 				int number = limitNumbers.get(0).getAlreadyNumber() + topic.getEnableSelect();
 				limitNumbers.get(0).setAlreadyNumber(number);
@@ -179,14 +178,12 @@ public class TopicController {
 	public String findDirectionBy(HttpServletRequest request,HttpServletResponse response,String gradeId,String type){
 		List<Specialty> specialtys = commonService.findBy("Specialty", "gradeId", gradeId);
 		int specialtySize = specialtys.size();
-		commonService.closeSession();
 		List<Direction> directions2 = new ArrayList<Direction>();
 		Direction direction;
 //		处理所有的方向
 		for(int i=0;i<specialtySize;i++){
 			List<Direction> directions = commonService.findBy("Direction", "specialtyId", String.valueOf(specialtys.get(i).getId()));
 			int directionsSize = directions.size();
-			commonService.closeSession();
 			for(int j=0;j<directionsSize;j++){
 				direction = new Direction();
 				direction.setDirectionName(directions.get(j).getDirectionName());
@@ -205,13 +202,9 @@ public class TopicController {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}else{
 			request.setAttribute("directions2", directions2);
-//			获取完数据后关闭session
-			commonService.closeSession();
 			return null;
 		}
 		
@@ -257,7 +250,6 @@ public class TopicController {
 		request.setAttribute("state", state);
 		session.setAttribute("gradeId", gradeId);
 		request.setAttribute("pagination", pagination);
-		topicService.closeSession();
 		return "topic/viewTopics";
 	}
 	
@@ -281,7 +273,6 @@ public class TopicController {
 		
 		request.setAttribute("topics", topics);
 		session.setAttribute("gradeId", gradeId);
-		commonService.closeSession();
 		return "topic/viewTopicsTeacher";
 	}
 	/**

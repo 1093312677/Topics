@@ -31,7 +31,7 @@
                     >
                     
     
-    <mvc:annotation-driven />
+	<mvc:annotation-driven />
     <!-- 注解支持 -->
     <context:annotation-config/>
     
@@ -68,20 +68,22 @@
     </bean>  
     
     
- <!-- 实例化 -->
-     <bean id="dao" class="com.dao.impl.DaoImpl"></bean>
-     <bean id="dealData" class="com.dto.DealData"></bean>
+ <!-- 实例化
+     
+     
      <bean id="pagination" class="com.common.Pagination"></bean>
      <bean id="daoFactory" class="com.dao.baseDaoFactory.mysqlDaoFactory.MysqlDAOFactory"></bean>
      <bean id="commonDao" class="com.dao.impl.CommonDaoImpl"></bean>
      <bean id="teacherDaoImpl" class="com.dao.impl.TeacherDaoImpl"></bean>
      <bean id="courseDaoImpl" class="com.dao.impl.CourseDaoImpl"></bean>
+ -->     
+ 	<bean id="dealData" class="com.dto.DealData"></bean>
      
-     
-     <!-- 配置事务管理器 -->
-	<tx:annotation-driven transaction-manager="transactionManager" />
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-	  <property name="dataSource" ref="dataSource" />
-	</bean>
-    
+     <!-- 配置事务管理器  -->
+    <bean id="transactionManager"  
+        class="org.springframework.orm.hibernate4.HibernateTransactionManager">  
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>  
+    <!-- 支持  @Transactional 标记 -->  
+    <tx:annotation-driven transaction-manager="transactionManager"/>  
 </beans>  

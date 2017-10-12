@@ -103,5 +103,15 @@ public interface ITopicDao {
 	 * @return
 	 */
 	public SubTopic getStudentSubTopic(Long studentId);
+
+	public List<Topics> findByTwo(String string, String string2, String valueOf, String string3, String state);
+
+	public int viewTopicNum(String gradeId, String state);
+
+	public List<Topics> viewTopic(String gradeId, String state, int page, int eachPage);
+
+	public boolean withdrawalTopic(String studentId, String topicId);
+
+	public Topics viewTopicDetials(String topicId);
 	
 }

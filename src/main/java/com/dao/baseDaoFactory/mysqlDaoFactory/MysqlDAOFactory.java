@@ -1,12 +1,14 @@
 package com.dao.baseDaoFactory.mysqlDaoFactory;
 
+import org.springframework.stereotype.Component;
+
 import com.dao.DaoInterface;
 import com.dao.baseDaoFactory.BaseDAOFactory;
 import com.dao.impl.CommonDaoImpl;
 import com.dao.impl.GroupDaoImpl;
 import com.dao.impl.SwapDaoImpl;
 import com.dao.impl.TeacherDaoImpl;
-
+@Component
 public class MysqlDAOFactory<T> extends BaseDAOFactory<T>{
 
 	@Override

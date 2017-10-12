@@ -15,11 +15,12 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.dao.IDao;
 import com.dao.ISettingDao;
 import com.dao.IStudentDao;
 import com.dao.ITeacherDao;
-import com.dao.impl.DaoImpl;
 import com.entity.Grade;
 import com.entity.Setting;
 import com.entity.Student;
@@ -29,7 +30,7 @@ import com.entity.Topics;
 @Service
 public class TeacherService {
 	@Autowired
-	private DaoImpl daoImpl;
+	private IDao daoImpl;
 	
 	@Autowired
 	private ITeacherDao teacherDao;
@@ -40,9 +41,6 @@ public class TeacherService {
 	@Autowired
 	private ISettingDao settingDao;
 	
-	public void closeSession(){
-		daoImpl.closeSession();
-	}
 	/**
 	 * 查看选择了该老师题目的学生
 	 * @param teacher
@@ -90,7 +88,6 @@ public class TeacherService {
 			}//遍历题目
 		}
 		
-		daoImpl.closeSession();
 		return topics2;
 	}
 	
@@ -194,6 +191,7 @@ public class TeacherService {
 	 * @param studentId
 	 * @return
 	 */
+	@Transactional
 	public boolean confirmStudent(Long topicId, Long studentId) {
 		Topics topic = teacherDao.getTopicIsSelect(topicId);
 //		选择的人数小于可选学生人数
@@ -288,10 +286,6 @@ public class TeacherService {
 			}
 		}
 		
-	   
-		
-//		获取完数据后关闭session
-	   studentDao.closeSession();
 		
 		return wb;
 	}
@@ -377,6 +371,7 @@ public class TeacherService {
 	 * @param state
 	 * @return
 	 */
+	@Transactional
 	public boolean updateTopicState(Long topicId, int state) {
 		return teacherDao.updateTopicState(topicId, state);
 	}

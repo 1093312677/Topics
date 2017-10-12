@@ -5,8 +5,10 @@ import java.util.List;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.ITeacherDao;
 import com.entity.Grade;
@@ -37,20 +39,14 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " WHERE g.department.id=:departmentId";
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.getTransaction().begin();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setLong("departmentId", departmentId);
 			grades = query.list();
-//			session.getTransaction().commit();
 			
 			return grades;
 		}catch(Exception e){
 			return grades;
-		} finally{
-			if(session.isOpen()) {
-//				session.close();
-			}
 		}
 	}
 
@@ -65,23 +61,17 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " AND "
 				+ " teacher.user.privilege = 3";
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setLong("departmentId", departmentId);
 			query.setFirstResult(num*size);
 			query.setMaxResults(size);
 			teachers = query.list();
-			session.getTransaction().commit();
 			
 			return teachers;
 		}catch(Exception e){
 			return teachers;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
 		}
 	}
 
@@ -95,25 +85,19 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " teacher.user.privilege = 3";
 		Integer count = 0;
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setCacheable(true);
 			query.setLong("departmentId", departmentId);
 			count = ((Number)query.uniqueResult()).intValue();
-			session.getTransaction().commit();
 			
 			return count;
 		}catch(Exception e){
 			return count;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
 		}
 	}
 
-
+	@Transactional
 	@Override
 	public boolean updateTopicState(Long topicId, int state) {
 		hql = "UPDATE Topics"
@@ -121,21 +105,15 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " WHERE "
 				+ " id=:topicId";
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setLong("topicId", topicId);
 			query.setLong("state", state);
 			query.executeUpdate();
-			session.getTransaction().commit();
 			
 			return true;
 		}catch(Exception e){
-			return false;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 
@@ -149,23 +127,17 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " id =:id";
 		Topics topic = null;
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setLong("id", topicId);
 			topic = (Topics) query.uniqueResult();
-			session.getTransaction().commit();
 			return topic;
 		}catch(Exception e){
 			return topic;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
-		}
+		} 
 	}
 
-
+	@Transactional
 	@Override
 	public boolean confirmSelect(Long topicId, Long studentId) {
 		hql = "UPDATE "
@@ -181,19 +153,13 @@ public class TeachersDaoImpl implements ITeacherDao{
 				+ " WHERE "
 				+ " id="+studentId;
 		try{
-			session = sessionFactory.openSession();
-			session.getTransaction().begin();
+			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.executeUpdate();
 			session.createSQLQuery(hql2).executeUpdate();
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			return false;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 		
 	}
