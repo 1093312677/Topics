@@ -28,9 +28,9 @@ public class TopicDaoImpl implements ITopicDao{
 	
 	
 	public void closeSession(){
-		if(session.isOpen()) {
-			session.close();
-		}
+//		if(session.isOpen()) {
+//			session.close();
+//		}
 	}
 	/**
 	 * 查看未通过题目

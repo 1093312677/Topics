@@ -24,7 +24,7 @@ import com.entity.User;
  * @author kone
  * 2017-1-12
  */
-@Component(value="dealData2")
+@Component
 public class DealData<T> {
 //	@Autowired
 //	private Pagination pagination;

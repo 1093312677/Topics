@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.IFormDao;
 import com.entity.Form;
@@ -38,6 +39,7 @@ public class FormDaoImpl implements IFormDao{
 		} 
 		return form;
 	}
+	@Transactional
 	@Override
 	public boolean updateForm(Form form) {
 		try{
@@ -48,6 +50,7 @@ public class FormDaoImpl implements IFormDao{
 			throw new ServiceException("error");
 		} 
 	}
+	@Transactional
 	@Override
 	public boolean saveForm(Form form) {
 		try{

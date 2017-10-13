@@ -25,23 +25,19 @@ public class TimerDaoImpl {
 	 * close session
 	 */
 	public void closeSession(){
-		if(session.isOpen())
-			session.close();
+//		if(session.isOpen())
+//			session.close();
 	}
 	
 	public long findMaxGrade() {
 		hql = "select max(id) from Grade";
 		long id = 0;
 		try{
-			session = sessionFactory.openSession();
+			session = sessionFactory.getCurrentSession();
 			id = (Long) session.createQuery(hql).uniqueResult();
 			return id;
 		}catch(Exception e){
 			return id;
-		} finally{
-			if(session.isOpen()) {
-				session.close();
-			}
 		}
 	}
 	

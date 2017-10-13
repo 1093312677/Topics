@@ -2,9 +2,10 @@ package com.common;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.service.TimerService;
-
+@Component
 public class TeacherTimer {
 	@Autowired
 	private TimerService timerService;

@@ -108,19 +108,20 @@ public class CourseController {
 	 */
 	@RequestMapping("/addCourse")
 	public String addCourse(CourseAndGrade courseAndGrade, HttpServletRequest request,HttpServletResponse response, HttpSession session){
-//		long gradeId = (long) session.getAttribute("gradeId");
-		Long gradeId = 4L;
+		long gradeId = (long) session.getAttribute("gradeId");
+//		Long gradeId = 4L;
 		Grade grade = new Grade();
 		grade.setId(gradeId);
-		
-		courseAndGrade.setCourseName("d");
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
-		courseAndGrade.setCourseNature(sdf.format(new Date()));
-		courseAndGrade.setCredit(3);
-		courseAndGrade.setName("kone");
-		courseAndGrade.setNo("110");
-		courseAndGrade.setScore(88);;
 		courseAndGrade.setGrade(grade);
+		
+//		courseAndGrade.setCourseName("d");
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
+//		courseAndGrade.setCourseNature(sdf.format(new Date()));
+//		courseAndGrade.setCredit(3);
+//		courseAndGrade.setName("kone");
+//		courseAndGrade.setNo("110");
+//		courseAndGrade.setScore(88);
+		
 		if(courseGradeService.addCourse(courseAndGrade)) {
 			try {
 				response.getWriter().print(1);

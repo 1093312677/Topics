@@ -6,6 +6,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.IScoreDao;
 import com.entity.Score;
@@ -36,6 +37,7 @@ public class ScoreDaoImpl implements IScoreDao{
 		} 
 		return score;
 	}
+	@Transactional
 	@Override
 	public boolean updateScore(Score score) {
 		try{
@@ -46,6 +48,7 @@ public class ScoreDaoImpl implements IScoreDao{
 			throw new ServiceException("error");
 		}
 	}
+	@Transactional
 	@Override
 	public boolean saveScore(Score score) {
 		try{

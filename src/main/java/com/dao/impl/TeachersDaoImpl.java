@@ -24,9 +24,9 @@ public class TeachersDaoImpl implements ITeacherDao{
 	
 	
 	public void closeSession(){
-		if(session.isOpen()) {
-			session.close();
-		}
+//		if(session.isOpen()) {
+//			session.close();
+//		}
 	}
 
 

@@ -3,8 +3,10 @@ package com.dao.impl;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.service.spi.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.dao.AccountDao;
 import com.entity.Clazz;
@@ -34,49 +36,37 @@ public class AccountDaoImpl implements AccountDao{
 	/**
 	 * 更新密码
 	 */
+	@Transactional
 	public boolean updatePw(String userId, String pw) {
 		String hql="update User u set u.password=:pw where u.id=:id";
 		
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query=session.createQuery(hql);
 			query.setString("pw", pw);
 			query.setString("id", userId);
 			query.executeUpdate();
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 
+	@Transactional
 	@Override
 	public boolean updateInfor(String table, String qq, String email, String telephone, String userId) {
 		hql = "update "+table+" set qq=:qq,email=:email,telephone=:telephone where id=:id";
 		try{
-			session = sessionFactory.openSession();
-			session.beginTransaction();
+			session = sessionFactory.getCurrentSession();
 			Query query=session.createQuery(hql);
 			query.setString("qq", qq);
 			query.setString("email", email);
 			query.setString("telephone", telephone);
 			query.setString("id", userId);
 			query.executeUpdate();
-			session.getTransaction().commit();
 			return true;
 		}catch(Exception e){
-			e.printStackTrace();
-			return false;
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
+			throw new ServiceException("error");
 		}
 	}
 
@@ -91,17 +81,11 @@ public class AccountDaoImpl implements AccountDao{
 		Student stu = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setString("no1", no);
 			stu = (Student) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return stu;
 	}
@@ -139,17 +123,11 @@ public class AccountDaoImpl implements AccountDao{
 		Clazz clazz = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("studentId", studentId);
 			clazz = (Clazz) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return clazz;
 	}
@@ -167,17 +145,11 @@ public class AccountDaoImpl implements AccountDao{
 		Direction direction = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("clazzId", clazzId);
 			direction = (Direction) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return direction;
 	}
@@ -195,17 +167,11 @@ public class AccountDaoImpl implements AccountDao{
 		Grade grade = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("directionId", directionId);
 			grade = (Grade) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return grade;
 	}
@@ -223,17 +189,11 @@ public class AccountDaoImpl implements AccountDao{
 		Department department = null;
 		try{
 			session = sessionFactory.getCurrentSession();
-//			session.beginTransaction();
 			Query query=session.createQuery(hql);
 			query.setLong("gradeId", gradeId);
 			department = (Department) query.uniqueResult();
-//			session.getTransaction().commit();
 		}catch(Exception e){
 			e.printStackTrace();
-		} finally {
-			if( session.isOpen() ) {
-//				session.close();
-			}
 		}
 		return department;
 	}
