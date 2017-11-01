@@ -44,7 +44,7 @@ public class Direction implements Serializable{
 	@OneToMany(mappedBy="direction",cascade={CascadeType.ALL},fetch=FetchType.LAZY)
 	private List<Clazz> clazzs = new ArrayList<Clazz>();
 	
-	@ManyToMany(mappedBy="directions",targetEntity = Topics.class,fetch = FetchType.LAZY,cascade=CascadeType.ALL)
+	@ManyToMany(mappedBy="directions",targetEntity = Topics.class,fetch = FetchType.LAZY,cascade=CascadeType.REFRESH)
 	private List<Topics> topics = new ArrayList<Topics>();
 	
 	public Direction() {

@@ -114,4 +114,11 @@ public interface ITopicDao {
 
 	public Topics viewTopicDetials(String topicId);
 	
+	/**
+	 * 通过id查找题目
+	 * @param topicId
+	 * @return
+	 */
+	public Topics getTopicById(Long topicId);
+	
 }

@@ -35,7 +35,8 @@
                                 <span class="clear">
                                     <span class="block m-t-xs" style="font-size:20px;">
                                         <i class="fa fa-area-chart"></i>
-                                        <strong class="font-bold">${name }</strong>
+                                        <strong class="font-bold">${name }</strong><br>
+                                        ${no }
                                     </span>
                                 </span>
                             </a>
@@ -216,6 +217,10 @@
 		                        <ul class="nav nav-second-level">
 		                            <li>
 		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/teacher/viewGradeSelectedIntent.do?viewType=viewResults">查看成绩</a>
+		                            </li>
+		                            
+		                             <li>
+		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/teacher/viewGradeSelectedIntent.do?viewType=viewFormResults">文档情况</a>
 		                            </li>
 		                        </ul>
 		                    </li>

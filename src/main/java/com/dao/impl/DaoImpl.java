@@ -60,7 +60,7 @@ public class DaoImpl<T> implements IDao<T>{
 	public List<T> view(String table, int page, int eachPage) {
 		List<T> entitys = new ArrayList<T>();
 		try{
-			hql = "From "+table;
+			hql = "From "+table+ " ORDER BY id DESC";;
 			session = sessionFactory.getCurrentSession();
 //			分页查询
 			Query query = session.createQuery(hql);

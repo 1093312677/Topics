@@ -108,7 +108,7 @@ public class CourseController {
 	 */
 	@RequestMapping("/addCourse")
 	public String addCourse(CourseAndGrade courseAndGrade, HttpServletRequest request,HttpServletResponse response, HttpSession session){
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 //		Long gradeId = 4L;
 		Grade grade = new Grade();
 		grade.setId(gradeId);
@@ -149,7 +149,7 @@ public class CourseController {
 	 */
 	@RequestMapping("/batchImportGrade")
 	public String batchImportGrade(@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		List<CourseAndGrade> grades = null;
 		if (!file.isEmpty()) {
 			grades = courseGradeService.saveGrade(file, gradeId);
@@ -166,8 +166,6 @@ public class CourseController {
 	 * 获取课程信息
 	 * @param request
 	 * @param response
-	 * @param type
-	 * @param pagination
 	 * @param session
 	 * @return
 	 */
@@ -191,7 +189,7 @@ public class CourseController {
 	 */
 	@RequestMapping("/setViewCourse")
 	public String setViewCourse(String []courseName, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		Long teacherId = (Long) session.getAttribute("teacherId");
 		courseGradeService.setViewCourse(teacherId, courseName, gradeId);
 		

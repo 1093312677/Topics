@@ -18,11 +18,23 @@
 <!-- alert -->
 <link rel="stylesheet" href="<%=request.getContextPath() %>/js/sweetalert/sweetalert.css"/>
 <script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
+
+<style>
+	.checkbox-class {
+		width:17px;
+		height:17px;
+		outline:none;
+	}
+</style>
 </head>
 <body>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
 	                            查看<span class="glyphicon glyphicon-eye-open">题目</span> 
+	           
+	          <c:if test="${state == 2 }">
+	          		<button class="btn btn-info" style="outline:none;" id="batch">批量通过</button>
+	          </c:if>
 	          <c:if test="${state == 1 }">
 		         <a href="<%=request.getContextPath() %>/topic/exportTopic.do">
 		        	 <span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出题目情况"></span>
@@ -35,6 +47,12 @@
     </div> 
     <table class="table table-hover table-striped" >
     	<tr class="info">
+    		
+    		<c:if test="${state == 2 }">
+    			<td>
+    				<input type="checkbox" class="checkbox-class" id="all-checkbox"/>
+    			</td> 
+    		</c:if>
     		<td >编号</td>
     		<td width=200px>题目名称</td>
     		<td>适用方向</td>
@@ -50,8 +68,14 @@
     		
     		<td>操作</td>
     	</tr>
+    	<form action="" id="form1">
     	<c:forEach items="${topics }" var="items">
-	    		<tr>
+	    		<tr class="choiceBox">
+	    			<c:if test="${state == 2 }">
+		    			<td>
+		    				<input type="checkbox" name="topicId" class="checkbox-class needcheck" value="${items.id }"/>
+		    			</td> 
+		    		</c:if>
 	    			<td><c:out value="${items.id }"></c:out></td>
 	    			<td>
 	    				<span  data-toggle="tooltip" data-placement="bottom" title="简介：${items.introduce }">
@@ -100,13 +124,13 @@
 	    				
 	    			<td>
 	    				<c:if test="${state == 2 }">
-	    					<button type="button" class="btn btn-default btn-sm" style="color:green">
+	    					<button type="button" class="btn btn-success btn-sm" style="color:white;outline:none" onclick="audit(<c:out value="${items.id }"></c:out>)">
 							    <span class="glyphicon glyphicon-ok"></span>
-								<a href="javascript:void(0)" style="color:green" id="audit" onclick="audit(<c:out value="${items.id }"></c:out>)"> 通过审核</a>
+								<a href="javascript:void(0)" style="color:white" id="audit" > 通过审核</a>
 							</button>
-							<button type="button" class="btn btn-default btn-sm" style="color:red">
+							<button type="button" class="btn btn-danger btn-sm" style="outline:none" onclick="noaudit(<c:out value="${items.id }">
 							    <span class="glyphicon glyphicon-remove"></span>
-								<a href="javascript:void(0)" style="color:red" id="audit" onclick="noaudit(<c:out value="${items.id }"></c:out>)"> 未通过审核</a>
+								<a href="javascript:void(0)" style="color:white" id="audit" ></c:out>)"> 未通过审核</a>
 							</button>
 	    				</c:if>
 	    				
@@ -117,6 +141,7 @@
 	    			</td>
 	    		</tr>
 		</c:forEach>
+		</form>
     </table>
     
       <!-- 分页开始 -->
@@ -157,6 +182,35 @@
     
     
 <script>
+
+	$(".choiceBox").click(function(){
+		$(this).children("input").attr("checked","true");
+	})
+//	$("#all-checkbox").click(function(){
+//		if(document.getElementById("all-checkbox").checked){
+//		    $(".checkbox-class").attr("checked","true");
+//		} else {
+//			$(".checkbox-class").removeAttr("checked"); 
+//		}
+//	})
+    $("#all-checkbox").click(function(){
+        if(document.getElementById("all-checkbox").checked){
+            $(".checkbox-class").prop("checked", true); 
+        } else {
+            $(".checkbox-class").prop("checked", false); 
+        }
+    })
+    
+    //点击一行选中
+//    $("#tb tr").click(function(){
+//        var check = $(this).find("input");
+//        if(check.is(':checked')) {
+//            check.prop("checked", false);
+//        } else {
+//            check.prop("checked", true);
+//        }
+//    })
+
 	$(function () { $("[data-toggle='tooltip']").tooltip(); });
 	$("#alert").hide();
 	$("#failed").hide();
@@ -166,45 +220,73 @@
 	})
 	
 	function audit(id){
-		
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
-			data:{"topicId":id},
-			dataType:"json",
-			success:function(data){
-				if( data == 1 ) {
-					swal("成功!", "", "success");
-				} else {
-					swal("失败!", "", "error");
+		swal({
+			  title: "确认通过？",
+			  text: "",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
+				data:{"topicId":id},
+				dataType:"json",
+				success:function(data){
+					if( data == 1 ) {
+						swal("成功!", "", "success");
+					} else {
+						swal("失败!", "", "error");
+					}
+					
+					window.setTimeout(reload,700);
+				},
+				error:function(msg){
+					console.log(msg)
 				}
-				
-				window.setTimeout(reload,700);
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
+			})	
+		});
+		
 	}
 	function noaudit(id){
-		$.ajax({
-			type:"post",
-			url:"<%=request.getContextPath()%>/teacher/notAuditTopic.do",
-			data:{"topicId":id},
-			dataType:"json",
-			success:function(data){
-				if( data == 1 ) {
-					swal("成功!", "", "success");
-				} else {
-					swal("失败!", "", "error");
+		swal({
+	        title: "请输入原因！",
+	        text: "不通过原因",
+	        type: "input",
+	        showCancelButton: true,
+	        closeOnConfirm: false,
+	        animation: "slide-from-top",
+	        inputPlaceholder: "请输入原因..."
+	    }, function(inputValue) {
+	        if (inputValue === false) {
+	            return false;
+	        }
+	        //if (inputValue === "") {
+	          //  swal.showInputError("内容不能为空！");
+	            //return false;
+	        //}
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/teacher/notAuditTopic.do",
+				data:{"topicId":id,"reason":inputValue},
+				dataType:"json",
+				success:function(data){
+					if( data == 1 ) {
+						swal("成功!", "", "success");
+					} else {
+						swal("失败!", "", "error");
+					}
+					
+					window.setTimeout(reload,700);
+				},
+				error:function(msg){
+					console.log(msg)
 				}
-				
-				window.setTimeout(reload,700);
-			},
-			error:function(msg){
-				console.log(msg)
-			}
-		})	
+			})	
+	    })
 	}
 	//删除
 	function deleteItem(id){
@@ -237,6 +319,50 @@
 		});
 		
 	}
+	
+	//批量通过
+	$("#batch").click(function(){
+		
+		var obj = $(".needcheck"); 
+		var s = 0; 
+		for(var i=0; i<obj.length; i++){ 
+			if(obj[i].checked) 
+				s += 1; //如果选中，将value添加到变量s中 
+		} 
+		if(s <= 0) {
+			swal("请选择!", "至少选择一项", "info");
+			return false;
+		}
+		var form = new FormData(document.getElementById("form1"));
+		swal({
+			  title: "确定批量通过？",
+			  text: "！",
+			  type: "warning",
+			  showCancelButton: true,
+			  confirmButtonColor: "#DD6B55",
+			  confirmButtonText: "　Yes　",
+			  closeOnConfirm: false
+		},
+		function(){
+			$.ajax({
+				type:"post",
+				url:"<%=request.getContextPath()%>/teacher/batchAuditTopic.do",
+				data:form,
+				processData:false,
+	            contentType:false,
+				dataType:"json",
+				success:function(data){
+					 swal("成功!", "", "success");
+					 window.setTimeout(reload,700);
+					
+				},
+				error:function(msg){
+					swal("失败！", "请重试！", "error");
+					console.log(msg)
+				}
+			})
+		});
+	})
 	
 	function reload(){
 		location.reload()

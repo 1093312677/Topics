@@ -162,7 +162,7 @@ public List<Student> getStudents(String name,String queryBy,long gradeId) {
 }
 @Override
 public List<Topics> findTopicBy(String pk, String findType, long directionId) {
-	List<Topics> topics=new ArrayList<>();
+	List<Topics> topics=new ArrayList<Topics>();
 	try{
 		session=getSession();
 		session.beginTransaction();

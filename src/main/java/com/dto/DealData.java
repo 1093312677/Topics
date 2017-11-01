@@ -159,7 +159,7 @@ public class DealData<T> {
 			return null;
 	  }
 	  public List<Topics> dealTopics(List<Topics> topics){
-			List<Topics>topics2=new ArrayList<>();
+			List<Topics>topics2=new ArrayList<Topics>();
 			Topics topic=null;
 		  for(int i=0;i<topics.size();i++){
 				topic=new Topics();

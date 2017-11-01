@@ -66,9 +66,7 @@
 			        
 			        <div class="input-group">
 			            <span class="input-group-addon" style="border-radius: 0;">题目  　简介</span>
-			            <textarea class="form-control"   rows="5" name="introduce">
-			            	${topic.introduce}
-			            </textarea>
+			            <textarea class="form-control"   rows="5" name="introduce">${topic.introduce}</textarea>
 			        </div>
 			        <br>
 			        <input type="submit" value="保存" class="btn btn-success" style="width:150px"/>

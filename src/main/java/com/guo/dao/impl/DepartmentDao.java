@@ -16,7 +16,7 @@ public class DepartmentDao extends BaseDao implements IDepartmentDao {
 	Session session=null;
 	@Override
 	public List<Department> departments(long departmentId) {
-		List<Department>departments=new ArrayList<>();
+		List<Department>departments=new ArrayList<Department>();
 		try{
 			session=getSession();
 			session.beginTransaction();
@@ -57,7 +57,7 @@ public class DepartmentDao extends BaseDao implements IDepartmentDao {
 
 	@Override
 	public List<Department> inspection(String departmentName) {
-		List<Department>departments=new ArrayList<>();
+		List<Department>departments=new ArrayList<Department>();
 		try{
 			session=getSession();
 			session.beginTransaction();

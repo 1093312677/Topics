@@ -60,7 +60,7 @@ public class AccountController {
 				if(user1.getPrivilege().equals("2")||user1.getPrivilege().equals("3")){
 //					管理员或者老师
 					List<Teacher> teachers = accountService.findBy("Teacher", "no", user.getUsername());
-					List<Teacher> teachers2=new ArrayList<>();
+					List<Teacher> teachers2=new ArrayList<Teacher>();
 					Teacher teacher=new Teacher();
 					teacher.setId(teachers.get(0).getId());
 					Department department=new Department();
@@ -70,6 +70,7 @@ public class AccountController {
 					session.setAttribute("teacherId", teachers.get(0).getId());
 					session.setAttribute("departmentId", teachers.get(0).getDepartment().getId());
 					session.setAttribute("name", teachers.get(0).getName());
+					session.setAttribute("no", teachers.get(0).getNo());
 					session.setAttribute("infor", teachers2);									
 				} else if( "4".equals(user1.getPrivilege()) ){
 //					学生
@@ -89,7 +90,8 @@ public class AccountController {
 					session.setAttribute("studentGradeId", gradeId);
 					session.setAttribute("studentDepartmentId", deparment.getId());
 					session.setAttribute("name", student.getName());
-					List<Student>students=new ArrayList<>();
+					session.setAttribute("no", student.getNo());
+					List<Student>students=new ArrayList<Student>();
 					Student student2=new Student();
 					Clazz clazz2=new Clazz();
 					Direction direction2=new Direction();
@@ -164,7 +166,6 @@ public class AccountController {
 	 * 手机端登录
 	 * @param request
 	 * @param response
-	 * @param session
 	 * @return
 	 */
 	@RequestMapping("/loginApp")
@@ -177,7 +178,6 @@ public class AccountController {
 	 * 手机端更新密码
 	 * @param request
 	 * @param response
-	 * @param session
 	 * @return
 	 */
 	@RequestMapping("/changePw")
@@ -207,7 +207,6 @@ public class AccountController {
 	 * 手机端更新信息
 	 * @param qq
 	 * @param email
-	 * @param telephone
 	 * @param userId
 	 * @param request
 	 * @param response

@@ -15,7 +15,7 @@ public class CollegeDao extends BaseDao implements ICollegeDao {
 	Session session;
 	@Override
 	public List<College> inspection(String collegeName) {
-		List<College> colleges=new ArrayList<>();
+		List<College> colleges=new ArrayList<College>();
 		try{
 			session=getSession();
 			session.beginTransaction();

@@ -22,7 +22,12 @@
 <body>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
-	                            查看待审核题目 
+	    	<c:if test="${state == 2}">
+	                                              查看待审核题目 
+	         </c:if>                
+	         <c:if test="${state == 3}">
+	         		查看未通过题目
+	         </c:if>   
 	    </div>
     </div> 
     <table class="table table-hover table-striped" >
@@ -35,7 +40,9 @@
     		<td>题目状态</td>
     		<td>发布时间</td>
     		<td>任务书</td>
-    		
+    		<c:if test="${state == 3}">
+    			<td>原因</td>
+    		</c:if>
     		<td>操作</td>
     	</tr>
     	<c:forEach items="${topics }" var="items">
@@ -82,17 +89,26 @@
 	    				</c:if>
 	    				
 	    			</td>
-	    			
+	    			<c:if test="${state == 3}">
+		    			<td>
+		    				<span  data-toggle="tooltip" data-placement="bottom" title="未通过原因：${items.reason }">
+		    					<a href="javascript:void(0)">查看</a>
+		   					</span>
+		    			</td>
+		    		</c:if>
 	    			<td>
-	    				<c:if test="${state == 2 }">
+	    				<c:if test="${state == -1 }">
 	    					<button type="button" class="btn btn-default btn-sm" style="color:green">
 							    <span class="glyphicon glyphicon-ok"></span>
 								<a href="javascript:void(0)" style="color:green" id="audit" onclick="audit(<c:out value="${items.id }"></c:out>)"> 通过审核</a>
 							</button>
 	    				</c:if>
 	    				
-	    				<c:if test="${state == 1 }">
+	    				<c:if test="${state == 2 || state == 3}">
 	    					<a href="javascript:void(0)" onclick="deleteItem(${items.id })"> <span class="glyphicon  glyphicon-trash" style="color:red" data-toggle="tooltip" data-placement="bottom" title="删除"></span></a>
+	    				</c:if>
+	    				<c:if test="${state == 3}">
+	    					<a href="<%=request.getContextPath()%>/topic/update.do?id=${items.id }" > <span class="glyphicon glyphicon-edit" style="color:green;padding-left:20px" data-toggle="tooltip" data-placement="bottom" title="更新"></span></a>
 	    				</c:if>
 	    			</td>
 	    		</tr>

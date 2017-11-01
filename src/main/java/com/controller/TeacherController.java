@@ -18,11 +18,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.common.Pagination;
-import com.common.QueryCondition;
 import com.dto.DealData;
 import com.entity.Department;
 import com.entity.Grade;
-import com.entity.Score;
 import com.entity.Setting;
 import com.entity.Student;
 import com.entity.Teacher;
@@ -290,6 +288,41 @@ public class TeacherController {
 		
 		return null;
 	}
+	
+	/**
+	 * 批量通过审核
+	 * @param topicId 选择的题目id
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/batchAuditTopic")
+	public String batchAuditTopic(Long[] topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+		String privilege = (String) session.getAttribute("privilege");
+		if("2".equals(privilege)) {
+			try {
+				for(Long id : topicId) {
+					teacherService.updateTopicState(id, 1);
+				}
+				PrintWriter out = response.getWriter();
+				out.print(1);
+				return null;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		PrintWriter out;
+		try {
+			out = response.getWriter();
+			out.print(0);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 	/**
 	 * 审核题目未通过
 	 * @param topicId
@@ -299,10 +332,10 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/notAuditTopic")
-	public String notAuditTopic(Long topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	public String notAuditTopic(Long topicId, String reason, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		String privilege = (String) session.getAttribute("privilege");
 		if("2".equals(privilege)) {
-			if( teacherService.updateTopicState(topicId, 3) ) {
+			if( teacherService.noAuditTopic(topicId, reason) ) {
 				try {
 					PrintWriter out = response.getWriter();
 					out.print(1);
@@ -471,6 +504,41 @@ public class TeacherController {
 		request.setAttribute("pagination", pagination);
 		return "teacher/viewResults";
 	}
+	
+	/**
+	 * 系主任查看学生表格提交情况
+	 * @param pageType
+	 * @param pagination
+	 * @param gradeId
+	 * @param request
+	 * @param response
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping("/viewFormResults")
+	public String viewFormResults( String pageType, Pagination pagination, Long gradeId, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+//		如果是输入的页数进行减一
+		if("1".equals(pageType)) {
+			pagination.setPage(pagination.getPage() - 1);
+		}
+		
+		int eachPage = 15;
+		pagination.setEachPage(eachPage);
+		pagination.setTotleSize(teacherService.getStudentsNum(gradeId));//获取总记录数
+		
+		List<Student> students = null;
+		
+		students = teacherService.getStudents(gradeId,  pagination.getPage(), eachPage);
+		
+//		处理分页数据
+		pagination = dealData.getPagination(students, pagination);
+		
+		
+		session.setAttribute("gradeId", gradeId);
+		request.setAttribute("students",students);
+		request.setAttribute("pagination", pagination);
+		return "teacher/viewFromResults";
+	}
 	/**
 	 * 查看最后选题
 	 * @param session
@@ -512,7 +580,6 @@ public class TeacherController {
 	 * @param session
 	 * @param request
 	 * @param response
-	 * @param gradeId
 	 * @return
 	 */
 	@RequestMapping("/exportLastSelect")

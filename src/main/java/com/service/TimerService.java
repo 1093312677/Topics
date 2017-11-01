@@ -96,7 +96,7 @@ public class TimerService {
 					
 			}
 		}catch(Exception e) {
-			throw new ServiceException("error");
+//			throw new ServiceException("error");
 		}
 		
 	}
@@ -112,6 +112,8 @@ public class TimerService {
 //				判断教师是否是设置自动选题
 				for(int jj=0;jj<teachers.get(j).getTeacherAutoSelects().size();jj++) {
 					if(teachers.get(j).getTeacherAutoSelects().get(jj).getAutoSelect() == 1 &&teachers.get(j).getTeacherAutoSelects().get(jj).getGrade().getId() == grades.get(i).getId()) {
+						//当前年级的老师没有设置自动选题
+						logger.info("------------设置自动选题教师------------"+teachers.get(i).getNo()+"----"+teachers.get(j).getName() );
 						for(int k=0;k<teachers.get(j).getTopics().size();k++) {
 //							出的题目是当前年级的
 							if(teachers.get(j).getTopics().get(k).getGrade().getId() == grades.get(i).getId()) {
@@ -219,7 +221,7 @@ public class TimerService {
 						}
 					} else {
 						//当前年级的老师没有设置自动选题
-						System.out.println("no-------------"+teachers.get(j).getName() );
+						logger.info("未设置自动选题教师------------"+teachers.get(i).getNo()+"----"+teachers.get(j).getName() );
 					}
 						
 				}

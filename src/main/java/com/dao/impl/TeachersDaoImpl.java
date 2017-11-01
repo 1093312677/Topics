@@ -36,7 +36,8 @@ public class TeachersDaoImpl implements ITeacherDao{
 		List<Grade> grades = null;
 		hql = "SELECT new Grade(id, gradeName) "
 				+ " FROM Grade as g "
-				+ " WHERE g.department.id=:departmentId";
+				+ " WHERE g.department.id=:departmentId"
+				+ " ORDER BY id DESC";
 		try{
 			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
@@ -162,6 +163,28 @@ public class TeachersDaoImpl implements ITeacherDao{
 			throw new ServiceException("error");
 		}
 		
+	}
+
+
+	@Transactional
+	@Override
+	public boolean noAuditTopic(Long topicId, String reason) {
+		hql = "UPDATE Topics"
+				+ " SET state=3"
+				+ " ,reason=:reason "
+				+ " WHERE "
+				+ " id=:topicId";
+		try{
+			session = sessionFactory.getCurrentSession();
+			Query query = session.createQuery(hql);
+			query.setLong("topicId", topicId);
+			query.setString("reason", reason);
+			query.executeUpdate();
+			
+			return true;
+		}catch(Exception e){
+			throw new ServiceException("error");
+		}
 	}
 	
 	

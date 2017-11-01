@@ -54,7 +54,20 @@
 										<input type="checkbox">
 										<span>Remember me</span>
 									</label>
-								</div> -->
+								</div> 
+								-->
+								
+								<div class="form-group clearfix">
+									<label class="fancy-checkbox element-left">
+										<span style="color:#f40;font-size:11px">
+											<c:if test="${loginMessage == 'error'}">
+												用户名或者密码错误！
+											</c:if>
+											
+										</span>
+									</label>
+								</div> 
+								
 								<button type="submit" class="btn btn-primary btn-lg btn-block">登录</button>
 								<!-- <div class="bottom">
 									<span class="helper-text"><i class="fa fa-lock"></i> <a href="#">Forgot password?</a></span>

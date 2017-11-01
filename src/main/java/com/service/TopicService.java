@@ -27,11 +27,13 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.common.ServerResponse;
 import com.dao.IDao;
+import com.dao.ILimitNumberDao;
 import com.dao.ISettingDao;
 import com.dao.ITopicDao;
 import com.dto.DealData;
 import com.dto.GroupAndTime;
 import com.entity.Grade;
+import com.entity.LimitNumber;
 import com.entity.Setting;
 import com.entity.Student;
 import com.entity.SubTopic;
@@ -53,6 +55,9 @@ public class TopicService {
 	
 	@Autowired
 	private DealData dealData;
+	
+	@Autowired
+	private ILimitNumberDao limitNumberDao;
 	
 	/**
 	 * 判断当前是否是上传题目时间
@@ -224,8 +229,22 @@ public class TopicService {
 	 */
 	@Transactional
 	public boolean deleteTopicNotThrought(Topics topic)	{
+//		查找对应题目的教师
+		Topics topic2 = topicDaoImpl.getTopicById(topic.getId());
+		Teacher teacher = topic2.getTeacher();
 		
-		return daoImpl.delete(topic);
+//		题目对应的年级
+		Grade grade = topic2.getGrade();
+		
+//		将题目人数回加
+		List<LimitNumber> limitNumbers = limitNumberDao.getLimitNumbers(grade.getId(), teacher.getId());
+		if(limitNumbers.size() > 0) {
+			LimitNumber limit = limitNumbers.get(0);
+			int number = limit.getAlreadyNumber();
+			number -= topic2.getEnableSelect();
+			limitNumberDao.updateLimitNumber(limit.getId(), number);
+		}
+		return daoImpl.delete(topic2);
 	}
 	
 	/**

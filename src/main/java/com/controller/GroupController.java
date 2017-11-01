@@ -114,7 +114,6 @@ public class GroupController {
 	 * @param request
 	 * @param response
 	 * @param session
-	 * @param group
 	 * @return
 	 */
 	@RequestMapping("/cancelGroup")
@@ -258,7 +257,6 @@ public class GroupController {
 	 * 设置组内老师成员
 	 * @param request
 	 * @param response
-	 * @param isChoiceLeader 额外增加的字段，判断是否选择了组长。
 	 * @param session
 	 * @return
 	 */
@@ -398,7 +396,7 @@ public class GroupController {
 //		通过session获取年级的id
 		session.setAttribute("groupId", groupId);
 		session.setAttribute("teacherId", teacherId);
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		List<Student> students = groupService.setStudentGroup(groupId, gradeId);
 		request.setAttribute("students", students);
 		return "group/setStudentGroup";
@@ -414,8 +412,8 @@ public class GroupController {
 	@RequestMapping("/setStuTeachGroup")
 	public String setStuTeachGroup(Long[] studentId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 //		通过session获取年级的id,教师id
-		long teacherId = (long) session.getAttribute("teacherId");
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long teacherId = (Long) session.getAttribute("teacherId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		if(groupService.setStuTeachGroup(gradeId, teacherId, studentId)){
 			request.setAttribute("message", "保存成功！");
 			request.setAttribute("path", "group/viewGroupMember.do?gradeId="+gradeId);
@@ -438,14 +436,13 @@ public class GroupController {
 	@RequestMapping("/viewStudentGroup")
 	public String viewStudentGroup(long teacherId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 //		通过session获取grade id
-		long gradeId = (long) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		List<StuTeachGroup> stuTeachGroups = groupService.viewStudentGroup(gradeId, teacherId);
 		request.setAttribute("stuTeachGroups",stuTeachGroups);
 		return "group/viewStudentGroup";
 	}
 	/**
 	 *	移除学生分组
-	 * @param studentId
 	 * @param request
 	 * @param response
 	 * @param session
@@ -471,7 +468,6 @@ public class GroupController {
 	
 	/**
 	 * 查看学生的分组
-	 * @param teacherId
 	 * @param request
 	 * @param response
 	 * @param session
@@ -615,10 +611,8 @@ public class GroupController {
 	
 	/**
 	 * 学生手机端查看分组信息
-	 * @param teacherId
 	 * @param request
 	 * @param response
-	 * @param session
 	 * @return
 	 */
 	@RequestMapping("/studentGroupApp")

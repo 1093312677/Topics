@@ -44,7 +44,7 @@ public class Topics implements Serializable{
 	@Column(columnDefinition="TEXT")
 	private String introduce;//题目简介
 	private String time;//发布时间
-	@ManyToMany(fetch=FetchType.LAZY,targetEntity = Direction.class,cascade={CascadeType.ALL})
+	@ManyToMany(fetch=FetchType.LAZY,targetEntity = Direction.class,cascade={CascadeType.REFRESH})
 	@JoinTable(name = "t_topic_direction",
 		joinColumns={@JoinColumn(name="topics_id")},   //本表与中间表的外键对应关系
 		inverseJoinColumns={@JoinColumn(name="directions_id")}) //另一张表与中间表的外键的对应关系
@@ -56,6 +56,9 @@ public class Topics implements Serializable{
 	private int state;//题目状态，1通过审核，2在审核中，3未通审核
 	private String taskBookName;//任务书名称
 	private int intentionNumber;
+	
+	private String reason;//如果未通过原因
+	
 //	和老师实现多对一关系
 	@ManyToOne
 	@JoinColumn(name="teacherId")
@@ -230,6 +233,16 @@ public class Topics implements Serializable{
 
 	public void setDirections(List<Direction> directions) {
 		this.directions = directions;
+	}
+
+
+	public String getReason() {
+		return reason;
+	}
+
+
+	public void setReason(String reason) {
+		this.reason = reason;
 	}
 
 

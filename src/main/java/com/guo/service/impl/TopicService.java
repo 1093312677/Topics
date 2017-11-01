@@ -42,13 +42,13 @@ public class TopicService implements ITopicService {
 	}
 
 	@Override
-	public long updateInfo(Topics topics,long directionIds[]) {
-		return topicDao.updateInfo(topics,directionIds);
+	public long updateInfo(Topics topics,long directionIds[], String privilege) {
+		return topicDao.updateInfo(topics,directionIds, privilege);
 	}
 
 	@Override
 	public List<Topics> findtopics(String findType, String primaryKey) {
-		List<Topics>topics=new ArrayList<>();
+		List<Topics>topics=new ArrayList<Topics>();
 		Calendar calendar = Calendar.getInstance();
 		int year = calendar.get(Calendar.YEAR);
 		int month = calendar.get(Calendar.MONTH);

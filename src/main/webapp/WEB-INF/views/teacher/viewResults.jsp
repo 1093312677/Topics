@@ -24,7 +24,7 @@
    		 </a>
 	    </div>
     </div> 
-    <table class="table table-hover table-striped" >
+    <table class="table table-hover table-striped">
     	<tr class="info">
     		<td >学号</td>
     		<td >姓名</td>
@@ -64,6 +64,7 @@
 	    			<td><c:out value="${it.score.headScore }"></c:out></td>
 	    			<td><c:out value="${it.score.replyResult }"></c:out></td>
 	    			<td><c:out value="${it.score.level }"></c:out></td>
+	    			
 	    			<c:choose>
 	    				<c:when test="${it.score.level == null }">
 	    					<td>评阅未未完成！</td>
@@ -75,7 +76,6 @@
 	    		</tr>
 	    	</c:forEach>
     </table>
-    
     	  <!-- 分页开始 -->
 	    <div class="col-sm-2">
 	    	<ul class="pagination" style="margin-top:1px">

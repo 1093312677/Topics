@@ -156,7 +156,7 @@ public class SwapController {
 	 */
 	@RequestMapping("/swapTeacher")
 	public String swapTeacher(String type, long topicId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		long studentId = (long) session.getAttribute("studentId");
+		Long studentId = (Long) session.getAttribute("studentId");
 		Long gradeId = (Long) session.getAttribute("gradeId");
 		String path = null;
 		if("depart".equals(type)) {

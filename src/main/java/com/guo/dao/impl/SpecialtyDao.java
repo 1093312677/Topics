@@ -61,7 +61,7 @@ public class SpecialtyDao extends BaseDao implements ISpecialtyDao{
 
 	@Override
 	public List<Specialty> inspection(String specialtyName,long gradeId) {
-		List<Specialty>specialties=new ArrayList<>();
+		List<Specialty>specialties=new ArrayList<Specialty>();
 		try{
 			session=getSession();
 			session.beginTransaction();

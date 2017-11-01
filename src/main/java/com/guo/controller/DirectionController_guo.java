@@ -38,7 +38,7 @@ public class DirectionController_guo {
 	@RequestMapping(value="findDirection1By.do")
 	public String findspecialty(HttpServletRequest request,HttpServletResponse response,int directionId){
 		Direction direction=directionService.get(directionId);
-		List<Direction>directions=new ArrayList<>();
+		List<Direction>directions=new ArrayList<Direction>();
 		directions.add(direction);
 		JSONObject json = new JSONObject();
 		json.put("directions", dealData.dealDirectionData(directions));

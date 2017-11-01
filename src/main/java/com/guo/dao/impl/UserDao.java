@@ -62,7 +62,7 @@ public class UserDao extends BaseDao implements IUserDao{
 
 	@Override
 	public List<User> alluser() {
-		List<User> allUser=new ArrayList<>();
+		List<User> allUser=new ArrayList<User>();
 		try{
 			session=getSession();
 			session.beginTransaction();
@@ -117,7 +117,7 @@ public class UserDao extends BaseDao implements IUserDao{
 
 	@Override
 	public List<User> inspection(String username) {
-		List<User> users=new ArrayList<>();
+		List<User> users=new ArrayList<User>();
 		try{
 			session=getSession();
 			session.beginTransaction();

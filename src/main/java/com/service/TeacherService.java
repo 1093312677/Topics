@@ -375,4 +375,16 @@ public class TeacherService {
 	public boolean updateTopicState(Long topicId, int state) {
 		return teacherDao.updateTopicState(topicId, state);
 	}
+	
+	/**
+	 * 审核题目未通过
+	 * @param topicId
+	 * @param reason
+	 * @return
+	 */
+	@Transactional
+	public boolean noAuditTopic(Long topicId, String reason) {
+		
+		return teacherDao.noAuditTopic(topicId, reason);
+	}
 }

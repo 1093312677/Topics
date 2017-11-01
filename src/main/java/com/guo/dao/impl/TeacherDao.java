@@ -121,7 +121,7 @@ public class TeacherDao extends BaseDao implements ITeacherDao {
 
 	@Override
 	public List<Teacher> teachers(String primaryKey, String findby,long departmentId) {
-		List<Teacher>teachers=new ArrayList<>();
+		List<Teacher>teachers=new ArrayList<Teacher>();
 		try{
 			session=getSession();
 			session.beginTransaction();
@@ -178,7 +178,7 @@ public class TeacherDao extends BaseDao implements ITeacherDao {
 
 	@Override
 	public List<Teacher> inspection(String teacherno) {
-		List<Teacher>teachers=new ArrayList<>();
+		List<Teacher>teachers=new ArrayList<Teacher>();
 		try{
 			session=getSession();
 			session.beginTransaction();

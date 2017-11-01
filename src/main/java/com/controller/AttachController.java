@@ -302,7 +302,7 @@ public class AttachController {
 	@RequestMapping("/submitInstructorReview")
 	public String submitInstructorReview(float mediumScore,long studentId, @RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
-		boolean isNow = (boolean) session.getAttribute("isNow");
+		Boolean isNow = (Boolean) session.getAttribute("isNow");
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
 //	    	String path = request.getSession().getServletContext().getRealPath("upload");
@@ -387,7 +387,7 @@ public class AttachController {
 	@RequestMapping("/submitMidReview")
 	public String submitMidReview(float score,long studentId, @RequestParam(value = "file", required = true) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
-		boolean isNow = (boolean) session.getAttribute("isNow");
+		Boolean isNow = (Boolean) session.getAttribute("isNow");
 		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {
@@ -459,7 +459,7 @@ public class AttachController {
 	@RequestMapping("/submitReplyResults")
 	public String submitReplyResults(String level, float score,long studentId, @RequestParam(value = "file", required = false) MultipartFile file, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		
-		boolean isNow = (boolean) session.getAttribute("isNow");
+		Boolean isNow = (Boolean) session.getAttribute("isNow");
 		JSONObject json = new JSONObject();
 //	            如果当前是提交时间，保存信息
 	    if(isNow) {

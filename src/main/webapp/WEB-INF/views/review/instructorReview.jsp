@@ -36,8 +36,9 @@
 	    	<tr class="info">
 	    		<td width="100px">学号</td>
 	    		<td>姓名</td>
-	    		<td>开题报告下载</td>
-	    		<td>中期报告下载</td>
+	    		<td>开题报告</td>
+	    		<td>中期报告</td>
+	    		<td>毕业论文</td>
 	    		<td>评阅分数</td>
 	    		<td>班级</td>
 	    		<td>方向</td>
@@ -59,6 +60,12 @@
 	    			<td>
 	    				<c:if test="${items.form.interimReport != null }">
 	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.form.interimReport}&documentName=${items.no }_${items.name }_中期报告_${items.form.interimReport}">下载</a>
+	    				</c:if>
+	    			</td>
+	    			
+	    			<td>
+	    				<c:if test="${items.form.fileName != null }">
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.form.fileName}&documentName=${items.no }_${items.name }_毕业论文_${items.form.fileName}">下载</a>
 	    				</c:if>
 	    			</td>
 	    			

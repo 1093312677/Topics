@@ -16,6 +16,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -66,6 +67,7 @@ public class TopicController {
 	 * @return
 	 */
 	@RequestMapping("/addTopic")
+	@Transactional
 	public String addTopic(Topics topic,long directionIds[],@RequestParam(value = "file", required = false) MultipartFile file,HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long gradeId = (Long) session.getAttribute("gradeId");
 		Long teacherId = (Long) session.getAttribute("teacherId");
@@ -128,9 +130,9 @@ public class TopicController {
 				commonService.saveOrUpdate(limitNumbers.get(0));
 			}
 			
-			for(int i=0;i<directionIds.length;i++){
-				commonService.insertSql(topicId, String.valueOf(directionIds[i]));
-			}
+//			for(int i=0;i<directionIds.length;i++){
+//				commonService.insertSql(topicId, String.valueOf(directionIds[i]));
+//			}
 			try {
 				//保存文件
 				if(!file.isEmpty()){
@@ -170,7 +172,6 @@ public class TopicController {
 	 * 在知道系的情况下，查找所有的方向
 	 * @param request
 	 * @param response
-	 * @param departmentId
 	 * @param type
 	 * @return
 	 */
@@ -231,20 +232,11 @@ public class TopicController {
 		
 		int eachPage = 15;
 		pagination.setEachPage(eachPage);
-		pagination.setTotleSize(topicService.getTopicsNum(String.valueOf(gradeId), String.valueOf(state)));//获取总记录数,1表示通过题目
 		
 		List<Topics> topics = null;
 		if(gradeId != null){
 			topics = topicService.getTopics(String.valueOf(gradeId), String.valueOf(state), pagination.getPage()*eachPage, eachPage);
 			pagination.setTotleSize(topicService.getTopicsNum(String.valueOf(gradeId), String.valueOf(state)));//获取总记录数,1表示通过题目
-		}
-		if(gradeId != null || gradeId != 0){
-			topics = topicService.getTopics(String.valueOf(gradeId), String.valueOf(state), pagination.getPage()*eachPage, eachPage);
-			for(int i=0;i<topics.size();i++) {
-				for(int j=0;j<topics.get(i).getDirections().size();j++) {
-					topics.get(i).getDirections().get(j).getDirectionName();
-				}
-			}
 		}
 		
 //		处理分页数据
@@ -301,19 +293,19 @@ public class TopicController {
 	 * @param request
 	 * @param response
 	 * @param type
-	 * @param pagination
 	 * @param session
 	 * @return
 	 */
 	@RequestMapping("/viewNotThoughtTopic")
-	public String viewNotThoughtTopic(int state, HttpServletRequest request,HttpServletResponse response,String type,String gradeId, HttpSession session){
+	public String viewNotThoughtTopic(int state, HttpServletRequest request,HttpServletResponse response,String type,Long gradeId, HttpSession session){
 		state -= 2;
 		List<Topics> topics = null;
 		Long teacherId = (Long) session.getAttribute("teacherId");
-		topics = topicService.viewNotThoughtTopic(gradeId, teacherId, String.valueOf(state));
+		topics = topicService.viewNotThoughtTopic(String.valueOf(gradeId), teacherId, String.valueOf(state));
 		
+		session.setAttribute("gradeId", gradeId);
 		request.setAttribute("topics", topics);
-		request.setAttribute("state", 1);
+		request.setAttribute("state", state);
 		return "topic/viewTopicsNotThought";
 	}
 	/**
@@ -358,9 +350,9 @@ public class TopicController {
 	 */
 	@RequestMapping("/exportTopic")
 	public String exportTopic(HttpServletRequest request,HttpServletResponse response,HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		HSSFWorkbook wb = null;
-		wb = topicService.exportTopic(gradeId);
+		wb = topicService.exportTopic(String.valueOf(gradeId));
 		//输出Excel文件
 	    OutputStream output;
 		try {
@@ -452,7 +444,6 @@ public class TopicController {
 	}
 	/**
 	 * 添加子题目
-	 * @param id
 	 * @param request
 	 * @param response
 	 * @param session
@@ -490,7 +481,7 @@ public class TopicController {
 	 */
 	@RequestMapping("/exportSubTopic")
 	public String downAttach( HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		String gradeId = (String) session.getAttribute("gradeId");
+		Long gradeId = (Long) session.getAttribute("gradeId");
 		//String path = request.getSession().getServletContext().getRealPath("upload");
 		String path = PathTool.getPath();
 		response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"); 
@@ -506,7 +497,7 @@ public class TopicController {
 	    response.addHeader("Cache-Control", "no-cache"); 
 	    
 	    
-	    topicService.downAttach(response, path, gradeId);
+	    topicService.downAttach(response, path, String.valueOf(gradeId));
 		return null;
 	}
 	/**

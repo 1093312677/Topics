@@ -394,6 +394,12 @@ public class TopicDaoImpl implements ITopicDao{
 		} 
 		return topic;
 	}
+	@Override
+	public Topics getTopicById(Long topicId) {
+		session = sessionFactory.getCurrentSession();
+		Topics topic = (Topics) session.load(Topics.class, topicId);
+		return topic;
+	}
 	
 	
 	

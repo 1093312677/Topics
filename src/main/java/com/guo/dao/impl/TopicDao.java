@@ -37,7 +37,7 @@ public class TopicDao extends BaseDao implements ITopicDao {
 	}
 
 	@Override
-	public long updateInfo(Topics topics,long directionIds[]) {
+	public long updateInfo(Topics topics,long directionIds[], String privilege) {
 		long gradeId=0;
 		try{
 			session=getSession();
@@ -60,7 +60,13 @@ public class TopicDao extends BaseDao implements ITopicDao {
 			query2.setLong("gradeId", gradeId);
 			query2.executeUpdate();
 			
-			String hql="update Topics t set t.topicsName=:topicsName ,t.introduce=:introduce,t.enableSelect=:enableSelect where t.id=:id";
+//			如果是教师更新，将题目设置为审核状态
+			String hql = "";
+			if("3".equals(privilege)) {
+				hql="update Topics t set t.topicsName=:topicsName ,t.introduce=:introduce,t.enableSelect=:enableSelect, t.state=2 where t.id=:id";
+			} else if("2".equals(privilege)) {
+				hql="update Topics t set t.topicsName=:topicsName ,t.introduce=:introduce,t.enableSelect=:enableSelect where t.id=:id";
+			}
 			Query query=session.createQuery(hql);
 			query.setString("topicsName", topics.getTopicsName());
 			query.setString("introduce", topics.getIntroduce());

@@ -63,7 +63,7 @@ public class DirectionDao extends BaseDao implements IDirectionDao {
 
 	@Override
 	public List<Direction> inspection(String directionName, long specialtyId) {
-		List<Direction>directions=new ArrayList<>();
+		List<Direction>directions=new ArrayList<Direction>();
 		try{
 			session=getSession();
 			session.beginTransaction();
@@ -81,7 +81,7 @@ public class DirectionDao extends BaseDao implements IDirectionDao {
 
 	@Override
 	public List<Direction> directionsByGrade(long gradeId) {
-		List<Direction>directions=new ArrayList<>();
+		List<Direction>directions=new ArrayList<Direction>();
 		try{
 			session=getSession();
 			session.beginTransaction();

@@ -44,9 +44,9 @@ public class TopicController_guo {
 		try {
 			Topics topics=topicService.geTopic(id);
 			long gradeId=topics.getGrade().getId();
-			List<Direction> directions=new ArrayList<>();
+			List<Direction> directions=new ArrayList<Direction>();
 			List<Direction>directions1=directionService.directionsByGrade(gradeId);
-			List<Direction>directions2=new ArrayList<>();
+			List<Direction>directions2=new ArrayList<Direction>();
 			for(int i=0;i<directions1.size();i++){
 				int flag=0;
 				Direction direction=new Direction();
@@ -72,14 +72,30 @@ public class TopicController_guo {
 		return "topic/updateTopic";	
 	}
 	@RequestMapping(value="updateInfo.do")
-	public String updateInfo(Topics topics,Long gradeid,long directionIds[],HttpServletRequest request){
-		long gradeId=topicService.updateInfo(topics,directionIds);
+	public String updateInfo(Topics topics,Long gradeid,long directionIds[],HttpServletRequest request, HttpSession session){
+		
+//		获取用户权限
+		String privilege = (String) session.getAttribute("privilege");
 		String url;
-		try {
-			url = "redirect:/topic/viewTopic.do?state=1&gradeId="+gradeId+"";
-		} finally{
-			topicService.closeSession();
+		if("3".equals(privilege)) {
+			long gradeId = (Long) session.getAttribute("gradeId");
+			topicService.updateInfo(topics,directionIds, privilege);
+//			教师
+			try {
+				url = "redirect:/topic/viewNotThoughtTopic.do?state=5&gradeId="+gradeId+"";
+			} finally{
+				topicService.closeSession();
+			}
+		} else {
+			long gradeId=topicService.updateInfo(topics,directionIds, privilege);
+//			系主任
+			try {
+				url = "redirect:/topic/viewTopic.do?state=1&gradeId="+gradeId+"";
+			} finally{
+				topicService.closeSession();
+			}
 		}
+		
 		return url;	
 	}
 	@RequestMapping(value="findtopics.do")

@@ -79,9 +79,7 @@
 				        
 				        <div class="input-group">
 				            <span class="input-group-addon" style="border-radius: 0;">题目  　简介</span></span>
-				            <textarea class="form-control"   rows="5" name="introduce">
-				            
-				            </textarea>
+				            <textarea class="form-control"   rows="5" name="introduce"></textarea>
 				        </div>
 				        <br>
 				        <input type="button" value="保存" class="btn btn-success" onclick="check()" style="width:150px"/>

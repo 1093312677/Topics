@@ -203,6 +203,14 @@
 		    		</tr>
 				</c:forEach>
     		</c:when>
+    		<c:when test="${viewType =='viewFormResults' }">
+    		  <!-- 文档提交情况 --> 
+    			<c:forEach items="${grades }" var="items">
+		    		<tr class="" align=center>
+		    			<td><a href="<%=request.getContextPath() %>/teacher/viewFormResults.do?gradeId=<c:out value="${items.id }"></c:out>"><c:out value="${items.gradeName }"></c:out></a></td>
+		    		</tr>
+				</c:forEach>
+    		</c:when>
     		
     	</c:choose>	
     	

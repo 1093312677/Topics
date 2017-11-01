@@ -61,7 +61,7 @@ public class ClazzDao extends BaseDao implements IClazzDao {
 
 	@Override
 	public List<Clazz> inspection(String clazzName, long directionId) {
-		List<Clazz>clazzs=new ArrayList<>();
+		List<Clazz>clazzs=new ArrayList<Clazz>();
 		try{
 			session=getSession();
 			session.beginTransaction();

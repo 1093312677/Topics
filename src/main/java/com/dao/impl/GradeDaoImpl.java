@@ -26,7 +26,8 @@ public class GradeDaoImpl implements IGradeDao{
 		List<Grade> grades = null;
 		hql = "SELECT new Grade(id, gradeName) "
 				+ " FROM Grade as g "
-				+ " WHERE g.department.id=:departmentId";
+				+ " WHERE g.department.id=:departmentId "
+				+ " ORDER BY id DESC";
 		try{
 			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);

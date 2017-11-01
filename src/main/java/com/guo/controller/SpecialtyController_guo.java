@@ -38,7 +38,7 @@ public class SpecialtyController_guo {
 	@RequestMapping(value="findspecialty1By.do")
 	public String findspecialty(HttpServletRequest request,HttpServletResponse response,int specialtyId){
 		Specialty specialty=specialtyService.get(specialtyId);
-		List<Specialty>specialtys=new ArrayList<>();
+		List<Specialty>specialtys=new ArrayList<Specialty>();
 		specialtys.add(specialty);
 		JSONObject json = new JSONObject();
 		json.put("specialtys", dealData.dealSpecialtyData(specialtys));

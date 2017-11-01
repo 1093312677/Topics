@@ -51,4 +51,12 @@ public interface ITeacherDao {
 	 * @return
 	 */
 	public boolean confirmSelect(Long topicId, Long studentId);
+	
+	/**
+	 * 审核题目未通过
+	 * @param topicId
+	 * @param reason
+	 * @return
+	 */
+	public boolean noAuditTopic(Long topicId, String reason);
 }

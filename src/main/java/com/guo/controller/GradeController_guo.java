@@ -41,7 +41,7 @@ public class GradeController_guo {
 	@RequestMapping(value="findgrade1By.do")
 	public String findSpecialtyBy(HttpServletRequest request,HttpServletResponse response,long gradeId){
 		Grade grade=gradeService.getgrade(gradeId);
-		List<Grade>grades=new ArrayList<>();
+		List<Grade>grades=new ArrayList<Grade>();
 		grades.add(grade);
 		JSONObject jsonObject=new JSONObject();
 		jsonObject.put("grades",dealData.dealGradeData(grades));
