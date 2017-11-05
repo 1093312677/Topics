@@ -1,8 +1,16 @@
 package com.service;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.List;
+import java.util.Random;
 
 import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -303,5 +311,107 @@ public class AccountService<T> {
 			result = accountDao.updateInfor("Teacher", qq, email, telephone, userId);
 		}
 		return result;
+	}
+
+	private static char[] chs = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789".toCharArray();
+	private static final int NUMBER_OF_CHS = 4;
+    private static final int IMG_WIDTH = 65;
+    private static final int IMG_HEIGHT = 25;
+	/**
+	 * 获取验证码
+	 * @return
+	 */
+	public String getRandomCode(HttpServletResponse response) {
+		BufferedImage img = new BufferedImage(IMG_WIDTH, IMG_HEIGHT, BufferedImage.TYPE_INT_RGB);
+		Graphics g = img.getGraphics();
+		Color c = new Color(255, 255, 255);
+		g.setColor(c);
+		g.fillRect(0, 0, IMG_WIDTH, IMG_HEIGHT);
+
+		Random r = new Random();
+		StringBuffer sb = new StringBuffer();                                           // 用于保存验证码字符串
+		int index;                                                                      // 数组的下标
+		for (int i = 0; i < NUMBER_OF_CHS; i++) {
+			index = r.nextInt(chs.length);                                              // 随机一个下标
+			g.setColor(new Color(r.nextInt(88), r.nextInt(210), r.nextInt(150)));       // 随机一个颜色
+			g.drawString(chs[index] + "", 15 * i + 3, 18);                              // 画出字符
+			sb.append(chs[index]);                                                      // 验证码字符串
+		}
+
+//		产生干扰点
+		for (int i=0;i<50;i++) {
+			int x = r.nextInt(IMG_WIDTH);
+			int y = r.nextInt(IMG_HEIGHT);
+			g.setColor(getColor());
+			g.drawOval(x,y,1,1);
+		}
+
+// 随机产生干扰线条
+		for (int i=0;i<r.nextInt(3)+3;i++) {
+			int x1 = r.nextInt(IMG_WIDTH)%15;
+			int y1 = r.nextInt(IMG_HEIGHT);
+			int x2 = (int) (r.nextInt(IMG_WIDTH)%40+IMG_WIDTH*0.7);
+			int y2 = r.nextInt(IMG_HEIGHT);
+			g.setColor(getColor());
+			g.drawLine(x1, y1, x2, y2);
+		}
+
+		try {
+			ImageIO.write(img, "jpg", response.getOutputStream());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return sb.toString();
+	}
+
+	/***
+	 * @return 随机返回一种颜色
+	 */
+	private Color getColor()
+	{
+		int R=(int) (Math.random()*255);
+		int G=(int) (Math.random()*255);
+		int B=(int) (Math.random()*255);
+		return new Color(R,G,B);
+	}
+
+
+	/**
+	 * 验证验证码
+	 * @param request
+	 * @param session
+	 */
+	public void checkCode(HttpServletRequest request, HttpSession session, HttpServletResponse response, String code) {
+		if(null == code || "".equals(code) || code.length() != 4) {
+			try {
+				request.setAttribute("loginMessage", "errorCode");
+				request.getRequestDispatcher("../index.jsp").forward(request, response);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		} else {
+			if(code.length() == 4) {
+				char [] arrs = code.toCharArray();
+				String codeT = (String) session.getAttribute("code");
+				char [] arrs2 = codeT.toCharArray();
+				boolean flag = true;
+				for(int i=0;i<4;i++) {
+					if(!String.valueOf(arrs[i]).toLowerCase().equals(String.valueOf(arrs2[i]).toLowerCase())) {
+						flag = false;
+					}
+				}
+
+				if(!flag) {
+					try {
+						request.setAttribute("loginMessage", "errorCode");
+						request.getRequestDispatcher("../index.jsp").forward(request, response);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+
+			}
+		}
+		return;
 	}
 }

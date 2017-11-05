@@ -53,8 +53,12 @@ public class AccountController {
 	 * @return
 	 */
 	@RequestMapping("/login")
-	public String login(HttpServletRequest request,HttpServletResponse response,HttpSession session, User user){
+	public String login(HttpServletRequest request,HttpServletResponse response,HttpSession session, User user, String code){
 		logger.info("user->"+"IP:"+request.getRemoteAddr()+"->username:"+user.getUsername());
+		session.setAttribute("username", user.getUsername());
+//		验证输入的验证码
+		accountService.checkCode(request, session, response, code);
+
 		User user1 = accountService.login(user);
 		if(user1 != null){
 				if(user1.getPrivilege().equals("2")||user1.getPrivilege().equals("3")){
@@ -157,6 +161,8 @@ public class AccountController {
 		session.removeAttribute("privilege");
 		session.removeAttribute("setting");
 		session.removeAttribute("username");
+		session.removeAttribute("name");
+		session.removeAttribute("no");
 		try {
 			response.sendRedirect("../index.jsp");
 		} catch (IOException e1) {
@@ -165,6 +171,18 @@ public class AccountController {
 		
 		return null;
 	}
+
+	/**
+	 * 获取验证码
+	 * @return
+	 */
+	@RequestMapping("/getRandomCode")
+	public String getRandomCode(HttpSession session, HttpServletResponse response) {
+		String code = accountService.getRandomCode(response);
+		session.setAttribute("code",code);
+		return null;
+	}
+
 	/**
 	 * 手机端登录
 	 * @param request

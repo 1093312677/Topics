@@ -30,7 +30,7 @@ public class LoginFilter implements Filter{
 		HttpSession session = re.getSession();
 		User user = (User) session.getAttribute("user");
 		String path = re.getRequestURI();
-		if(path.contains("loginOut") || path.contains("login")) {
+		if(path.contains("loginOut") || path.contains("login") || path.contains("getRandomCode")) {
 			chain.doFilter(request, response);
 			return;
 		}

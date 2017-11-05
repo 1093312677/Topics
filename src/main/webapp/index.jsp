@@ -12,7 +12,6 @@
 	
 	<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/css/bootstrap.min.css">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
 	<!-- VENDOR CSS -->
 	<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/vendor/font-awesome/css/font-awesome.min.css">
 	<link rel="stylesheet" href="<%=request.getContextPath() %>/assets/vendor/linearicons/style.css">
@@ -40,14 +39,18 @@
 								</div>
 								<p class="lead"><h3>毕业设计管理系统</h3></p>
 							</div>
-							<form class="form-auth-small" action="<%=request.getContextPath() %>/account/login.do" method="post"">
+							<form class="form-auth-small" action="<%=request.getContextPath() %>/account/login.do" method="post">
 								<div class="form-group">
-									<label for="signin-email1" class="control-label sr-only">Email</label>
-									<input type="type" class="form-control" id="signin-email1" value="" name="username" placeholder="帐号">
+									<label for="username" class="control-label sr-only">Email</label>
+									<input type="type" class="form-control" id="username" value="${username}" required name="username" placeholder="帐号">
 								</div>
 								<div class="form-group">
-									<label for="signin-password" class="control-label sr-only">Password</label>
-									<input type="password" class="form-control" id="signin-password" value="" name="password" placeholder="密码">
+									<label for="password" class="control-label sr-only">Password</label>
+									<input type="password" class="form-control" id="password" value="" required name="password" placeholder="密码">
+								</div>
+								<div class="form-group">
+									<input type="text" class="form-control"  id="code" value="" required name="code" placeholder="验证码" style="width:60%;">
+									<img src="<%=request.getContextPath()%>/account/getRandomCode.do" onclick="refresh(this)" height="40px" width="100px" style="float: right;margin-top: -40px" id="getImg"/>
 								</div>
 								<!-- <div class="form-group clearfix">
 									<label class="fancy-checkbox element-left">
@@ -60,9 +63,14 @@
 								<div class="form-group clearfix">
 									<label class="fancy-checkbox element-left">
 										<span style="color:#f40;font-size:11px">
-											<c:if test="${loginMessage == 'error'}">
-												用户名或者密码错误！
-											</c:if>
+											<c:choose>
+												<c:when test="${loginMessage == 'error'}">
+													用户名或者密码错误！
+												</c:when>
+												<c:when test="${loginMessage == 'errorCode'}">
+													验证码错误！
+												</c:when>
+											</c:choose>
 											
 										</span>
 									</label>
@@ -89,6 +97,10 @@
 	</div>
 	<!-- END WRAPPER -->
 	<script>
+
+        function refresh(img) {
+            img.src="<%=request.getContextPath()%>/account/getRandomCode.do?"+new Date;
+        }
 		winWidth  = document.documentElement.clientWidth;
 		winHeight = document.documentElement.clientHeight;
 		$("#bg").css({"height":parseInt(winHeight)+30});
@@ -96,7 +108,9 @@
 		window.setTimeout(hide,2000);
 		function hide(){
 			$(".alert").hide();
-		}	
+		}
+
+
 	</script>
 		<!-- zhao -->
 
