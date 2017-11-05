@@ -9,8 +9,15 @@ import com.dao.daoAdapter.DaoAdapter;
 import com.entity.Group;
 import com.entity.StuTeachGroup;
 import com.entity.TeacherGroup;
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+@Repository
 public class GroupDaoImpl extends DaoAdapter{
+	@Autowired
+	private SessionFactory sessionFactory;
+
 	private Session session;
 	private String hql = "";
 	public void setSession(Session session){
@@ -59,8 +66,8 @@ public class GroupDaoImpl extends DaoAdapter{
 	 */
 	@Override
 	public  List<TeacherGroup> findTeacherGroup(String teacherId) {
+		session = sessionFactory.getCurrentSession();
 		hql ="FROM TeacherGroup WHERE teacherId="+teacherId;
-		@SuppressWarnings("unchecked")
 		List<TeacherGroup> teacherGroup = session.createQuery(hql).list();
 		return teacherGroup;
 	}

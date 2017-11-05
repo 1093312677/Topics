@@ -39,7 +39,6 @@ public class AccountService<T> {
 	private Logger logger = Logger.getLogger(AccountService.class);
 	/**
 	 * save Entity
-	 * @param T entitys
 	 * @author kone
 	 * @return boolean
 	 */
@@ -192,7 +191,6 @@ public class AccountService<T> {
 	
 	/**
 	 * 通过方向id获取年级信息
-	 * @param directionId
 	 * @return
 	 */
 	public Department getDepartmentByGradeId(Long gradeId) {
@@ -295,7 +293,6 @@ public class AccountService<T> {
 	/**
 	 * 更新信息
 	 * @param userId
-	 * @param pw
 	 * @return
 	 */
 	public boolean updateInfor(String privilege, String qq, String email, String telephone, String userId) {

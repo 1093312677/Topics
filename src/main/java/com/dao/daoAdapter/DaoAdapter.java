@@ -62,7 +62,6 @@ public class DaoAdapter<T> implements DaoInterface<T>{
 
 	@Override
 	public List findTeacherGroup(String teacherId) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

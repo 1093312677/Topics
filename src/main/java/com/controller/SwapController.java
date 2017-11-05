@@ -157,12 +157,6 @@ public class SwapController {
 	@RequestMapping("/swapTeacher")
 	public String swapTeacher(String type, long topicId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
 		Long studentId = (Long) session.getAttribute("studentId");
-		Long gradeId = (Long) session.getAttribute("gradeId");
-		String path = null;
-		if("depart".equals(type)) {
-		} else {
-			path = "teacher/viewStudentSelectedIntent.do?gradeId="+gradeId;
-		}
 		JSONObject json = new JSONObject();
 		
 		if(swapService.swapTeacher(topicId, studentId)){

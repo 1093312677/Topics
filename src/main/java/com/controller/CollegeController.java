@@ -58,12 +58,15 @@ public class CollegeController {
 		int page = 0;
 		int eachPage = 10;
 		List<College> colleges = commonService.view("College", page, eachPage);
-		
+
 		if(type==null){
 			type = "null";
 		}
 		if(type.equals("json")){
 			try {
+				for(College c : colleges) {
+					c.setDepartments(null);
+				}
 				JSONObject json = new JSONObject();
 				json.put("colleges", colleges);
 				response.getWriter().println(json.toString());

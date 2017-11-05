@@ -16,13 +16,13 @@ public class RedisTool {
 	private static Jedis jedis = null;
 	public RedisTool() {
 		jedis = new Jedis("127.0.0.1",6379);
-		jedis.auth("kone");
+//		jedis.auth("kone");
 	}
 	
 	public static void init() {
 		try{
 			jedis = new Jedis("127.0.0.1",6379);
-			jedis.auth("kone");
+//			jedis.auth("kone");
 		}catch(Exception e) {
 			jedis = null;
 		}
@@ -47,17 +47,22 @@ public class RedisTool {
 		if(jedis == null) {
 			return null;
 		}
-		if(key != null){
-			if(jedis.exists(key.getBytes())) {
-				byte[] byt=jedis.get(key.getBytes());
-				if(byt.length == 0) {
-					return null;
+		try{
+			if(key != null){
+				if(jedis.exists(key.getBytes())) {
+					byte[] byt=jedis.get(key.getBytes());
+					if(byt.length == 0) {
+						return null;
+					}
+					Object obj=unserizlize(byt);
+					return obj;
 				}
-		        Object obj=unserizlize(byt);
-				return obj;
+
 			}
-			
+		} catch (Exception e) {
+			return null;
 		}
+
 		return null;
 		
 	}

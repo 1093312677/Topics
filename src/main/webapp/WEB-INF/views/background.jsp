@@ -640,17 +640,21 @@
             <div class="row border-bottom">
                 <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
                     <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-info " href="#"><i class="fa fa-bars"></i> </a>
-                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
-                            <div class="form-group">
-                                <!-- <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search"> -->
-                            </div>
-                        </form>
+                        <%--<form role="search" class="navbar-form-custom" method="post" action="search_results.html">--%>
+                            <%--<div class="form-group">--%>
+                                <%--<!-- <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search"> -->--%>
+                            <%--</div>--%>
+                        <%--</form>--%>
+						<button type="button" class="btn btn-default btn-sm" style="margin:10px 0 0 30px;" id="back">
+							<span class="glyphicon glyphicon-arrow-left"></span> 返回
+						</button>
                     </div>
+
                     
                 </nav>
             </div>
             <div class="row J_mainContent" id="content-main">
-                <iframe id="J_iframe" width="100%" height="100%" src="<%=request.getContextPath() %>/account/mainpage.do" frameborder="0" data-id="index_v1.html" seamless></iframe>
+                <iframe id="J_iframe" name="frame" width="100%" height="100%" src="<%=request.getContextPath() %>/account/mainpage.do" frameborder="0" data-id="index_v1.html" seamless></iframe>
             </div>
         </div>
         <!--右侧部分结束-->
@@ -668,6 +672,17 @@
 
     <!-- 第三方插件 -->
     <script src="<%=request.getContextPath() %>js/plugins/pace/pace.min.js"></script>
+	
+	<script>
+        $("#back").click(function(){
+            window.history.go(-1);
+            window.setTimeout(function(){
+                frame.window.location.reload();
+            },100)
+
+        })
+
+	</script>
 <div style="text-align:center;">
 
 </div>

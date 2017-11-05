@@ -19,7 +19,7 @@
 <script src="<%=request.getContextPath() %>/js/sweetalert/sweetalert-dev.js"></script>
 </head>
 <body>
-	<!-- 提示框开始 -->
+	<!-- 提示框开始
 	<div class="alert-container" id="alert">
 		<div class="box-container">
 			<div class="alert-title">
@@ -32,14 +32,14 @@
 				<span id="success" class="glyphicon glyphicon-ok-circle" style="color:#dff0d8;font-size:60px;margin-left:40%;margin-top:20px"></span>
 				<span id="failed" class="glyphicon glyphicon-remove-circle" style="color:#f2dede;font-size:60px;margin-left:40%;margin-top:20px"></span>
 				
-				<!-- 文字内容开始 -->
+				<!-- 文字内容开始
 				<div class="content" align=center id="content">
 				
 				</div>
-				<!-- 文字内容结束 -->
+				<!-- 文字内容结束
 			</div>
 		</div>
-	</div>
+	</div>-->
 <!-- 提示框结束 -->
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
@@ -81,7 +81,7 @@
 	    			<td><c:out value="${items.introduce }"></c:out></td>
 	    			<td>
 	    				<c:if test="${items.enableSelect > items.selectedStudent }">
-    						<a href="javascript:void(0)" id="swap(${items.id })" > 调剂至此题目</a>
+    						<a href="javascript:void(0)" onclick="swap(${items.id })" > 调剂至此题目</a>
 	    				</c:if>
 	    			</td>
 	    		</tr>
@@ -124,7 +124,6 @@
 	function swap(id) {
 		
 		var url = "<%=request.getContextPath()%>/swap/swapTeacher.do?type=teacher";
-		
 		swal({
 			  title: "确认调剂 ？",
 			  text: "",
@@ -136,18 +135,15 @@
 			  showLoaderOnConfirm: true, 
 		},
 		function(){
-			var form = new FormData(document.getElementById("form"));
 			$.ajax({
 				type:"post",
 				url:url,
 				data:{"topicId":id},
 				dataType:"json",
-				processData:false,
-	            contentType:false,
 				success:function(data){
 					if(data.result==1){
 						swal("调剂 成功!", "", "success");
-						window.setTimeout("location.reload()",700);
+						window.setTimeout("jump()",700);
 					}else{
 						swal("调剂 失败！", "请重试！", "error");
 					}
@@ -163,6 +159,11 @@
 	function reload(){
 		location.reload()
 	}
+	function jump() {
+        var gradeId = ${gradeId};
+        var jumpUrl = "<%=request.getContextPath()%>/teacher/viewStudentSelectedIntent.do?gradeId="+gradeId;
+        window.location.href=jumpUrl;
+    }
 </script>	
 	
 </body>

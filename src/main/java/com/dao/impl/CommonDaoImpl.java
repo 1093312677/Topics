@@ -8,6 +8,8 @@ import org.springframework.stereotype.Component;
 
 import com.dao.daoAdapter.DaoAdapter;
 import com.entity.Student;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * 通用的dao
  * @author kone
@@ -21,6 +23,7 @@ public class CommonDaoImpl<T> extends DaoAdapter<T>{
 	public void setSession(Session session){
 		this.session = session;
 	}
+	@Transactional
 	@Override
 	public boolean save(T entity) {
 		session.save(entity);

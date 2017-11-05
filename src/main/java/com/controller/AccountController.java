@@ -112,6 +112,9 @@ public class AccountController {
 					session.setAttribute("infor", students);					
 //					}
 					
+				} else {
+					session.setAttribute("name", user1.getUsername());
+					session.setAttribute("no",  user1.getUsername());
 				}
 			session.setAttribute("user", user1);
 			session.setAttribute("id", user.getId());

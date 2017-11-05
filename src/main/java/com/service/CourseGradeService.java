@@ -86,14 +86,23 @@ public class CourseGradeService {
                 	grade.setCredit(Float.valueOf(tool.getValue(creditCell)));
 //                	课程成绩分数
                 	Cell scoreCell = row.getCell(5);
-                	grade.setScore(Float.valueOf(tool.getValue(scoreCell)));
+					try {
+						grade.setScore(Float.valueOf(tool.getValue(scoreCell)));
+					} catch (Exception e) {
+						continue;
+					}
+
                 	
                 	grades.add(grade);
 		        }
+//		        for(CourseAndGrade cg : grades) {
+//					this.addCourse(cg);
+//				}
+
 		        session = sessionFactory.getCurrentSession();
-//    			传递session保证是同一个session进行事务处理
-    			commonDaoImpl.setSession(session); 
+    			commonDaoImpl.setSession(session);
     			for(int i=0;i<grades.size();i++) {
+
 			        try{
 			        	commonDaoImpl.save(grades.get(i));
 			        	if(i % 10 == 0) {
@@ -102,13 +111,13 @@ public class CourseGradeService {
 			        	}
 	            	}catch(Exception e){
 	            		grades2.add(grades.get(i));
-	        			session.getTransaction().rollback();
 	        			e.printStackTrace();
 	        		}
     			}
 		        return grades2;
 			} catch (Exception e) {
-				throw new ServiceException("error");
+//				throw new ServiceException("error");
+				e.printStackTrace();
 			} 
 		}
 		return grades2;
@@ -187,7 +196,6 @@ public class CourseGradeService {
 	
 	/**
 	 * 设置教师选择的课程
-	 * @param teacher
 	 * @param courseName
 	 * @return
 	 */
@@ -227,7 +235,6 @@ public class CourseGradeService {
 	}
 	/**
 	 * 查看选择的课程
-	 * @param teacher
 	 * @param gradeId
 	 * @return
 	 */
@@ -246,8 +253,6 @@ public class CourseGradeService {
 	
 	/**
 	 * 查看选择的课程
-	 * @param teacher
-	 * @param gradeId
 	 * @return
 	 */
 	@Transactional
@@ -266,8 +271,6 @@ public class CourseGradeService {
 	
 	/**
 	 * 添加课程
-	 * @param teacher
-	 * @param gradeId
 	 * @return
 	 */
 	@Transactional

@@ -22,7 +22,7 @@
 <body>
 	<div class="panel panel-default" style="margin:0">
 	    <div class="panel-body">
-	                            设置是否自动选题
+	                            设置是否自动选择学生
 	    </div>
     </div>
     <div class="container">
@@ -39,8 +39,8 @@
 			   	    <tr>
 			   	    	
 			   	    	<td>
-			   	    		<c:if test="${isAuto == true }">已设置为自动选题</c:if>
-			   	    		<c:if test="${isAuto == false }">已设置为非自动选题</c:if>
+			   	    		<c:if test="${isAuto == true }">已设置为自动选择学生</c:if>
+			   	    		<c:if test="${isAuto == false }">已设置为非自动选择学生</c:if>
 			   	    	</td>
 			   	    	<td><a href="javascript:void(0)" onclick="change()">修改</a></td>
 			   	   </tr>

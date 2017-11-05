@@ -42,14 +42,14 @@
 	</div>
 	<div class="panel-body" align="center">
 		<c:if test="${privilege == 4 }">
-			第一轮选课开始时间：<c:out value="${setting.oneSelectStartTime }"></c:out>
+			第一轮选题开始时间：<c:out value="${setting.oneSelectStartTime }"></c:out>
 			<br>
-			第一轮选课结束时间：<c:out value="${setting.oneSelectEndTimeOne }"></c:out>
+			第一轮选题结束时间：<c:out value="${setting.oneSelectEndTimeOne }"></c:out>
 			<br>
 			<br>
-			第二轮选课开始时间：<c:out value="${setting.twoSelectStartTime }"></c:out>
+			第二轮选题开始时间：<c:out value="${setting.twoSelectStartTime }"></c:out>
 			<br>
-			第二轮选课结束时间：<c:out value="${setting.twoSelectEndTimeOne }"></c:out>
+			第二轮选题结束时间：<c:out value="${setting.twoSelectEndTimeOne }"></c:out>
 			<br>
 			<br>
 			开题报告提交开始时间：<c:out value="${setting.openReportStartTime }"></c:out>

@@ -204,7 +204,22 @@
 			            <input type="datetime-local" name="midReviewEndTime" id="midReviewEndTime" class="form-control"  required value='${settings.midReviewEndTime }'>
 			        </div>
 			        <br>
-<!-- /小组评阅-->			
+<!-- /小组评阅-->
+
+<!-- 答辩置结束 -->
+					<span style="font-size:10px;color:gray;margin-left:-40px;">答辩</span>
+					<div class="input-group">
+						<span class="input-group-addon" style="border-radius: 0;">答辩开始时间　　　　<span style="color:red;margin-top:13px;">*</span></span>
+						<input type="datetime-local" name="defenceStartTime" id="defenceStartTime" class="form-control"  required value='${settings.defenceStartTime }'>
+					</div>
+					<br>
+
+					<div class="input-group">
+						<span class="input-group-addon" style="border-radius: 0;">答辩结束时间　　　　<span style="color:red;margin-top:13px;">*</span></span>
+						<input type="datetime-local" name="defenceEndTime" id="defenceEndTime" class="form-control"  required value='${settings.defenceEndTime }'>
+					</div>
+					<br>
+					<!-- 答辩设置结束 -->
 
 <!-- 答辩结果提交 -->  
 					<span style="font-size:10px;color:gray;margin-left:-40px;">答辩结果提交</span>
@@ -222,20 +237,7 @@
 <!-- /答辩结果提交-->	
 
         
-<!-- 答辩置结束 --> 
-					<span style="font-size:10px;color:gray;margin-left:-40px;">答辩</span>
-			        <div class="input-group">
-			            <span class="input-group-addon" style="border-radius: 0;">答辩开始时间　　　　<span style="color:red;margin-top:13px;">*</span></span>
-			            <input type="datetime-local" name="defenceStartTime" id="defenceStartTime" class="form-control"  required value='${settings.defenceStartTime }'>
-			        </div>
-			        <br>
-			        
-			         <div class="input-group">
-			            <span class="input-group-addon" style="border-radius: 0;">答辩结束时间　　　　<span style="color:red;margin-top:13px;">*</span></span>
-			            <input type="datetime-local" name="defenceEndTime" id="defenceEndTime" class="form-control"  required value='${settings.defenceEndTime }'>
-			        </div>
-			        <br> 
-<!-- 答辩设置结束 -->  
+
 			        <input type="submit" value="保存或更新" class="btn btn-success" style="width:150px"/>
 		        
 				</form>

@@ -38,10 +38,15 @@ import com.entity.TimeAndPlace;
  */
 @Service
 public class GroupService {
+
+	@Autowired
+	private GroupDaoImpl groupDao;
+
 	@Autowired
 	private SessionFactory sessionFactory;
 	private Session session;
-	
+
+
 	/**
 	 * 关闭session
 	 */
@@ -73,7 +78,6 @@ public class GroupService {
 	}
 	/**
 	 * 查看group
-	 * @param group
 	 * @return
 	 */
 	public List<Group> viewGroup(String gradeId){
@@ -163,7 +167,7 @@ public class GroupService {
 	
 	/**
 	 * 更新group
-	 * @param id
+	 * @param group
 	 * @return
 	 */
 	@Transactional
@@ -185,7 +189,7 @@ public class GroupService {
 	
 	/**
 	 * 设置答辩组之前的查看
-	 * @param group
+	 * @param gradeId
 	 * @return
 	 */
 	public List<Group> setViewGroup(String gradeId){
@@ -269,7 +273,7 @@ public class GroupService {
 	}
 	/**
 	 * 给组添加老师
-	 * @param id
+	 * @param groupId
 	 * @return
 	 */
 	@Transactional
@@ -339,7 +343,7 @@ public class GroupService {
 	}
 	/**
 	 * 删除teacher group
-	 * @param group
+	 * @param teacherGroup
 	 * @return
 	 */
 	@Transactional
@@ -361,28 +365,19 @@ public class GroupService {
 	
 	/**
 	 * 查看分组成员
-	 * @param group
+	 * @param gradeId
 	 * @return
 	 */
 	public List<TeacherGroup> viewGroupMember(long gradeId, long teacherId){
 		List<TeacherGroup> teacherGroup2= new ArrayList<TeacherGroup>();
 		try{
-			session = sessionFactory.getCurrentSession();
-//			获取groupDao
-			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
-//			传递session保证是同一个session进行事务处理
-			dao.setSession(session); 
-//			
 			List<TeacherGroup> teacherGroup= null;
-			teacherGroup = dao.findTeacherGroup(String.valueOf(teacherId));
+			teacherGroup = groupDao.findTeacherGroup(String.valueOf(teacherId));
 			
 			for(int i=0;i<teacherGroup.size();i++){
 //				判断是否是组长，同时是选择的年级
 				if(teacherGroup.get(i).getIsLeader() == 1 && teacherGroup.get(i).getGroup().getGrade().getId() == gradeId) {
 					teacherGroup2 = teacherGroup.get(i).getGroup().getTeacherGroup();
-					for(int j=0;j<teacherGroup.get(i).getGroup().getTeacherGroup().size();j++){
-						teacherGroup.get(i).getGroup().getTeacherGroup().get(j).getTeacher().getName();
-					}
 				}
 			}
 			
@@ -395,7 +390,7 @@ public class GroupService {
 	
 	/**
 	 * 分配学生
-	 * @param group
+	 * @param groupId
 	 * @return
 	 */
 	@Transactional
@@ -526,7 +521,7 @@ public class GroupService {
 	/**
 	 * 学生查看分组
 	 * @param gradeId
-	 * @param teacherId
+	 * @param studentId
 	 * @return
 	 */
 	public Group studentGroup(long studentId, long gradeId){
@@ -563,21 +558,15 @@ public class GroupService {
 	
 	/**
 	 * 查看分组答辩时间和地点
-	 * @param group
+	 * @param gradeId
 	 * @return
 	 */
 	public GroupTimeAndPlace viewTimeAndPlace(long gradeId, long teacherId){
 		Group group = null;
 		GroupTimeAndPlace groupTimeAndPlace = new GroupTimeAndPlace();
 		try{
-			session = sessionFactory.getCurrentSession();
-//			获取groupDao
-			GroupDaoImpl dao =  (GroupDaoImpl) BaseDAOFactory.getInstance().getDaoInterface("GroupDao");
-//			传递session保证是同一个session进行事务处理
-			dao.setSession(session); 
-//			
 			List<TeacherGroup> teacherGroup= null;
-			teacherGroup = dao.findTeacherGroup(String.valueOf(teacherId));
+			teacherGroup = groupDao.findTeacherGroup(String.valueOf(teacherId));
 			
 			for(int i=0;i<teacherGroup.size();i++){
 //				判断是否是组长，同时是选择的年级
@@ -699,7 +688,6 @@ public class GroupService {
 	/**
 	 * 导出学生分组情况
 	 * @param gradeId
-	 * @param departmentId
 	 * @return
 	 */
 	public HSSFWorkbook exportStudentGroup(String gradeId) {

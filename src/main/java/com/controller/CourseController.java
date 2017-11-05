@@ -154,7 +154,6 @@ public class CourseController {
 		if (!file.isEmpty()) {
 			grades = courseGradeService.saveGrade(file, gradeId);
 		}
-		
 		session.setAttribute("grades", grades);
 		if(grades.size() == 0) {
 			request.setAttribute("message", "(上传失败学生的信息)");

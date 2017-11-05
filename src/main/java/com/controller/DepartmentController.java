@@ -80,7 +80,6 @@ public class DepartmentController {
 	
 	/**
 	 *  增加系
-	 * @param gradeId
 	 * @param department
 	 * @param request
 	 * @param response

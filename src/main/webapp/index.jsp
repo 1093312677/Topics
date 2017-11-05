@@ -42,7 +42,7 @@
 							</div>
 							<form class="form-auth-small" action="<%=request.getContextPath() %>/account/login.do" method="post"">
 								<div class="form-group">
-									<label for="signin-email" class="control-label sr-only">Email</label>
+									<label for="signin-email1" class="control-label sr-only">Email</label>
 									<input type="type" class="form-control" id="signin-email1" value="" name="username" placeholder="帐号">
 								</div>
 								<div class="form-group">
