@@ -339,7 +339,7 @@ public class AccountService<T> {
 		}
 
 //		产生干扰点
-		for (int i=0;i<50;i++) {
+		for (int i=0;i<40;i++) {
 			int x = r.nextInt(IMG_WIDTH);
 			int y = r.nextInt(IMG_HEIGHT);
 			g.setColor(getColor());
@@ -347,7 +347,7 @@ public class AccountService<T> {
 		}
 
 // 随机产生干扰线条
-		for (int i=0;i<r.nextInt(3)+3;i++) {
+		for (int i=0;i<r.nextInt(2)+3;i++) {
 			int x1 = r.nextInt(IMG_WIDTH)%15;
 			int y1 = r.nextInt(IMG_HEIGHT);
 			int x2 = (int) (r.nextInt(IMG_WIDTH)%40+IMG_WIDTH*0.7);
@@ -382,7 +382,8 @@ public class AccountService<T> {
 	 * @param session
 	 */
 	public void checkCode(HttpServletRequest request, HttpSession session, HttpServletResponse response, String code) {
-		if(null == code || "".equals(code) || code.length() != 4) {
+		String codeT = (String) session.getAttribute("code");
+		if(null == code || "".equals(code) || code.length() != 4 || null == codeT || "".equals(codeT) || 4 != codeT.length()) {
 			try {
 				request.setAttribute("loginMessage", "errorCode");
 				request.getRequestDispatcher("../index.jsp").forward(request, response);
@@ -390,27 +391,29 @@ public class AccountService<T> {
 				e.printStackTrace();
 			}
 		} else {
-			if(code.length() == 4) {
-				char [] arrs = code.toCharArray();
-				String codeT = (String) session.getAttribute("code");
-				char [] arrs2 = codeT.toCharArray();
-				boolean flag = true;
-				for(int i=0;i<4;i++) {
-					if(!String.valueOf(arrs[i]).toLowerCase().equals(String.valueOf(arrs2[i]).toLowerCase())) {
-						flag = false;
-					}
+			if(!codeT.equalsIgnoreCase(code)) {
+				try {
+					request.setAttribute("loginMessage", "errorCode");
+					request.getRequestDispatcher("../index.jsp").forward(request, response);
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
-
-				if(!flag) {
-					try {
-						request.setAttribute("loginMessage", "errorCode");
-						request.getRequestDispatcher("../index.jsp").forward(request, response);
-					} catch (Exception e) {
-						e.printStackTrace();
-					}
-				}
-
 			}
+//			if(code.length() == 4) {
+//				char [] arrs = code.toCharArray();
+//				char [] arrs2 = codeT.toCharArray();
+//				boolean flag = true;
+//				for(int i=0;i<4;i++) {
+//					if(!String.valueOf(arrs[i]).toLowerCase().equals(String.valueOf(arrs2[i]).toLowerCase())) {
+//						flag = false;
+//					}
+//				}
+//
+//				if(!flag) {
+//
+//				}
+
+//			}
 		}
 		return;
 	}

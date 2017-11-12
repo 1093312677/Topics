@@ -1,0 +1,93 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+    pageEncoding="utf-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html >
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+	<link rel="shortcut icon" href="<%=request.getContextPath() %>/images/image.ico"/>
+	<title>毕业设计选题系统登录</title>
+	
+	<link rel="stylesheet" href="<%=request.getContextPath() %>/css/common.css"/>
+	<link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap.min.css">
+    <link rel="stylesheet" href="<%=request.getContextPath() %>/css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="<%=request.getContextPath() %>/css/scrollerbar.css"/>
+	<link rel="stylesheet" href="<%=request.getContextPath() %>/css/index.css"/>
+	
+	<script src="<%=request.getContextPath() %>/js/jquery-3.1.1.min.js"></script>
+	<script src="<%=request.getContextPath() %>/js/bootstrap.min.js"></script>
+	
+</head>
+<body>
+	<!-- zhao -->
+	<div class="panel panel-primary">
+    <div class="panel-heading">
+       <center> <h3 class="panel-title">毕业选题系统</h3></center>
+    </div>
+</div>
+ <!-- class="bg" id="bg">  -->
+ <div>
+		<div class="container">
+			<div class="row">
+				<div class="col-md-4 col-sm-3">
+				</div>
+				<div class="col-md-4 col-sm-6">
+					<!--<div class="center">  -->
+					
+					
+					<div class = "center">
+						<div class="content-header">
+							<p class="text-center" id="text">LOGIN </p>
+						</div>
+						<br>
+						<c:if test="${loginMessage =='error'}">
+							<div class="alert alert-danger alert-dismissable" id="alert">
+						          <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+						                &times;
+						          </button>
+						           	 用户名或密码错误，请重新登录！
+						     </div>
+						</c:if>
+						
+						<form action="<%=request.getContextPath() %>/account/login.do" method="post">
+							<div class="input-group">
+					            <span class="input-group-addon"> <span class="glyphicon glyphicon-user"></span></span>
+					            <input type="text" class="form-control" id="edit" name="username" placeholder="用户名">
+					        </div>
+					        <br>
+					        <br>
+					        <br>
+					        <div class="input-group">
+					            <span class="input-group-addon"><span class="glyphicon glyphicon-lock"></span></span>
+					            <input type="password" class="form-control" id="edit" name="password" placeholder="密码">
+					        	<span class="input-group-btn">
+			                        <input class="btn"  id="btn" type="submit" value="登录">
+			                    </span>
+					        </div>
+					        
+				        </form>
+					</div><!-- center -->
+				</div><!-- col-md-12 -->
+				<div class="col-md-4 col-sm-3">
+				</div>
+			</div><!-- row -->
+		</div><!-- container -->
+	</div><!-- bg -->
+	
+
+
+	<script>
+		winWidth  = document.documentElement.clientWidth;
+		winHeight = document.documentElement.clientHeight;
+		$("#bg").css({"height":parseInt(winHeight)+30});
+		
+		window.setTimeout(hide,2000);
+		function hide(){
+			$(".alert").hide();
+		}	
+	</script>
+		<!-- zhao -->
+
+</body>
+</html>
