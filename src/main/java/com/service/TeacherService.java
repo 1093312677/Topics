@@ -2,11 +2,10 @@ package com.service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
+import com.dao.*;
+import com.entity.*;
 import org.apache.poi.hssf.record.formula.functions.T;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -16,16 +15,6 @@ import org.apache.poi.hssf.util.CellRangeAddress;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.dao.IDao;
-import com.dao.ISettingDao;
-import com.dao.IStudentDao;
-import com.dao.ITeacherDao;
-import com.entity.Grade;
-import com.entity.Setting;
-import com.entity.Student;
-import com.entity.Teacher;
-import com.entity.Topics;
 
 @Service
 public class TeacherService {
@@ -40,7 +29,9 @@ public class TeacherService {
 	
 	@Autowired
 	private ISettingDao settingDao;
-	
+
+	@Autowired
+	private IIntentionDao intentionDao;
 	/**
 	 * 查看选择了该老师题目的学生
 	 * @param teacherId
@@ -183,6 +174,29 @@ public class TeacherService {
 		bc[0] = batch;
 		bc[1] = choice;
 		return bc;
+	}
+
+
+	public List<Student> viewIntentStudent(Long topicId, Long gradeId){
+		int batch = 0;
+		int choice = 0;
+		int bc[] = getBatchChoice(gradeId);
+		batch = bc[0];
+		choice = bc[1];
+
+
+		List<IntentionTopic> intentionTopics = intentionDao.getIntentions(topicId, batch, choice);
+		List<Student> students = new ArrayList<Student>();
+		Student student = null;
+		for(IntentionTopic intentionTopic : intentionTopics){
+			student = new Student();
+			student.setId(intentionTopic.getStudent().getId());
+			student.setNo(intentionTopic.getStudent().getNo());
+			student.setName(intentionTopic.getStudent().getName());
+			students.add(student);
+		} //遍历意向题目结束
+
+		return students;
 	}
 	
 	/**

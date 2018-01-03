@@ -2,9 +2,17 @@ package com.controller;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import com.dto.AppViewIntentStu;
+import com.dto.StudentDTO;
+import com.dto.TopicStudent;
+import com.entity.IntentionTopic;
+import com.service.TeacherService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,6 +36,9 @@ import com.service.TopicService;
 public class AppTeacherController {
 	@Autowired
 	private TopicService topicService;
+
+	@Autowired
+	private TeacherService teacherService;
 	
 	/**
 	 * 教师查看自己出的题目 app
@@ -105,5 +116,67 @@ public class AppTeacherController {
 		}
 		return null;
 	}
+
+	/**
+	 * 查看选择了意向题目的学生
+	 * @param gradeId
+	 * @return
+	 */
+	@RequestMapping("/viewStudentSelectedIntent")
+	@ResponseBody
+	public ServerResponse viewStudentSelectedIntent(Long gradeId, Long teacherId){
+
+		AppViewIntentStu appViewIntentStu = new AppViewIntentStu();
+//		获取选题设置
+		Set<Topics> topics = null;
+		int bc[] = null;
+		topics = teacherService.viewSelected(teacherId, gradeId);
+		bc = teacherService.getBatchChoice(gradeId);
+
+		TopicStudent topicStudent = null;
+		StudentDTO studentDTO = null;
+		for(Topics topic : topics) {
+			topicStudent = new TopicStudent();
+			topicStudent.setTopicName(topic.getTopicsName());
+			topicStudent.setTopicId(topic.getId());
+			topicStudent.setEnable(topic.getEnableSelect());
+			topicStudent.setSelected(topic.getSelectedStudent());
+			int count = 0;
+
+			for(IntentionTopic intent : topic.getIntentionTopics()) {
+				if(null != intent && null != intent.getStudent()) {
+					studentDTO = new StudentDTO();
+					studentDTO.setId(intent.getStudent().getId());
+					studentDTO.setName(intent.getStudent().getName());
+					studentDTO.setNo(intent.getStudent().getNo());
+
+					topicStudent.getStudents().add(studentDTO);
+					count ++;
+				}
+			}
+
+			topicStudent.setNum(count);
+
+
+			appViewIntentStu.getTopics().add(topicStudent);
+		}
+
+		appViewIntentStu.setBatch(bc[0]);
+		appViewIntentStu.setChoice(bc[1]);
+
+		return ServerResponse.response(200, "success", appViewIntentStu);
+	}
+
+    /**
+     * 通过题目id查看当前批次当前志愿的学生
+     * @param topicId
+     * @return
+     */
+    @RequestMapping("/viewIntentStudent")
+    @ResponseBody
+    public ServerResponse viewIntentStudent(Long topicId, Long gradeId){
+
+	    return ServerResponse.response(200, "success", teacherService.viewIntentStudent(topicId, gradeId));
+    }
 	
 }

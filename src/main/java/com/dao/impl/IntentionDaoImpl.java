@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.dao.IIntentionDao;
 import com.entity.IntentionTopic;
 
+import java.util.List;
+
 @Repository
 public class IntentionDaoImpl implements IIntentionDao{
 	@Autowired
@@ -71,5 +73,20 @@ public class IntentionDaoImpl implements IIntentionDao{
 			throw new ServiceException("error");
 		}
 	}
-	
+
+	@Override
+	public List<IntentionTopic> getIntentions(Long topicId, int batch, int choice) {
+		String hql = "FROM IntentionTopic AS intent" +
+				"	WHERE choice=:choice " +
+				"	AND batch=:batch " +
+				"	AND intent.topic.id=:topicId" +
+				"	AND intent.student.topics IS null";
+		session = sessionFactory.getCurrentSession();
+		Query query = session.createQuery(hql);
+		query.setLong("topicId", topicId);
+		query.setInteger("batch", batch);
+		query.setInteger("choice", choice);
+		return query.list();
+	}
+
 }
