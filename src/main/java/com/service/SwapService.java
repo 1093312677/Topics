@@ -55,7 +55,6 @@ public class SwapService {
 	}
 	/**
 	 * 修改老师调配
-	 * @param id
 	 * @return
 	 */
 	@Transactional

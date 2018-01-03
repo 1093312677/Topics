@@ -58,18 +58,18 @@
 				        <br>
 				        <input type="hidden" value="${gradeId }" name="gradeId"/>
 				         <div class="input-group">
-				            <span class="input-group-addon" style="border-radius: 0;">适用于方向<span style="color:red;margin-top:13px;">*</span></span>
+				            <span class="input-group-addon" style="border-radius: 0;">适用于专业<span style="color:red;margin-top:13px;">*</span></span>
 				            <div id="direction-content" style="z-index:1">
 				            	<select id="direction" name="directionIds" required class="selectpicker show-tick form-control" multiple data-live-search="true">
 		                        </select>
 				            </div>
 				        </div>
-				        <br>
-				         <div class="input-group">
-				            <span class="input-group-addon" style="border-radius: 0;">可选学生数<span style="color:red;margin-top:13px;">*</span></span>
-				            <input type="number" name="enableSelect" id='enableSelect' class="form-control" placeholder="可选学生数（必填）" required>
-				        	<span style="color:#06c290;margin-left:20px" id="numContainer"></span>
-				        </div>
+				        <%--<br>--%>
+				         <%--<div class="input-group">--%>
+				            <%--<span class="input-group-addon" style="border-radius: 0;">可选学生数<span style="color:red;margin-top:13px;">*</span></span>--%>
+				            <%--<input type="number" name="enableSelect" id='enableSelect' class="form-control" placeholder="可选学生数（必填）" required>--%>
+				        	<%--<span style="color:#06c290;margin-left:20px" id="numContainer"></span>--%>
+				        <%--</div>--%>
 				        <br>
 				         <div class="input-group">
 				            <span class="input-group-addon" style="border-radius: 0;">文件　 上传</span>
@@ -146,14 +146,14 @@ function getNum(gradeId){
 
 
 function check() {
-	var inputNum = $("#enableSelect").val();
-	if(inputNum > maxNum ) {
-		$("#numContainer").html('超出最大可填人数'+maxNum);
-		return false;
-	} else if(inputNum==0) {
-		$("#numContainer").html('请输入正确人数！');
-		return false;
-	}
+	// var inputNum = $("#enableSelect").val();
+	// if(inputNum > maxNum ) {
+	// 	$("#numContainer").html('超出最大可填人数'+maxNum);
+	// 	return false;
+	// } else if(inputNum==0) {
+	// 	$("#numContainer").html('请输入正确人数！');
+	// 	return false;
+	// }
 	var direction = $("#direction").val();
 	var topicsName = $("#topicsName").val();
 	var enableSelect = $("#enableSelect").val();

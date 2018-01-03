@@ -136,9 +136,9 @@
 		                            <li>
 		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/specialty/viewSpecialty.do">专业信息</a>
 		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/direction/viewDirection.do">方向信息</a>
-		                            </li>
+		                            <%--<li>--%>
+		                                <%--<a class="J_menuItem" href="<%=request.getContextPath() %>/direction/viewDirection.do">方向信息</a>--%>
+		                            <%--</li>--%>
 		                            <li>
 		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/clazz/viewClazz.do">班级信息</a>
 		                            </li>
@@ -179,9 +179,9 @@
 		                            <li>
 		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/topic/viewGradeTopic.do?state=2">审核题目</a>
 		                            </li>
-		                            <li>
-		                                <a class="J_menuItem" href="<%=request.getContextPath() %>/teacher/viewGradeSelectedIntent.do?viewType=setTeacherTopicNum">设置教师出题数</a>
-		                            </li>
+		                            <%--<li>--%>
+		                                <%--<a class="J_menuItem" href="<%=request.getContextPath() %>/teacher/viewGradeSelectedIntent.do?viewType=setTeacherTopicNum">设置教师出题数</a>--%>
+		                            <%--</li>--%>
 		                        </ul>
 		                    </li>
 		                    

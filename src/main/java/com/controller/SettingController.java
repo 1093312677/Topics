@@ -94,7 +94,6 @@ public class SettingController {
 	/**
 	 * 查看年级对应的设置APP
 	 * @param gradeId
-	 * @param session
 	 * @param request
 	 * @param response
 	 * @return

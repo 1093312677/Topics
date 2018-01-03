@@ -47,18 +47,18 @@ public class TopicDao extends BaseDao implements ITopicDao {
 			query2.setLong("id", topics.getId());
 			Topics topics2=(Topics) query2.uniqueResult();
 			gradeId=topics2.getGrade().getId();
-			hql1="from LimitNumber l where l.teacher=:teacherId";
-			query2=session.createQuery(hql1);
-			long teacherId=topics2.getTeacher().getId();
-			query2.setLong("teacherId",teacherId );
-			LimitNumber limitNumber=(LimitNumber) query2.uniqueResult();
-			int num=limitNumber.getAlreadyNumber()-topics2.getEnableSelect()+topics.getEnableSelect();
-			String sql="update LimitNumber l set l.alreadyNumber=:num where l.teacher=:teacherId and l.grade=:gradeId";
-			query2=session.createQuery(sql);
-			query2.setInteger("num", num);
-			query2.setLong("teacherId", teacherId);
-			query2.setLong("gradeId", gradeId);
-			query2.executeUpdate();
+//			hql1="from LimitNumber l where l.teacher=:teacherId";
+//			query2=session.createQuery(hql1);
+//			long teacherId=topics2.getTeacher().getId();
+//			query2.setLong("teacherId",teacherId );
+//			LimitNumber limitNumber=(LimitNumber) query2.uniqueResult();
+//			int num=limitNumber.getAlreadyNumber()-topics2.getEnableSelect()+topics.getEnableSelect();
+//			String sql="update LimitNumber l set l.alreadyNumber=:num where l.teacher=:teacherId and l.grade=:gradeId";
+//			query2=session.createQuery(sql);
+//			query2.setInteger("num", num);
+//			query2.setLong("teacherId", teacherId);
+//			query2.setLong("gradeId", gradeId);
+//			query2.executeUpdate();
 			
 //			如果是教师更新，将题目设置为审核状态
 			String hql = "";

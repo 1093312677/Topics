@@ -38,7 +38,7 @@ public class AppTeacherController {
 	 */
 	@RequestMapping("/teacherViewTopicsApp")
 	@ResponseBody
-	public ServerResponse<List<Topics>> teacherViewTopicsApp(String teacherId, String gradeId, int status) {
+	public ServerResponse<List<Topics>> teacherViewTopicsApp(String teacherId, String gradeId, Integer status) {
 		
 		
 		return topicService.teacherViewTopicsApp(teacherId, gradeId, status);

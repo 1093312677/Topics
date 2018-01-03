@@ -86,8 +86,10 @@
 	    					未上传
 	    				</c:if>
 	    				<c:if test="${items.taskBookName !='' }">
-	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.taskBookName }&documentName=${items.topicsName }_${items.teacher.name }_任务书_${items.taskBookName }"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
-	    				</c:if>
+	    					<a href="<%=request.getContextPath() %>/document/download.do?randName=${items.taskBookName }&documentName=${items.topicsName }_${items.teacher.name }_任务书_${items.taskBookName }" onclick="download(${items.taskBookName },${items.topicsName }, ${items.teacher.name }, ${items.taskBookName })"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>
+							<%--<a href="#" onclick="down('${items.taskBookName }','${items.topicsName }', '${items.teacher.name }', '${items.taskBookName }')"><span class="glyphicon glyphicon-download-alt" style="color:green;float:right" data-toggle="tooltip" data-placement="bottom" title="下载"></span></a>--%>
+
+						</c:if>
 	    				
 	    			</td>
 	    			<td>
@@ -104,7 +106,7 @@
 							</button>
 							<button type="button" class="btn btn-default btn-sm" style="color:red">
 							    <span class="glyphicon glyphicon-remove"></span>
-								<a href="javascript:void(0)" style="color:red" id="audit" onclick="noaudit(<c:out value="${items.id }"></c:out>)"> 未通过审核</a>
+								<a href="javascript:void(0)" style="color:red" id="notAudit" onclick="noaudit(<c:out value="${items.id }"></c:out>)"> 未通过审核</a>
 							</button>
 	    				</c:if>
 	    				
@@ -160,6 +162,10 @@
 	}
 	function reload(){
 		location.reload()
+	}
+
+	function down(a,b,c,d) {
+	    window.location.href="<%=request.getContextPath() %>/document/download.do?randName="+a+"&documentName="+encodeURI(a+b+c);
 	}
 	
 	$("#save").click(function(){

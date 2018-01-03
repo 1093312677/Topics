@@ -19,6 +19,7 @@ import com.entity.Grade;
 import com.entity.Specialty;
 import com.entity.Teacher;
 import com.service.CommonService;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping("/specialty")
@@ -47,7 +48,6 @@ public class SpecialtyController {
 	 * @param request
 	 * @param response
 	 * @param type
-	 * @param page
 	 * @return
 	 */
 	@RequestMapping("/viewSpecialty")
@@ -92,33 +92,36 @@ public class SpecialtyController {
 	}
 	/**
 	 * 增加专业
-	 * @param departmentId
 	 * @param specialty
 	 * @param request
 	 * @param response
 	 * @return
 	 */
 	@RequestMapping("/addSpecialty")
-	public String addSpecialty(long gradeId,Specialty specialty,HttpServletRequest request,HttpServletResponse response){
+	@ResponseBody
+	public Integer addSpecialty(long gradeId,Specialty specialty,HttpServletRequest request,HttpServletResponse response){
 		Grade grade = new Grade();
 		grade.setId(gradeId);
 		specialty.setGrade(grade);
-		try {
-			if(commonService.save(specialty)){
-				response.getWriter().println("1");
-			}else{
-				response.getWriter().println("0");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		if(commonService.save(specialty)){
+//			特殊需求，保存专业的时候，同时把方向保存，取相同的名称
+			saveDirection(specialty);
+			return 1;
+		}else{
+			return 0;
 		}
-		return null;
+	}
+
+	public void saveDirection(Specialty specialty) {
+		Direction direction = new Direction();
+		direction.setSpceialty(specialty);
+		direction.setDirectionName(specialty.getSpecialtyName());
+		commonService.save(direction);
 	}
 	/**
 	 * 通过条件查找专业
 	 * @param request
 	 * @param response
-	 * @param departmentId
 	 * @param type
 	 * @return
 	 */

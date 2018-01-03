@@ -52,7 +52,6 @@ public class DirectionController {
 	 * @param request
 	 * @param response
 	 * @param type
-	 * @param page
 	 * @return
 	 */
 	@RequestMapping("/viewDirection")

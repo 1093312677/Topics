@@ -15,6 +15,9 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import com.common.BaseEntity;
+
+import java.io.Serializable;
+
 /**
  * 意向题目实体
  * @author kone
@@ -23,7 +26,7 @@ import com.common.BaseEntity;
 @Entity
 @Table(name="intentionTopic")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE) 
-public class IntentionTopic extends BaseEntity{
+public class IntentionTopic extends BaseEntity  implements Serializable {
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private long id;

@@ -32,9 +32,9 @@
 	    <div class="panel-body">
 	                            查看<span class="glyphicon glyphicon-eye-open">题目</span> 
 	           
-	          <c:if test="${state == 2 }">
-	          		<button class="btn btn-info" style="outline:none;" id="batch">批量通过</button>
-	          </c:if>
+	          <%--<c:if test="${state == 2 }">--%>
+	          		<%--<button class="btn btn-info" style="outline:none;" id="batch">批量通过</button>--%>
+	          <%--</c:if>--%>
 	          <c:if test="${state == 1 }">
 		         <a href="<%=request.getContextPath() %>/topic/exportTopic.do">
 		        	 <span class="glyphicon glyphicon-export" style="color:green;float:right;margin-right:80px" data-toggle="tooltip" data-placement="bottom" title="导出题目情况"></span>
@@ -48,11 +48,11 @@
     <table class="table table-hover table-striped" >
     	<tr class="info">
     		
-    		<c:if test="${state == 2 }">
-    			<td>
-    				<input type="checkbox" class="checkbox-class" id="all-checkbox"/>
-    			</td> 
-    		</c:if>
+    		<%--<c:if test="${state == 2 }">--%>
+    			<%--<td>--%>
+    				<%--<input type="checkbox" class="checkbox-class" id="all-checkbox"/>--%>
+    			<%--</td> --%>
+    		<%--</c:if>--%>
     		<td >编号</td>
     		<td width=200px>题目名称</td>
     		<td>适用方向</td>
@@ -71,11 +71,11 @@
     	<form action="" id="form1">
     	<c:forEach items="${topics }" var="items">
 	    		<tr class="choiceBox">
-	    			<c:if test="${state == 2 }">
-		    			<td>
-		    				<input type="checkbox" name="topicId" class="checkbox-class needcheck" value="${items.id }"/>
-		    			</td> 
-		    		</c:if>
+	    			<%--<c:if test="${state == 2 }">--%>
+		    			<%--<td>--%>
+		    				<%--<input type="checkbox" name="topicId" class="checkbox-class needcheck" value="${items.id }"/>--%>
+		    			<%--</td> --%>
+		    		<%--</c:if>--%>
 	    			<td><c:out value="${items.id }"></c:out></td>
 	    			<td>
 	    				<span  data-toggle="tooltip" data-placement="bottom" title="简介：${items.introduce }">
@@ -149,14 +149,14 @@
     	<ul class="pagination" style="margin-top:1px">
 	    	<!-- 上一页 -->
 	    	<c:if test="${pagination.page>1 }">
-	    		<li><a href="<%=request.getContextPath() %>/topic/viewTopic.do?state=1&page=${pagination.page-2 }">上一页</a></li>
+	    		<li><a href="<%=request.getContextPath() %>/topic/viewTopic.do?gradeId=${gradeId}&state=${state}&page=${pagination.page-2 }">上一页</a></li>
 	    	</c:if>
 			<c:if test="${pagination.page<=1 }">
 				<li class="disabled"><a href="javascript:void(0)">上一页</a></li>
 	    	</c:if>
 			<!-- 下一页 -->
 			<c:if test="${pagination.page<pagination.totlePage }">
-	    		<li><a href="<%=request.getContextPath() %>/topic/viewTopic.do?state=1&page=${pagination.page }">下一页</a></li>
+	    		<li><a href="<%=request.getContextPath() %>/topic/viewTopic.do?gradeId=${gradeId}&state=${state}&page=${pagination.page }">下一页</a></li>
 	    	</c:if>
 			<c:if test="${pagination.page>=pagination.totlePage }">
 				<li class="disabled"><a href="javascript:void(0)">下一页</a></li>
@@ -164,8 +164,9 @@
 		</ul>
     </div>
 	<div class="col-sm-2">
-	<form action="<%=request.getContextPath() %>/topic/viewTopic.do?state=1" method="post">
+	<form action="<%=request.getContextPath() %>/topic/viewTopic.do?gradeId=${gradeId}&state=${state}" method="post">
 		<div class="input-group" width="200px">
+				<input type="hidden" class="form-control" name="pageType" value="1">
 				<input type="number" class="form-control" name="page" value="1">
 				<span class="input-group-btn">
 				<button class="btn btn-default" type="submit">
@@ -220,35 +221,104 @@
 	})
 	
 	function audit(id){
-		swal({
-			  title: "确认通过？",
-			  text: "",
-			  type: "warning",
-			  showCancelButton: true,
-			  confirmButtonColor: "#DD6B55",
-			  confirmButtonText: "　Yes　",
-			  closeOnConfirm: false
-		},
-		function(){
-			$.ajax({
-				type:"post",
-				url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
-				data:{"topicId":id},
-				dataType:"json",
-				success:function(data){
-					if( data == 1 ) {
-						swal("成功!", "", "success");
-					} else {
-						swal("失败!", "", "error");
-					}
-					
-					window.setTimeout(reload,700);
-				},
-				error:function(msg){
-					console.log(msg)
-				}
-			})	
-		});
+        // 直接通过需要系主任输入人数的------版本
+        swal({
+                title: "确认通过",
+                text: "请选择人数 <select class='form-control' id='num'><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option>8</option><option>9</option><option>10</option></select>",
+                type: "info",
+                html: true,
+                showCancelButton: true,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true,
+            },
+            function(){
+                $.ajax({
+                    type:"post",
+                    url:"<%=request.getContextPath()%>/teacher/auditTopic.do",
+                    data:{"topicId":id,"num":$("#num").val()},
+                    dataType:"json",
+                    success:function(data){
+                        if( data == 1 ) {
+                            swal("成功!", "", "success");
+                        } else {
+                            swal("失败!", "", "error");
+                        }
+
+                        window.setTimeout(reload,700);
+                    },
+                    error:function(msg){
+                        console.log(msg)
+                    }
+                })
+
+            });
+
+        <%--swal({--%>
+            <%--title: "确认通过！",--%>
+            <%--text: "请设置该题目可选学生人数",--%>
+            <%--type: "info",--%>
+            <%--showCancelButton: true,--%>
+            <%--closeOnConfirm: false,--%>
+            <%--animation: "slide-from-top",--%>
+            <%--inputPlaceholder: "请输入学生人数"--%>
+        <%--}, function(inputValue) {--%>
+            <%--if (inputValue === false) {--%>
+                <%--return false;--%>
+            <%--}--%>
+            <%--if (inputValue === "") {--%>
+				<%--swal.showInputError("内容不能为空！");--%>
+				<%--return false;--%>
+            <%--}--%>
+            <%--$.ajax({--%>
+                <%--type:"post",--%>
+                <%--url:"<%=request.getContextPath()%>/teacher/auditTopic.do",--%>
+                <%--data:{"topicId":id,"num":inputValue},--%>
+                <%--dataType:"json",--%>
+                <%--success:function(data){--%>
+                    <%--if( data == 1 ) {--%>
+                        <%--swal("成功!", "", "success");--%>
+                    <%--} else {--%>
+                        <%--swal("失败!", "", "error");--%>
+                    <%--}--%>
+
+                    <%--window.setTimeout(reload,700);--%>
+                <%--},--%>
+                <%--error:function(msg){--%>
+                    <%--console.log(msg)--%>
+                <%--}--%>
+            <%--})--%>
+        <%--})--%>
+
+	    // 直接通过不需要系主任输入人数的------版本
+		<%--swal({--%>
+			  <%--title: "确认通过？",--%>
+			  <%--text: "",--%>
+			  <%--type: "warning",--%>
+			  <%--showCancelButton: true,--%>
+			  <%--confirmButtonColor: "#DD6B55",--%>
+			  <%--confirmButtonText: "　Yes　",--%>
+			  <%--closeOnConfirm: false--%>
+		<%--},--%>
+		<%--function(){--%>
+			<%--$.ajax({--%>
+				<%--type:"post",--%>
+				<%--url:"<%=request.getContextPath()%>/teacher/auditTopic.do",--%>
+				<%--data:{"topicId":id},--%>
+				<%--dataType:"json",--%>
+				<%--success:function(data){--%>
+					<%--if( data == 1 ) {--%>
+						<%--swal("成功!", "", "success");--%>
+					<%--} else {--%>
+						<%--swal("失败!", "", "error");--%>
+					<%--}--%>
+					<%----%>
+					<%--window.setTimeout(reload,700);--%>
+				<%--},--%>
+				<%--error:function(msg){--%>
+					<%--console.log(msg)--%>
+				<%--}--%>
+			<%--})	--%>
+		<%--});--%>
 		
 	}
 	function noaudit(id){

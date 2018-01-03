@@ -26,7 +26,7 @@
 	    		<td width="100px">学号</td>
 	    		<td>姓名</td>
 	    		<td>班级</td>
-	    		<td>方向</td>
+	    		<%--<td>方向</td>--%>
 	    		<td>专业</td>
 	    		
 	    		<td>年级</td>
@@ -42,7 +42,7 @@
 	    				<a href="<%=request.getContextPath() %>/student/viewStudentOne.do?filter=yes&no=<c:out value="${items.no }"></c:out>&id=<c:out value="${items.id }"></c:out>"><c:out value="${items.name }"></c:out></a>
 	    			</td>
 	    			<td><c:out value="${items.clazz.className }"></c:out></td>
-	    			<td><c:out value="${items.clazz.direction.directionName }"></c:out></td>
+	    			<%--<td><c:out value="${items.clazz.direction.directionName }"></c:out></td>--%>
 	    			<td><c:out value="${items.clazz.direction.spceialty.specialtyName }"></c:out></td>
 	    			<td><c:out value="${items.clazz.direction.spceialty.grade.gradeName }"></c:out></td>
 	    			<!--  -->

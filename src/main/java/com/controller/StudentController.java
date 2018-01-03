@@ -71,9 +71,6 @@ public class StudentController {
 	 * @param session
 	 * @param request
 	 * @param response
-	 * @param type
-	 * @param pagination
-	 * @param gradeId
 	 * @return
 	 */
 	@RequestMapping("/viewGrade")
@@ -90,7 +87,6 @@ public class StudentController {
 	 * @param request
 	 * @param response
 	 * @param type
-	 * @param page
 	 * @return
 	 */
 	@RequestMapping("/viewStudent")
@@ -482,31 +478,48 @@ public class StudentController {
 		request.setAttribute("student", studentService.getStudent(studentId));
 		return "student/finalSelection";
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	
 	/**
 	 * 学生在手机端查看成绩
 	 * @param userId
-	 * @param request
-	 * @param response
 	 * @return
 	 */
 	@RequestMapping("/viewScoreApp")
 	@ResponseBody
-	public  ServerResponse<Score> loginApp(Long userId, HttpServletRequest request,HttpServletResponse response){
+	public  ServerResponse<Score> loginApp(Long userId){
 		
 		return studentService.viewScoreApp(userId);
 	}
 	
 	/**
 	 * 学生在手机端查看最终选题
-	 * @param request
-	 * @param response
-	 * @param session
+	 * @param userId
 	 * @return
 	 */
 	@RequestMapping("/finalSelectionApp")
 	@ResponseBody
-	public ServerResponse<Student> finalSelectionApp(String userId, HttpServletRequest request,HttpServletResponse response){
+	public ServerResponse<Student> finalSelectionApp(String userId){
 		List<Student> students2 = commonService.findBy("Student", "id", userId);
 		if(students2.size() > 0) {
 			Topics topic = new Topics();
@@ -549,7 +562,7 @@ public class StudentController {
 	 */
 	@RequestMapping("/viewTopicsStudentApp")
 	@ResponseBody
-	public ServerResponse<List<Topics>> viewTopicsStudentApp(String userId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+	public ServerResponse<List<Topics>> viewTopicsStudentApp(String userId){
 		List<Topics> topics = null;
 		List<Student> students = (List<Student>) commonService.find("Student", userId);
 		if(students.size() > 0) {
@@ -614,31 +627,31 @@ public class StudentController {
 	
 	/**
 	 * 查看意向题目APP
-	 * @param request
-	 * @param response
-	 * @param session
+	 * @param studentId
 	 * @return
 	 */
 	@RequestMapping("/viewIntentionTopicApp")
 	@ResponseBody
-	public ServerResponse<List<IntentionTopic>> viewIntentionTopicApp(String studentId, HttpServletRequest request,HttpServletResponse response,HttpSession session){
+	public ServerResponse<List<IntentionTopic>> viewIntentionTopicApp(String studentId){
 		
 		List<IntentionTopic> intentionTopics = commonService.findBy("IntentionTopic", "studentId", studentId);
 		Teacher t = null;
+		Topics topics = null;
 		for(int i=0;i<intentionTopics.size();i++) {
-			intentionTopics.get(i).getTopic().getTopicsName();
-			intentionTopics.get(i).setStudent(null);
-			intentionTopics.get(i).getTopic().setDirections(null);
-			intentionTopics.get(i).getTopic().setGrade(null);
-			intentionTopics.get(i).getTopic().setStudents(null);
-			intentionTopics.get(i).getTopic().setSubTopic(null);
-			intentionTopics.get(i).getTopic().setIntentionTopics(null);
-			intentionTopics.get(i).getTopic().setStudents(null);
-//			intentionTopics.get(i).getTopic().setTeacher(null);
-			
 			t = new Teacher();
-			t.setName(intentionTopics.get(i).getTopic().getTeacher().getName());
-			intentionTopics.get(i).getTopic().setTeacher(t);
+			topics = new Topics();
+			if(null != intentionTopics.get(i).getTopic() && null != intentionTopics.get(i).getTopic().getTeacher()) {
+				t.setName(intentionTopics.get(i).getTopic().getTeacher().getName());
+				t.setId(intentionTopics.get(i).getTopic().getTeacher().getId());
+			}
+
+			if(null != intentionTopics.get(i).getTopic()) {
+				topics.setTopicsName(intentionTopics.get(i).getTopic().getTopicsName());
+				topics.setId(intentionTopics.get(i).getId());
+			}
+			intentionTopics.get(i).setTopic(topics);
+			topics.setTeacher(t);
+			intentionTopics.get(i).setStudent(null);
 		}
 		return ServerResponse.response(200, "获取成功", intentionTopics);
 	}

@@ -67,7 +67,6 @@ public class TopicDaoImpl implements ITopicDao{
 	/**
 	 * 系主任查看题目
 	 * @param gradeId
-	 * @param teacherId
 	 * @return
 	 */
 	public List<Topics> viewTopic(String gradeId, String state, int page, int eachPage) {
@@ -88,7 +87,6 @@ public class TopicDaoImpl implements ITopicDao{
 	/**
 	 * 系主任查看题目数量
 	 * @param gradeId
-	 * @param teacherId
 	 * @return
 	 */
 	public int viewTopicNum(String gradeId, String state) {

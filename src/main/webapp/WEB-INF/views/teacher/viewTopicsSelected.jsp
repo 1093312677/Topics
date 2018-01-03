@@ -33,21 +33,23 @@
     		<td >已选学生</td>
     		
     		<td>发布时间</td>
-    		<td>题目简介</td>
     		<td >任务书</td>
     		<td>选择学生</td>
     	</tr>
     	<c:forEach items="${topics }" var="items">
 	    		<tr>
 	    			<td><c:out value="${items.id }"></c:out></td>
-	    			<td><c:out value="${items.topicsName }"></c:out></td>
+					<td>
+						<span  data-toggle="tooltip" data-placement="bottom" title="简介：${items.introduce }">
+						<a href="javascript:void(0)">${items.topicsName }</a>
+					</span>
+					</td>
 	    			
 	    			
 	    			<td><c:out value="${items.enableSelect }"></c:out></td>
 	    			<td><c:out value="${items.selectedStudent }"></c:out></td>
 	    			
 	    			<td><c:out value="${items.time }"></c:out></td>
-	    			<td><c:out value="${items.introduce }"></c:out></td>
 	    			<td>
 	    				<c:if test="${items.taskBookName == null || items.taskBookName == ''}">
 	    					未上传
@@ -83,7 +85,7 @@
 										        <li role="presentation"><a role="menuitem" tabindex="-1" href="<%=request.getContextPath() %>/student/viewStudentOne.do?filter=yes&no=<c:out value="${intentionTopics.student.no }"></c:out>&id=<c:out value="${intentionTopics.student.id }"></c:out>">查看信息</a></li>
 										   		<li role="presentation"><a role="menuitem" tabindex="-1"  id="${intentionTopics.message }" class="mes"  data-toggle="modal" data-target="#myModal" href="javascript:void(0)" >查看留言</a></li>
 										   		<c:if test="${intentionTopics.swap == 1}">
-										   			<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=request.getContextPath() %>/swap/viewSwapTeacher.do?studentId=${intentionTopics.student.id}&directionId=${intentionTopics.student.clazz.direction.id }">调剂</a></li>
+										   			<li role="presentation"><a role="menuitem" tabindex="-1" href="<%=request.getContextPath() %>/swap/viewSwapTeacher.do?studentId=${intentionTopics.student.id}&directionId=${intentionTopics.student.clazz.direction.id }">调剂到其他题目</a></li>
 										    	</c:if>
 										    </ul>
 										</div>

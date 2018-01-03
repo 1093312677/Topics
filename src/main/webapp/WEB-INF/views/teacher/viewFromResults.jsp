@@ -27,7 +27,7 @@
     		<td >姓名</td>
     		<td >性别</td>
     		<td >班级</td>
-    		<td >方向</td>
+    		<td >专业</td>
     		<td width=250px>题目名称</td>
     		<td width=60px>开题报告</td>
     		<td width=60px>中期报告</td>

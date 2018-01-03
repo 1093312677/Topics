@@ -43,7 +43,7 @@ public class TeacherService {
 	
 	/**
 	 * 查看选择了该老师题目的学生
-	 * @param teacher
+	 * @param teacherId
 	 * @param gradeId
 	 * @return
 	 */
@@ -372,8 +372,8 @@ public class TeacherService {
 	 * @return
 	 */
 	@Transactional
-	public boolean updateTopicState(Long topicId, int state) {
-		return teacherDao.updateTopicState(topicId, state);
+	public boolean updateTopicState(Long topicId, int state, Integer num) {
+		return teacherDao.updateTopicState(topicId, state, num);
 	}
 	
 	/**

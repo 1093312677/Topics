@@ -29,6 +29,8 @@ import com.entity.User;
 import com.service.CommonService;
 import com.service.SettingService;
 import com.service.TeacherService;
+import org.springframework.web.bind.annotation.ResponseBody;
+
 /**
  * 老师相关操作
  * @author kone
@@ -50,7 +52,6 @@ public class TeacherController {
 	private SettingService settingService;
 	/**
 	 * 保存老师信息
-	 * @param departmentId
 	 * @param teacher
 	 * @param request
 	 * @param response
@@ -173,7 +174,6 @@ public class TeacherController {
 	 * @param request
 	 * @param response
 	 * @param type
-	 * @param pagination
 	 * @return
 	 */
 	@RequestMapping("/viewTeacherOne")
@@ -264,29 +264,16 @@ public class TeacherController {
 	 * @return
 	 */
 	@RequestMapping("/auditTopic")
-	public String auditTopic(Long topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	@ResponseBody
+	public Integer auditTopic(Integer num, Long topicId, HttpServletRequest request, HttpServletResponse response, HttpSession session){
 		String privilege = (String) session.getAttribute("privilege");
 		if("2".equals(privilege)) {
-			if( teacherService.updateTopicState(topicId, 1) ) {
-				try {
-					PrintWriter out = response.getWriter();
-					out.print(1);
-					return null;
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			if( teacherService.updateTopicState(topicId, 1, num) ) {
+				return 1;
 			} 
 		}
-		
-		PrintWriter out;
-		try {
-			out = response.getWriter();
-			out.print(0);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		return null;
+
+		return 0;
 	}
 	
 	/**
@@ -303,7 +290,7 @@ public class TeacherController {
 		if("2".equals(privilege)) {
 			try {
 				for(Long id : topicId) {
-					teacherService.updateTopicState(id, 1);
+					teacherService.updateTopicState(id, 1, null);
 				}
 				PrintWriter out = response.getWriter();
 				out.print(1);

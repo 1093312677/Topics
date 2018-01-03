@@ -3,6 +3,7 @@ package com.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -85,7 +86,7 @@ public class DocumentController {
 	        response.reset();
 	        // 设置response的Header
 	        response.setContentType("application/octet-stream;charset=utf-8");
-	        response.addHeader("Content-Disposition", "attachment;filename=" + new String(documentName));
+	        response.addHeader("Content-Disposition", "attachment;filename=" + new String(documentName.getBytes("gbk"),"iso-8859-1"));
 		    //  客户端不缓存  
 		    response.addHeader("Pragma", "no-cache");  
 		    response.addHeader("Cache-Control", "no-cache"); 
@@ -106,7 +107,6 @@ public class DocumentController {
 	
 	/**
 	 * 删除模板文档
-	 * @param id
 	 * @return
 	 */
 	@RequestMapping("/deleteDocument")

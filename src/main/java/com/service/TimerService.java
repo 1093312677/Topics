@@ -5,11 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.service.spi.ServiceException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 /**
@@ -37,7 +35,7 @@ public class TimerService {
 	@Autowired
 	private SessionFactory sessionFactory;
 	private Session session;
-	private static Logger logger =LoggerFactory.getLogger(TimerService.class);
+	private static Logger logger = Logger.getLogger(TimerService.class);
 	@Transactional
 	public void test() {
 		try{

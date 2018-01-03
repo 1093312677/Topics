@@ -65,7 +65,7 @@
 	    		<td width="100px">学号</td>
 	    		<td>姓名</td>
 	    		<td>班级</td>
-	    		<td>方向</td>
+	    		<%--<td>方向</td>--%>
 	    		<td>专业</td>
 	    		
 	    		<td>年级</td>
@@ -81,7 +81,7 @@
 	    				<a href="<%=request.getContextPath() %>/student/viewStudentOne.do?filter=no&no=<c:out value="${items.no }"></c:out>&id=<c:out value="${items.id }"></c:out>"><c:out value="${items.name }"></c:out></a>
 	    			</td>
 	    			<td><c:out value="${items.clazz.className }"></c:out></td>
-	    			<td><c:out value="${items.clazz.direction.directionName }"></c:out></td>
+	    			<%--<td><c:out value="${items.clazz.direction.directionName }"></c:out></td>--%>
 	    			<td><c:out value="${items.clazz.direction.spceialty.specialtyName }"></c:out></td>
 	    			<td><c:out value="${items.clazz.direction.spceialty.grade.gradeName }"></c:out></td>
 	    			<td><c:out value="${items.clazz.direction.spceialty.grade.department.departmentName }"></c:out></td>
@@ -750,14 +750,22 @@
 			dataType:"json",
 			success:function(data){
 				var length = data.directions.length;
-				var content = "<select name='id' class='form-control' id='selectDirection' onchange='getClazz()'>";
-				content += "<option value='null'>--请选择方向--</option>";
-				for(var i=0;i<length;i++){
-					content += "<option value='"+data.directions[i].id+"'>"+data.directions[i].directionName+"</option>";
-				}
-				content += "</select>";
-				$(".direction-content").html(content);
-				
+				// var content = "<select name='id' class='form-control' id='selectDirection' onchange='getClazz()'>";
+				// content += "<option value='null'>--请选择方向--</option>";
+				// for(var i=0;i<length;i++){
+				// 	content += "<option value='"+data.directions[i].id+"'>"+data.directions[i].directionName+"</option>";
+				// }
+				// content += "</select>";
+				// $(".direction-content").html(content);
+
+
+				// 特殊需求版本
+                var content = "";
+                for(var i=0;i<length;i++){
+                    content = '<input type="hidden" value="'+data.directions[i].id+'" name="id" id="selectDirection"/>';
+                }
+                $(".direction-content").html(content);
+                getClazz();
 			},
 			error:function(msg){
 				console.log(msg)

@@ -59,7 +59,6 @@ public class TopicController {
 	private GradeService gradeService;
 	/**
 	 * 添加毕业选题
-	 * @param teacherId
 	 * @param topic
 	 * @param request
 	 * @param response
@@ -274,11 +273,10 @@ public class TopicController {
 	/**
 	 * 查看年级获取题目
 	 * @param request
-	 * @param response
 	 * @return
 	 */
 	@RequestMapping("/viewGradeTopic")
-	public String viewGradeTopic(HttpSession session,HttpServletRequest request,HttpServletResponse response,int state){
+	public String viewGradeTopic(HttpSession session,HttpServletRequest request, int state){
 		Long departmentId = (Long)session.getAttribute("departmentId");
 		List<Grade> grades = null;
 		grades = gradeService.viewGrades(departmentId);

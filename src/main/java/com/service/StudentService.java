@@ -55,7 +55,6 @@ public class StudentService {
 	private Logger logger = Logger.getLogger(StudentService.class);
 	/**
 	 * student view topics
-	 * @param directions
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
@@ -109,7 +108,6 @@ public class StudentService {
 	 * select intention topic
 	 * @param student
 	 * @param choice
-	 * @param setting
 	 * @param topic
 	 * @return
 	 */
@@ -160,7 +158,6 @@ public class StudentService {
 	 * save intention topic
 	 * @param student
 	 * @param choice
-	 * @param setting
 	 * @param topic
 	 * @return
 	 */
@@ -176,10 +173,7 @@ public class StudentService {
 	}
 	/**
 	 * updateIntentionTopic
-	 * @param student
 	 * @param choice
-	 * @param setting
-	 * @param topic
 	 * @return
 	 */
 	public boolean updateIntentionTopic(Long studentId,Integer choice, Integer batch, Long topicId,Integer type){
@@ -364,7 +358,7 @@ public class StudentService {
             case Cell.CELL_TYPE_ERROR: // 故障  
             	 return "";  
             default:  
-            	 return "";   
+            	 return "";
             }  
         }
 	}
@@ -400,7 +394,11 @@ public class StudentService {
 	public ServerResponse<Score> viewScoreApp(Long userId) {
 		Score score = new Score();
 		Score score2 = scoreDao.getScoreParam(userId);
-		float s = score2.getMediumScore() +score2.getHeadScore() + score2.getReplyResult();
+		float s = 0f;
+		if(null != score2) {
+			s = score2.getMediumScore() +score2.getHeadScore() + score2.getReplyResult();
+		}
+
 		score.setScore(s);
 		return ServerResponse.response(200, "获取成功", score);
 	}

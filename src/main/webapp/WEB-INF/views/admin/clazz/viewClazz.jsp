@@ -43,7 +43,7 @@
     	<tr class="info">
     		<td width="70px">编号</td>
     		<td>班级</td>
-    		<td>方向</td>
+    		<%--<td>方向</td>--%>
     		<td>专业</td>
     		<td>年级</td>
     		<td>系</td>
@@ -55,7 +55,7 @@
     		<tr>
     			<td><c:out value="${items.id }"></c:out></td>
     			<td><c:out value="${items.className }"></c:out></td>
-    			<td><c:out value="${items.direction.directionName }"></c:out></td>
+    			<%--<td><c:out value="${items.direction.directionName }"></c:out></td>--%>
     			<td><c:out value="${items.direction.spceialty.specialtyName }"></c:out></td>
     			<td><c:out value="${items.direction.spceialty.grade.gradeName }"></c:out></td>
     			
@@ -366,14 +366,19 @@
 			dataType:"json",
 			success:function(data){
 				var length = data.directions.length;
-				var content = "<select name='id' class='form-control' id='selectDirection' onchange='showInput()'>";
-				content += "<option value='null'>--请选择方向--</option>";
-				for(var i=0;i<length;i++){
-					content += "<option value='"+data.directions[i].id+"'>"+data.directions[i].directionName+"</option>";
-				}
-				content += "</select>";
+				// var content = "<select name='id' class='form-control' id='selectDirection' onchange='showInput()'>";
+				// content += "<option value='null'>--请选择方向--</option>";
+				// for(var i=0;i<length;i++){
+				// 	content += "<option value='"+data.directions[i].id+"'>"+data.directions[i].directionName+"</option>";
+				// }
+				// content += "</select>";
+
+                var content = "";
+                for(var i=0;i<length;i++){
+                    content = '<input type="hidden" value="'+data.directions[i].id+'" name="id" id="selectDirection"/>';
+                }
 				$(".direction-content").html(content);
-				
+                showInput();
 			},
 			error:function(msg){
 				console.log(msg)

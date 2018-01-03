@@ -57,7 +57,7 @@ public class AccountController {
 		logger.info("user->"+"IP:"+request.getRemoteAddr()+"->username:"+user.getUsername());
 		session.setAttribute("username", user.getUsername());
 //		验证输入的验证码
-		accountService.checkCode(request, session, response, code);
+//		accountService.checkCode(request, session, response, code);
 
 		User user1 = accountService.login(user);
 		if(user1 != null){

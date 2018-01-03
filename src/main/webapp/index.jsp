@@ -48,10 +48,10 @@
 									<label for="password" class="control-label sr-only">Password</label>
 									<input type="password" class="form-control" id="password" value="" required name="password" placeholder="密码">
 								</div>
-								<div class="form-group">
-									<input type="text" class="form-control"  id="code" value="" required name="code" placeholder="验证码" style="width:60%;">
-									<img src="<%=request.getContextPath()%>/account/getRandomCode.do" onclick="refresh(this)" height="40px" width="100px" style="float: right;margin-top: -40px" id="getImg"/>
-								</div>
+								<%--<div class="form-group">--%>
+									<%--<input type="text" class="form-control"  id="code" value="" required name="code" placeholder="验证码" style="width:60%;">--%>
+									<%--<img src="<%=request.getContextPath()%>/account/getRandomCode.do" onclick="refresh(this)" height="40px" width="100px" style="float: right;margin-top: -40px" id="getImg"/>--%>
+								<%--</div>--%>
 								<!-- <div class="form-group clearfix">
 									<label class="fancy-checkbox element-left">
 										<input type="checkbox">

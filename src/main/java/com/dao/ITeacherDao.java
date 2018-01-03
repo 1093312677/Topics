@@ -35,7 +35,7 @@ public interface ITeacherDao {
 	 * @param state
 	 * @return
 	 */
-	public boolean updateTopicState(Long topicId, int state);
+	public boolean updateTopicState(Long topicId, int state, Integer num);
 	
 	/**
 	 * 获取题目判断是否可以选择

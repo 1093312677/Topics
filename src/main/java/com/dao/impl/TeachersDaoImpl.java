@@ -100,22 +100,30 @@ public class TeachersDaoImpl implements ITeacherDao{
 
 	@Transactional
 	@Override
-	public boolean updateTopicState(Long topicId, int state) {
+	public boolean updateTopicState(Long topicId, int state, Integer num) {
 		hql = "UPDATE Topics"
-				+ " SET state=:state "
-				+ " WHERE "
+				+ " SET state=:state ";
+		if(null != num && 0 != num) {
+			hql += " ,enableSelect=:num";
+		}
+
+		hql += " WHERE "
 				+ " id=:topicId";
-		try{
+
+//		try{
 			session = sessionFactory.getCurrentSession();
 			Query query = session.createQuery(hql);
 			query.setLong("topicId", topicId);
 			query.setLong("state", state);
+			if(null != num && 0 != num) {
+				query.setLong("num", num);
+			}
 			query.executeUpdate();
 			
 			return true;
-		}catch(Exception e){
-			throw new ServiceException("error");
-		}
+//		}catch(Exception e){
+//			throw new ServiceException("error");
+//		}
 	}
 
 

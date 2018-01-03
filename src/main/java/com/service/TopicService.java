@@ -209,8 +209,6 @@ public class TopicService {
 	 * 查看题目数量
 	 * @param gradeId
 	 * @param state
-	 * @param page
-	 * @param eachPage
 	 * @return
 	 */
 	public int getTopicsNum (String gradeId, String state) {

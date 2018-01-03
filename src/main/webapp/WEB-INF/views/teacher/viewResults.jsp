@@ -30,7 +30,7 @@
     		<td >姓名</td>
     		<td >性别</td>
     		<td >班级</td>
-    		<td >方向</td>
+    		<td >专业</td>
     		<td width=250px>题目名称</td>
     		<td width=60px>指导教师评阅成绩</td>
     		<td width=60px>小组评阅成绩</td>
