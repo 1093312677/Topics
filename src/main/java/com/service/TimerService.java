@@ -37,7 +37,7 @@ public class TimerService {
 	private Session session;
 	private static Logger logger = Logger.getLogger(TimerService.class);
 	@Transactional
-	public void test() {
+	public void start() {
 		try{
 			session = sessionFactory.getCurrentSession();
 			timerDao.setSession(session);
@@ -109,9 +109,10 @@ public class TimerService {
 				List<CheckViewGrade> checkViewGrades = teachers.get(j).getCheckViewGrade();
 //				判断教师是否是设置自动选题
 				for(int jj=0;jj<teachers.get(j).getTeacherAutoSelects().size();jj++) {
-					if(teachers.get(j).getTeacherAutoSelects().get(jj).getAutoSelect() == 1 &&teachers.get(j).getTeacherAutoSelects().get(jj).getGrade().getId() == grades.get(i).getId()) {
+					Integer auto = teachers.get(j).getTeacherAutoSelects().get(jj).getAutoSelect();
+					if( (auto == 0 || auto == null ) &&teachers.get(j).getTeacherAutoSelects().get(jj).getGrade().getId() == grades.get(i).getId()) {
 						//当前年级的老师没有设置自动选题
-						logger.info("------------设置自动选题教师------------"+teachers.get(i).getNo()+"----"+teachers.get(j).getName() );
+						logger.info("------------设置自动选题教师------------"+teachers.get(j).getNo()+"----"+teachers.get(j).getName() );
 						for(int k=0;k<teachers.get(j).getTopics().size();k++) {
 //							出的题目是当前年级的
 							if(teachers.get(j).getTopics().get(k).getGrade().getId() == grades.get(i).getId()) {
@@ -219,7 +220,7 @@ public class TimerService {
 						}
 					} else {
 						//当前年级的老师没有设置自动选题
-						logger.info("未设置自动选题教师------------"+teachers.get(i).getNo()+"----"+teachers.get(j).getName() );
+						logger.info("未设置自动选题教师------------"+teachers.get(j).getNo()+"----"+teachers.get(j).getName() );
 					}
 						
 				}

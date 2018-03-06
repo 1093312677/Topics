@@ -1,13 +1,16 @@
 package com.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.common.JavaWebToken;
 import com.dto.AppViewIntentStu;
 import com.dto.StudentDTO;
 import com.dto.TopicStudent;
@@ -178,5 +181,29 @@ public class AppTeacherController {
 
 	    return ServerResponse.response(200, "success", teacherService.viewIntentStudent(topicId, gradeId));
     }
+
+
+	/**
+	 * token验证
+	 * @param username
+	 * @param password
+	 * @return
+	 */
+	@RequestMapping("/testToken")
+	@ResponseBody
+    public ServerResponse testToken(String username, String password) {
+		Map<String,Object> m = new HashMap<String,Object>();
+		m.put("userId", username);
+		String token = JavaWebToken.createJavaWebToken(m);
+		System.out.println(token);
+    	return ServerResponse.response(200, "success", token);
+	}
+
+	@RequestMapping("/vertifyToken")
+	@ResponseBody
+	public ServerResponse vertifyToken(String token) {
+		Map map = JavaWebToken.parserJavaWebToken(token);
+		return ServerResponse.response(200, "success", map);
+	}
 	
 }

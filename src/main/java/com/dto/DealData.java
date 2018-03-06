@@ -2,6 +2,7 @@ package com.dto;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -109,7 +110,6 @@ public class DealData<T> {
 	}
 	/**
 	 * 处理Specialty数据，只返回年级名称和id
-	 * @param specialtys
 	 * @return
 	 */
 	public List<Direction> dealDirectionData(List<Direction> directions){
@@ -131,7 +131,6 @@ public class DealData<T> {
 	}
 	/**
 	 * 处理Clazz数据，只返回年级名称和id
-	 * @param specialtys
 	 * @return
 	 */
 	  public List<Clazz> dealClazzData( List<Clazz> clazzs){
@@ -306,12 +305,23 @@ public class DealData<T> {
 			try {
 //				当前时间
 				Date now = new Date();
-//				第一轮选题开始，结束时间
-				Date oneStart = sdf.parse(startTime.replace("T"," ").concat(":00"));
+//				结束时间
+//				Date oneStart = sdf.parse(startTime.replace("T"," ").concat(":00"));
 				Date oneEnd = sdf.parse(endTime.replace("T"," ").concat(":00"));
-				if(now.getTime() > oneStart.getTime() && now.getTime() < oneEnd.getTime() ) {
+//				if(now.getTime() > oneStart.getTime() && now.getTime() < oneEnd.getTime() ) {
+//					return true;
+//				}
+
+//				获取结尾时间段前20分钟
+				Calendar calendar = Calendar.getInstance();
+				calendar.setTime(oneEnd);
+				calendar.add(Calendar.MINUTE, -20);
+
+				if(now.getTime() > calendar.getTime().getTime() && now.getTime() < oneEnd.getTime() ) {
+					System.out.println("ok---------------------------");
 					return true;
 				}
+
 			} catch (Exception e){
 				return false;
 			}

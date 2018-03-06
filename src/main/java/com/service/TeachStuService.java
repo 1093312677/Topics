@@ -88,8 +88,6 @@ public class TeachStuService {
 	/**
 	 * 查看学生
 	 * @param gradeId
-	 * @param page
-	 * @param eachPage
 	 * @return
 	 */
 	public List<Student> viewStudents(Long gradeId, int num, int size) {
@@ -224,7 +222,6 @@ public class TeachStuService {
 	}
 	/**
 	 * 系主任一键选题
-	 * @param departmentId
 	 * @return
 	 */
 	@Transactional
@@ -414,10 +411,10 @@ public class TeachStuService {
 		TeacherAutoSelect teacherAutoSelect =  teacherAutoSelectDao.getTeacherAutoSelect(gradeId, teacherId);
 		if(teacherAutoSelect != null) {
 			if(teacherAutoSelect.getAutoSelect() == 1) {
-				return true;
+				return false;
 			}
 		}
-		return false;
+		return true;
 	}
 	/**
 	 * 设置教师自动选题
@@ -482,7 +479,6 @@ public class TeachStuService {
 	
 	/**
 	 * 删除教师	
-	 * @param studentId
 	 * @return
 	 */
 	@Transactional

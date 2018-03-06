@@ -12,11 +12,11 @@ public class TeacherTimer {
 	@Test
 	public void selectTopic() {
 		
-		System.out.println("run");
+		System.out.println("-----------------------run-----------------------");
 //		SendEmail send = new SendEmail();
 //		send.sendMail();
 		
-		timerService.test();
+		timerService.start();
 		
 	}
 }

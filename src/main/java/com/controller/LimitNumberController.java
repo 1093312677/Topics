@@ -138,7 +138,7 @@ public class LimitNumberController {
 	
 	@RequestMapping("/auto")
 	public String auto(HttpSession session, HttpServletRequest request,HttpServletResponse response) {
-		timerService.test();
+		timerService.start();
 		return null;
 	}
 	

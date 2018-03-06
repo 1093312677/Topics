@@ -21,9 +21,9 @@
                     http://www.springframework.org/schema/cache
                     http://www.springframework.org/schema/cache/spring-cache-3.1.xsd
                     http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd
-                    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd  
+                    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 			        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-			        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd  
+			        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
 			        http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd 
                     
                     http://www.springframework.org/schema/mvc
@@ -50,33 +50,48 @@
     
     
   	 <!-- spring Timer  --> 
-    <bean id="teacherTimer" class="com.common.TeacherTimer"></bean>
-    <task:scheduled-tasks>
-    	<task:scheduled ref="teacherTimer" method="selectTopic" cron="0 */59 * * * ?" />
-    </task:scheduled-tasks>
- 
-  	
-  
-    <!-- 属性文件位置 -->  
+    <!--<bean id="teacherTimer" class="com.common.TeacherTimer"></bean>-->
+    <!--<task:scheduled-tasks>-->
+    	<!--<task:scheduled ref="teacherTimer" method="selectTopic" cron="0 */59 * * * ?" />-->
+    <!--</task:scheduled-tasks>-->
+
+
+    <!-- 配置方法映射工厂类 -->
+    <bean id="jobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="autoSelect"></property>
+        <property name="targetMethod" value="execute"></property>
+        <property name="concurrent" value="false"></property>
+        <!-- concurrent : false表示等上一个任务执行完后再开启新的任务 -->
+    </bean>
+
+    <!-- 配置任务高度的的时间/周期 -->
+    <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jobDetail"></property>
+        <property name="cronExpression" value="0 */6 * * * ?"></property>
+        <property name="startDelay" value="3000"></property>
+    </bean>
+
+    <bean id="schedulerFactoryBean"  class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+                <ref bean="trigger1"/>
+            </list>
+        </property>
+    </bean>
+    <!--/-->
+
+
+    <!-- 属性文件位置 -->
     <bean id="annotationPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">  
         <property name="locations">
             <list>  
                 <value>classpath:config/properties/config.properties</value>  
-                <value>classpath:config/properties/log4j.properties</value>  
-            </list>  
+                <value>classpath:config/properties/log4j.properties</value>
+            </list>
         </property>  
     </bean>  
     
     
- <!-- 实例化
-     
-     
-     <bean id="pagination" class="com.common.Pagination"></bean>
-     <bean id="daoFactory" class="com.dao.baseDaoFactory.mysqlDaoFactory.MysqlDAOFactory"></bean>
-     <bean id="commonDao" class="com.dao.impl.CommonDaoImpl"></bean>
-     <bean id="teacherDaoImpl" class="com.dao.impl.TeacherDaoImpl"></bean>
-     <bean id="courseDaoImpl" class="com.dao.impl.CourseDaoImpl"></bean>
- -->     
  	<bean id="dealData" class="com.dto.DealData"></bean>
      
     

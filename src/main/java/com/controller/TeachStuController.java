@@ -60,7 +60,6 @@ public class TeachStuController {
 	 * @param request
 	 * @param response
 	 * @param pageType
-	 * @param type
 	 * @param pagination
 	 * @param gradeId
 	 * @return
@@ -117,7 +116,6 @@ public class TeachStuController {
 			wb.write(output);
 			output.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -151,7 +149,6 @@ public class TeachStuController {
 			wb.write(output);
 			output.flush();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;

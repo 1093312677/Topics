@@ -8,5 +8,5 @@
     <!-- 加载配置文件 -->
     <context:property-placeholder location="classpath:config/properties/config.properties"/>
     <!-- 扫描service自动注入为bean -->
-    <context:component-scan base-package="com.service,com.dao.impl,com.guo.dao.impl,com.guo.service.impl" />
+    <context:component-scan base-package="com.service,com.dao.impl,com.guo.dao.impl,com.guo.service.impl,com.timer" />
 </beans>
